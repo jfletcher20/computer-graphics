@@ -44,7 +44,7 @@ class GKS {
         var yCoord = this.platno.height / 2 + this.units(y);
 
         if (xCoord < this.xmin || xCoord > this.xmax || yCoord < this.ymin || yCoord > this.ymax) {
-            console.log("Koordinate (" + x + ", " + y + ") su izvan granica x ε (" + this.xmin + ", " + this.xmax + ") & y ε (" + this.ymin + ", " + this.ymax + ")");
+            // console.log("Koordinati (" + x + ", " + y + ") su izvan granica x ε (" + this.xmin + ", " + this.xmax + ") & y ε (" + this.ymin + ", " + this.ymax + ")");
             xCoord = Math.min(Math.max(xCoord, this.xmin), this.xmax);
             yCoord = Math.min(Math.max(yCoord, this.ymin), this.ymax);
         }
@@ -65,7 +65,7 @@ GKS.prototype.koristiDebljinu = function(debljina) {
     this.renderer.lineWidth = debljina;
 }
 
-GKS.prototype.nacrtajKoordinatniSustav = function() {
+GKS.prototype.nacrtajKoordinatniSustav = function(withArrows = true, withGrid = false, withMarkers = false) {
 
     var inicijalnaBoja = this.renderer.strokeStyle;
     this.koristiBoju("black");
@@ -73,8 +73,9 @@ GKS.prototype.nacrtajKoordinatniSustav = function() {
     this.koristiDebljinu(1.5);
 
     this.nacrtajKoordinatneOsi();
-    this.nacrtajStrijeliceKoordinatnogSustava();
-    this.nacrtajKoordinatnuMrezu(10);
+    if (withArrows)this.nacrtajStrijeliceKoordinatnogSustava();
+    if (withGrid) this.nacrtajKoordinatnuMrezu(10);
+    if (withMarkers) this.nacrtajOznake(true);
 
     this.koristiBoju(inicijalnaBoja);
     this.koristiDebljinu(inicijalnaDebljina);
@@ -139,7 +140,41 @@ GKS.prototype.nacrtajKoordinatnuMrezu = function(expand = 0) {
 
 }
 
-GKS.prototype.nacrtajSlova = function(text) {
-    this.renderer.font = "20px Arial";
-    this.renderer.fillText(text, this.platno.width - 20, this.platno.height / 2 + 20);
+GKS.prototype.nacrtajOznake = function(enumerate = true, max = 10000) {
+    
+    var inicijalnaBoja = this.renderer.strokeStyle;
+    this.koristiBoju("black");
+
+    var inicijalnaDebljina = this.renderer.lineWidth;
+    this.koristiDebljinu(1);
+
+    for (var i = this.xmin; i <= this.xmax; i++) {
+        this.postaviNa(i, -0.1);
+        this.linijaDo(i, 0.1);
+        if (i != 0 && i <= max && i >= -max && enumerate) this.nacrtajSlova(i, i -0.1, -0.45);
+        this.povuciLiniju();
+    }
+
+    for (var i = this.ymin; i <= this.ymax; i++) {
+        this.postaviNa(-0.1, i);
+        this.linijaDo(0.1, i);
+        if (i != 0 && i <= max && i >= -max && enumerate) this.nacrtajSlova(i, 0.15, i - 0.1);
+        this.povuciLiniju();
+    }
+
+    this.koristiDebljinu(inicijalnaDebljina);
+    this.koristiBoju(inicijalnaBoja);
+
+}
+
+GKS.prototype.nacrtajSlova = function(text, x, y) {
+    this.renderer.font = unit / 2 + "px Arial";
+    if (x && y)
+        this.renderer.fillText(
+            text, this.platno.width / 2 + this.units(x), this.platno.height / 2 + -this.units(y)
+        );
+    else
+        this.renderer.fillText(
+            text, this.platno.width / 2 + this.units(this.x), this.platno.height / 2 + -this.units(this.y)
+        );
 }

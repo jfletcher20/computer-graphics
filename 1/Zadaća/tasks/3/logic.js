@@ -62,14 +62,6 @@ window.onload = function() {
 
     unitSlider.oninput = drawButterfly;
 
-    for (var t = 0; t <= 12 * Math.PI; t += iteratorBump) {
-        const x = _x(t);
-        const y = _y(t);
-        var xNext = x + (x < 12 * Math.PI ? 2*iteratorBump : 2*-iteratorBump);
-        var yNext = y + (x < 12 * Math.PI ? 2*iteratorBump : 2*-iteratorBump);
-        gks.postaviNa(x, y - 0.5);
-        gks.linijaDo(xNext, yNext - 0.5);
-        gks.povuciLiniju();
-    }
+    drawButterfly();
 
 }

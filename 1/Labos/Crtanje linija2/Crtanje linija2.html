@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="hr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Crtanje linija</title>
+	</head>
+
+	<body>
+		<h1>Crtanje linija</h1>	
+		<canvas id="renderer" width="640" height="640" style="border:5px solid black">
+			Vaš preglednik ne podržava HTML5 canvas.
+		</canvas>
+
+		<script>
+			const unit = 60;
+			const maxSizeX = 5, maxSizeY = 5;
+			function units(x) { return x * unit; }
+		    window.onload = function() {
+				var canvas = document.getElementById("renderer");
+				if (!canvas) alert("Greška - nema platna!");
+				var w = canvas.width;
+				var h = canvas.height;
+				var g = canvas.getContext("2d");
+
+				var x = w / 2;
+				var y = h / 2;
+				
+				g.strokeStyle = "black";
+				g.beginPath();
+				g.moveTo(x - units(maxSizeX), y);
+				g.lineTo(x + units(maxSizeX), y);
+				g.moveTo(x, y-units(maxSizeY));
+				g.lineTo(x, y+units(maxSizeY));
+				g.stroke();
+
+				// coordinate grid
+				g.beginPath();
+				for (let i = -maxSizeX; i <= maxSizeX; i++) {
+					g.moveTo(x + units(i), y - units(0.2));
+					g.lineTo(x + units(i), y + units(0.2));
+				}
+				for (let i = -maxSizeY; i <= maxSizeY; i++) {
+					g.moveTo(x - units(0.2), y + units(i));
+					g.lineTo(x + units(0.2), y + units(i));
+				}
+				g.lineWidth = 0.7;
+				g.stroke();
+
+				g.lineWidth = 3;
+
+				g.strokeStyle = "red";
+				g.beginPath();
+				const maxDiagonal = Math.sqrt(maxSizeX * maxSizeX + maxSizeY * maxSizeY);
+				for (let i = -maxDiagonal; i <= maxDiagonal; i += 0.1) {
+					let xPos = units(i) + x;
+					let yPos = y - units(0.5 * i * i - 3);
+					if (xPos < x - units(maxSizeX)) continue;
+					if (xPos > x + units(maxSizeX)) continue;
+					if (yPos < y - units(maxSizeY)) continue;
+					if (yPos > y + units(maxSizeY)) continue;
+					if (i === -maxDiagonal) g.moveTo(xPos, yPos);
+					else g.lineTo(xPos, yPos);
+				}
+				g.stroke();
+            }
+		</script>
+	</body>
+</html>

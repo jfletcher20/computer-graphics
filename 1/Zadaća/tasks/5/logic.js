@@ -1,11 +1,11 @@
 const unit = 40;
-const xmin = -8, xmax = 8, ymin = -3, ymax = 3;
+const xmin = -20, xmax = 20, ymin = -20, ymax = 20;
 
 window.onload = function() {
     
     const canvas = document.getElementById("renderer");
     const unitSlider = document.getElementById("unit");
-    const displacementSlider = document.getElementById("displacement");
+    const sizeSlider = document.getElementById("size");
     if (!canvas) alert("Greška - nema platna!");
 
     var gks = new GKS(canvas, xmin, xmax, ymin, ymax);
@@ -29,44 +29,42 @@ window.onload = function() {
     function cos(x) { return Math.cos(x); }
     function sin(x) { return Math.sin(x); }
 
-    // function _x(r, φ) { return r * cos(φ); }
-    // function _y(r, φ) { return r * sin(φ); }
+    function _x(a, φ) { return _r(a, φ) * cos(φ); }
+    function _y(a, φ) { return _r(a, φ) * sin(φ); }
+    function _r(a, φ) { return a * cos(4 * φ); }
 
-    function _x(t) {
-        return t;
-    }
+    const iteratorBump = 0.001;
 
-    function _y(t) {
-        return Math.sin(t);
-    }
+    function drawFlower() {
 
-    const iteratorBump = 0.01;
+        const a = sizeSlider.value / 2;
 
-    function drawCurve() {
-
-        const displacementValue = displacementSlider.value / 100;
-        gks.placeCenterAt(displacementValue, 0.5);
-
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-        gks.nacrtajKoordinatniSustav(true, true, true, 10000, 1);
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        // gks.nacrtajKoordinatniSustav(true, true, true);
         gks.unit = unitSlider.value;
         gks.koristiBoju("red");
         gks.koristiDebljinu(1);
 
-        for (var t = 0; t <= 2 * Math.PI; t += iteratorBump) {
-            const x = _x(t);
-            const y = _y(t);
-            var xNext = x + iteratorBump;
-            var yNext = y + (x < 2 * Math.PI ? 2 * iteratorBump : 2 * -iteratorBump);
-            gks.postaviNa(x, y);
-            gks.linijaDo(xNext, yNext);
-            gks.povuciLiniju();
+        function drawCurve(a = 1) {
+            for (var t = 0; t <= 2 * Math.PI; t += iteratorBump) {
+                const x = _x(a, t);
+                const y = _y(a, t);
+                var xNext = x + (x > 0 ? a * iteratorBump : a * -iteratorBump);
+
+                var yNext = y + (y > 0 ? a * iteratorBump : a * -iteratorBump);
+
+                gks.postaviNa(x, y);
+                gks.linijaDo(xNext, yNext);
+                gks.povuciLiniju();
+            }
         }
+
+        for (var i = a; i > 0; i -= 0.5) drawCurve(i);
     }
 
-    unitSlider.oninput = drawCurve;
-    displacementSlider.oninput = drawCurve;
+    unitSlider.oninput = drawFlower;
+    sizeSlider.oninput = drawFlower;
 
-    drawCurve();
+    drawFlower();
 
 }

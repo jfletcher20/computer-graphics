@@ -24,10 +24,10 @@ window.onload = function() {
 
     function drawEllipsis() {
 
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         gks.nacrtajKoordinatniSustav(false, false, true, 10000, 10000);
 
-        gks.koristiBoju("blue");
+        gks.koristiBoju("red");
         const a = 4, b = 2;
 
         for (var t = 0; t <= 2 * Math.PI; t += 0.01) {

@@ -47,7 +47,7 @@ window.onload = function() {
         const displacementValue = displacementSlider.value / 100;
         gks.placeCenterAt(displacementValue, 0.5);
 
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         gks.nacrtajKoordinatniSustav(true, true, true, 10000, 1);
         gks.unit = unitSlider.value;
         gks.koristiBoju("red");

@@ -48,7 +48,7 @@ window.onload = function() {
         const displacementValue = displacementSlider.value / 100;
         gks.displace(0, -0.2 - 5 * displacementValue);
 
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         gks.unit = unitSlider.value;
         gks.koristiBoju("red");
         gks.koristiDebljinu(1);

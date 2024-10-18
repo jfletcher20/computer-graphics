@@ -45,18 +45,19 @@ window.onload = function() {
     const iteratorBump = 0.0015;
 
     function drawButterfly() {
+        const displacementValue = displacementSlider.value / 100;
+        gks.displace(0, -0.2 - 5 * displacementValue);
+
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         gks.unit = unitSlider.value;
         gks.koristiBoju("red");
         gks.koristiDebljinu(1);
 
-        const displacementValue = displacementSlider.value / 100;
-
         for (var t = 0; t <= 12 * Math.PI; t += iteratorBump) {
             const x = _x(t);
             const y = _y(t);
-            var xNext = x + (x < 12 * Math.PI ? 2*iteratorBump : 2*-iteratorBump);
-            var yNext = y + (x < 12 * Math.PI ? 2*iteratorBump : 2*-iteratorBump);
+            var xNext = x + (x < 12 * Math.PI ? 2 * iteratorBump : 2 * -iteratorBump);
+            var yNext = y + (x < 12 * Math.PI ? 2 * iteratorBump : 2 * -iteratorBump);
             gks.postaviNa(x, y - 0.5 - 5 * displacementValue);
             gks.linijaDo(xNext, yNext - 0.5 - 5 * displacementValue);
             gks.povuciLiniju();

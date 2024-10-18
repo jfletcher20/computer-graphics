@@ -5,6 +5,8 @@ window.onload = function() {
 
     const canvas = document.getElementById("renderer");
     const unitSlider = document.getElementById("unit");
+    const aFocusSlider = document.getElementById("focus-a");
+    const bFocusSlider = document.getElementById("focus-b");
     if (!canvas) alert("Greška - nema platna!");
 
     var gks = new GKS(canvas, xmin, xmax, ymin, ymax);
@@ -28,7 +30,7 @@ window.onload = function() {
         gks.nacrtajKoordinatniSustav(false, false, true, 10000, 10000);
 
         gks.koristiBoju("red");
-        const a = 4, b = 2;
+        const a = aFocusSlider.value, b = bFocusSlider.value;
 
         for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
             var x = a * Math.cos(t);
@@ -44,6 +46,10 @@ window.onload = function() {
 
     unitSlider.oninput = function() {
         gks.unit = this.value;
+        drawEllipsis();
+    }
+
+    aFocusSlider.oninput = bFocusSlider.oninput = function() {
         drawEllipsis();
     }
 

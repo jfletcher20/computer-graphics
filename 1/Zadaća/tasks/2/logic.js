@@ -3,10 +3,12 @@ const xmin = -20, xmax = 20, ymin = -20, ymax = 20;
 
 window.onload = function() {
 
-    var canvas = document.getElementById("renderer");
+    const canvas = document.getElementById("renderer");
+    const unitSlider = document.getElementById("unit");
     if (!canvas) alert("Greška - nema platna!");
+
     var gks = new GKS(canvas, xmin, xmax, ymin, ymax);
-    gks.unit = 70;
+    gks.unit = unitSlider.value;
 
     /*
 
@@ -20,19 +22,31 @@ window.onload = function() {
 
     */
 
-    gks.nacrtajKoordinatniSustav(false, false, true);
+    function drawEllipsis() {
 
-    gks.koristiBoju("blue");
-    const a = 4, b = 2;
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        gks.nacrtajKoordinatniSustav(false, false, true);
 
-    for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-        var x = a * Math.cos(t);
-        var y = b * Math.sin(t);
-        var xNext = a * Math.cos(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-        var yNext = b * Math.sin(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-        gks.postaviNa(x, y);
-        gks.linijaDo(xNext, yNext);
-        gks.povuciLiniju();
+        gks.koristiBoju("blue");
+        const a = 4, b = 2;
+
+        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
+            var x = a * Math.cos(t);
+            var y = b * Math.sin(t);
+            var xNext = a * Math.cos(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
+            var yNext = b * Math.sin(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
+            gks.postaviNa(x, y);
+            gks.linijaDo(xNext, yNext);
+            gks.povuciLiniju();
+        }
+        
     }
+
+    unitSlider.oninput = function() {
+        gks.unit = this.value;
+        drawEllipsis();
+    }
+
+    drawEllipsis();
 
 }

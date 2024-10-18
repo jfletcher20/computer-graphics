@@ -141,7 +141,6 @@ GKS.prototype.nacrtajKoordinatnuMrezu = function(expand = 0) {
 }
 
 GKS.prototype.nacrtajOznake = function(enumerate = true, max = 10000) {
-    
     var inicijalnaBoja = this.renderer.strokeStyle;
     this.koristiBoju("black");
 
@@ -151,30 +150,24 @@ GKS.prototype.nacrtajOznake = function(enumerate = true, max = 10000) {
     for (var i = this.xmin; i <= this.xmax; i++) {
         this.postaviNa(i, -0.1);
         this.linijaDo(i, 0.1);
-        if (i != 0 && i <= max && i >= -max && enumerate) this.nacrtajSlova(i, i -0.1, -0.45);
+        if (i != 0 && i <= max && i >= -max && enumerate) this.nacrtajSlova(i, i, -0.3);
         this.povuciLiniju();
     }
 
     for (var i = this.ymin; i <= this.ymax; i++) {
         this.postaviNa(-0.1, i);
         this.linijaDo(0.1, i);
-        if (i != 0 && i <= max && i >= -max && enumerate) this.nacrtajSlova(i, 0.15, i - 0.1);
+        if (i != 0 && i <= max && i >= -max && enumerate) this.nacrtajSlova(i, 0.3, i);
         this.povuciLiniju();
     }
 
     this.koristiDebljinu(inicijalnaDebljina);
     this.koristiBoju(inicijalnaBoja);
-
-}
+};
 
 GKS.prototype.nacrtajSlova = function(text, x, y) {
-    this.renderer.font = unit / 2 + "px Arial";
-    if (x && y)
-        this.renderer.fillText(
-            text, this.platno.width / 2 + this.units(x), this.platno.height / 2 + -this.units(y)
-        );
-    else
-        this.renderer.fillText(
-            text, this.platno.width / 2 + this.units(this.x), this.platno.height / 2 + -this.units(this.y)
-        );
-}
+    this.renderer.font = this.unit / 3 + "px Arial";
+    this.renderer.textAlign = "center";
+    this.renderer.fillText(text, this.platno.width / 2 + this.units(x), this.platno.height / 2 + -this.units(y - 0.0855));
+    this.renderer.textAlign = "start";
+};

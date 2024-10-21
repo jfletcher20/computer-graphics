@@ -29,21 +29,27 @@ class GKS {
         this.renderer = this.platno.getContext("2d");
         this.xDefault = this.platno.width / 2;
         this.yDefault = this.platno.height / 2;
+        this.scalarX = 1;
+        this.scalarY = 1;
     }
 
-    units(x) { return x * this.unit; }
+    units(x, useXScalar = false, useYScalar = false) {
+        var defaultUnitsAt640wh = this.unit;
+        var un = defaultUnitsAt640wh * ((this.platno.width > this.platno.height ? this.platno.height : this.platno.width) / 640);
+        return x * un * (useXScalar ? this.scalarX : 1) * (useYScalar ? this.scalarY : 1);
+    }
 
     postaviNa(x, y) {
         this.x = x;
         this.y = y;
         this.renderer.beginPath();
-        this.renderer.moveTo(this.xDefault + this.units(x), this.yDefault + -this.units(y));
+        this.renderer.moveTo(this.xDefault + this.units(x, true), this.yDefault + -this.units(y, false, true));
     }
 
     linijaDo(x, y) {
         y = -y;
-        var xCoord = this.xDefault + this.units(x);
-        var yCoord = this.yDefault + this.units(y);
+        var xCoord = this.xDefault + this.units(x, true);
+        var yCoord = this.yDefault + this.units(y, false, true);
 
         if (xCoord < this.xmin || xCoord > this.xmax || yCoord < this.ymin || yCoord > this.ymax) {
             // console.log("Koordinati (" + x + ", " + y + ") su izvan granica x ε (" + this.xmin + ", " + this.xmax + ") & y ε (" + this.ymin + ", " + this.ymax + ")");
@@ -51,7 +57,7 @@ class GKS {
             yCoord = Math.min(Math.max(yCoord, this.ymin), this.ymax);
         }
 
-        this.renderer.lineTo(this.xDefault + this.units(x), this.yDefault + this.units(y));
+        this.renderer.lineTo(this.xDefault + this.units(x, true), this.yDefault + this.units(y, false, true));
     }
 
     koristiBoju(c) {
@@ -153,7 +159,7 @@ GKS.prototype.nacrtajOznake = function(enumerate = true, maxX = 10000, maxY = 10
         if (i == 0 || i == this.xmin) continue;
         this.postaviNa(i, -0.1);
         this.linijaDo(i, 0.1);
-        if (i <= maxX && i >= -maxX && enumerate) this.nacrtajSlova(i, i, -0.3);
+        if (i <= maxX && i >= -maxX && enumerate) this.nacrtajSlova(i, i, -0.2);
         this.povuciLiniju();
     }
 
@@ -161,7 +167,7 @@ GKS.prototype.nacrtajOznake = function(enumerate = true, maxX = 10000, maxY = 10
         if (i == 0 || i == this.ymin) continue;
         this.postaviNa(-0.1, i);
         this.linijaDo(0.1, i);
-        if (i <= maxY && i >= -maxY && enumerate) this.nacrtajSlova(i, 0.3, i);
+        if (i <= maxY && i >= -maxY && enumerate) this.nacrtajSlova(i, 0.2, i);
         this.povuciLiniju();
     }
 
@@ -170,9 +176,9 @@ GKS.prototype.nacrtajOznake = function(enumerate = true, maxX = 10000, maxY = 10
 };
 
 GKS.prototype.nacrtajSlova = function(text, x, y) {
-    this.renderer.font = this.unit / 3 + "px Arial";
+    this.renderer.font = this.units(1) / 5 + "px Arial";
     this.renderer.textAlign = "center";
-    this.renderer.fillText(text, this.xDefault + this.units(x), this.yDefault + -this.units(y - 0.0855));
+    this.renderer.fillText(text, this.xDefault + this.units(x, true), this.yDefault + -this.units(y - 0.0855, false, true));
     this.renderer.textAlign = "start";
 };
 

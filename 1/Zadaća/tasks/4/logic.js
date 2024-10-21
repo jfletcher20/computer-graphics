@@ -10,6 +10,8 @@ window.onload = function() {
 
     var gks = new GKS(canvas, xmin, xmax, ymin, ymax);
     gks.unit = unitSlider.value;
+    gks.scalarY = 3;
+    gks.scalarX = 0.95;
     
     /*
 
@@ -26,19 +28,8 @@ window.onload = function() {
     gks.koristiBoju("red");
     gks.koristiDebljinu(1)
 
-    function cos(x) { return Math.cos(x); }
-    function sin(x) { return Math.sin(x); }
-
-    // function _x(r, φ) { return r * cos(φ); }
-    // function _y(r, φ) { return r * sin(φ); }
-
-    function _x(t) {
-        return t;
-    }
-
-    function _y(t) {
-        return Math.sin(t);
-    }
+    function _x(t) { return t; }
+    function _y(t) { return Math.sin(t); }
 
     const iteratorBump = 0.01;
 
@@ -46,9 +37,11 @@ window.onload = function() {
 
         const displacementValue = displacementSlider.value / 100;
         gks.placeCenterAt(displacementValue, 0.5);
+        gks.scalarY = 1.25;
+        gks.scalarX = 0.95;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        gks.nacrtajKoordinatniSustav(true, true, true, 10000, 1);
+        gks.nacrtajKoordinatniSustav(true, false, true, 10000, 1);
         gks.unit = unitSlider.value;
         gks.koristiBoju("red");
         gks.koristiDebljinu(1);

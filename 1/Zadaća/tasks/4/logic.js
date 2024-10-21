@@ -55,6 +55,9 @@ window.onload = function() {
             gks.linijaDo(xNext, yNext);
             gks.povuciLiniju();
         }
+        
+        gks.nacrtajSlova("Sinusoida", 5.2, -1.35, 0.7, /*"purple"*/ "lavender");
+
     }
 
     unitSlider.oninput = drawCurve;

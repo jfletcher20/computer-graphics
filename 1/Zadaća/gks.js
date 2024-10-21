@@ -175,8 +175,9 @@ GKS.prototype.nacrtajOznake = function(enumerate = true, maxX = 10000, maxY = 10
     this.koristiBoju(inicijalnaBoja);
 };
 
-GKS.prototype.nacrtajSlova = function(text, x, y) {
-    this.renderer.font = this.units(1) / 5 + "px Arial";
+GKS.prototype.nacrtajSlova = function(text, x, y, fontSize, fillStyle = "black") {
+    this.renderer.font = fontSize ? this.units(1) * fontSize + "px Arial" : this.units(1) / 5 + "px Arial";
+    this.renderer.fillStyle = fillStyle;
     this.renderer.textAlign = "center";
     this.renderer.fillText(text, this.xDefault + this.units(x, true), this.yDefault + -this.units(y - 0.0855, false, true));
     this.renderer.textAlign = "start";

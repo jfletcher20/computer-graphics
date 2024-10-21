@@ -41,6 +41,8 @@ window.onload = function() {
             gks.linijaDo(xNext, yNext);
             gks.povuciLiniju();
         }
+
+        gks.nacrtajSlova("Elipsa", 3, -4.2, 1, /*"purple"*/ "lavender");
         
     }
 

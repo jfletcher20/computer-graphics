@@ -8,8 +8,8 @@
 */
 
 
-const unit = 40;
-const xmin = -5, xmax = 5, ymin = -5, ymax = 5;
+const unit = 30;
+const xmin = -20, xmax = 20, ymin = -20, ymax = 20;
 
 window.onload = function() {
 
@@ -23,6 +23,8 @@ window.onload = function() {
     const bFocusSlider = document.getElementById("focus-b");
     const degreesSlider = document.getElementById("degrees");
 
+    const rotation3dCheckbox = document.getElementById("3d");
+
     if (!canvas) alert("Greška - nema platna!");
 
     canvasHeightSlider.oninput = function() {
@@ -33,7 +35,7 @@ window.onload = function() {
         draw();
     }
 
-    canvasWidthSlider.oninput =  function() {
+    canvasWidthSlider.oninput = function() {
         canvas.width = this.value;
         canvas.height = canvasHeightSlider.value;
         gks.initRenderer();
@@ -47,15 +49,13 @@ window.onload = function() {
 
     function drawEllipsis1(a = aFocusSlider.value, b = bFocusSlider.value, angle = degreesSlider.value) {
 
-
         gks = new GKS2(canvas, xmin, xmax, ymin, ymax);
         gks.unit = unitSlider.value;
 
         gks.koristiBoju("red");
 
         const m = new MT2D();
-        // m.pomakni(4, -2);
-        m.rotiraj(angle);
+        m.rotiraj(angle, rotation3dCheckbox.checked);
 
         gks.trans(m);
 
@@ -65,7 +65,10 @@ window.onload = function() {
             if(t < Math.PI) gks.koristiBoju("red");
             else gks.koristiBoju("purple");
             gks.postaviNa(x, y);
-            gks.linijaDo(x + x > 0 ? 0.1 : -0.1, y + y > 0 ? 0.1 : -0.1);
+            // gks.linijaDo(x + x > 0 ? 0.1 : -0.1, y + y > 0 ? 0.1 : -0.1);
+            var xNext = a * Math.cos(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
+            var yNext = b * Math.sin(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
+            gks.linijaDo(xNext, yNext);
             gks.povuciLiniju();
         }
 
@@ -73,22 +76,23 @@ window.onload = function() {
 
     function drawEllipsis2() {
 
-        // gks.koristiBoju("blue");
-        // const a = aFocusSlider.value, b = bFocusSlider.value;
-        // const m = new MT2D();
-        // m.pomakni(4, -2);
+        gks.initRenderer();
+        gks.koristiBoju("blue");
+        const a = aFocusSlider.value, b = bFocusSlider.value;
+        const m = new MT2D();
+        m.indentitet();
+        m.pomakni(4, -2);
+        gks.trans(m);
 
-        // gks.trans(m);
-
-        // for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-        //     var x = a * Math.cos(t);
-        //     var y = b * Math.sin(t);
-        //     var xNext = a * Math.cos(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-        //     var yNext = b * Math.sin(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-        //     gks.postaviNa(x, y);
-        //     gks.linijaDo(xNext, yNext);
-        //     gks.povuciLiniju();
-        // }
+        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
+            var x = a * Math.cos(t);
+            var y = b * Math.sin(t);
+            var xNext = a * Math.cos(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
+            var yNext = b * Math.sin(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
+            gks.postaviNa(x, y);
+            gks.linijaDo(xNext, yNext);
+            gks.povuciLiniju();
+        }
     
     }
 
@@ -109,7 +113,7 @@ window.onload = function() {
         draw();
     }
 
-    aFocusSlider.oninput = bFocusSlider.oninput = degreesSlider.oninput = draw;
+    aFocusSlider.oninput = bFocusSlider.oninput = degreesSlider.oninput = rotation3dCheckbox.oninput = draw;
     draw();
 
 }

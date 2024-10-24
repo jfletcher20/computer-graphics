@@ -79,9 +79,9 @@ class MT2D {
         this.mult(m);
     }
 
-    rotiraj(φ) {
+    rotiraj(φ, invertSine = false) {
         let m = [
-            [this.#cos(φ), this.#sin(φ), 0],
+            [this.#cos(φ), (invertSine ? -1 : 1) * this.#sin(φ), 0],
             [this.#sin(φ), this.#cos(φ), 0],
             [0, 0, 1]
         ];

@@ -32,10 +32,10 @@ class MT2D {
         [0, 0, 1]
     ];
     constructor() {
-        this.#matrica = this.indentitet();
+        this.#matrica = this.identitet();
     }
 
-    indentitet() {
+    identitet() {
         return [
             [1, 0, 0],
             [0, 1, 0],

@@ -13,8 +13,9 @@
 		<h1>Zadatak 2</h1>
 		<nav>
 			<a href="../labos.html">Labos</a>
-			<a href="../elipsa/elipsa.html">Elipsa</a>
-			<a href="matrica.html" class="selected">Matrica</a>
+			<a href="../1/ellipse.html" class="selected">Elipsa</a>
+			<a href="../2/matrix-transformations.html">Transformacije 1</a>
+			<a href="../3/multiple-matrix-transformations.html">Transformacije 2</a>
 		</nav>
 		<div class="container">
 			<input type="range" id="unit" min="20" max="120" value="70" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
@@ -24,16 +25,7 @@
 
 			<input type="range" id="focus-a" min="1" max="5" value="4" style="transform: rotate(90deg); position: absolute; margin-top: 215px; margin-left: 700px;">
 			<input type="range" id="focus-b" min="1" max="5" value="2" style="transform: rotate(90deg); position: absolute; margin-top: 415px; margin-left: 700px;">
-			<input type="range" id="degrees" min="-180" max="180" value="-30" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-left: 745px;">
-
-			<!-- checkbox for 3d mode on/off -->
-			 <div style="position: absolute; margin-top: 15px; margin-left: 490px; background-color: rgba(0, 0, 0, 0.5); padding: 8px; border-radius: 5px;">
-				<input type="checkbox" name="3d" id="3d">
-				<label for="3d" 
-					style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;"
-				>3D rotacija</label>
-			</div>
-
+			<input type="range" id="radius-r" min="1" max="5" value="4" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-left: 745px;">
 			<canvas id="renderer" width="640" height="640">
 				Vaš preglednik ne podržava HTML5 canvas.
 			</canvas>

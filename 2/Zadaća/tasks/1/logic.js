@@ -74,9 +74,7 @@ window.onload = function() {
 
     }
 
-    function pravac(x) {
-        return 3 * x + 6;
-    }
+    function pravac(x) { return 3 * x + 6; }
 
     function draw() {
         
@@ -93,10 +91,24 @@ window.onload = function() {
         gks.linijaDo(1, pravac(1));
         gks.povuciLiniju();
 
-        let m = new MT2D();
-        m.zrcaliNaX();
-        m.zrcaliNaY();
-        gks.trans(m);
+        let matrix = new MT2D();
+        // calculate the reflection matrix m
+        const m = 3;
+        const m2 = m * m;
+        const scalar = 1 / (m2 + 1);
+        // matrix.mult([
+            // [scalar * ( m2 -1  ), scalar * 2 * m, -4],
+            // [scalar * 2 * m, scalar * ( m2-1 ), -2],
+            // [0, 0, 1]
+        // ]);
+        matrix.zrcaliNaX();
+        
+        matrix.rotiraj(2 * Math.atan(m) * 180 / Math.PI);
+        // matrix.pomakni(0, pravac(0));
+
+        gks.trans(matrix);
+        gks.koristiBoju("purple");
+        gks.nacrtajKoordinatneOsi();
         drawTruck("blue");
 
     }

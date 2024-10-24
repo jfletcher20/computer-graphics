@@ -76,6 +76,37 @@ window.onload = function() {
 
     function pravac(x) { return 3 * x + 6; }
 
+    function calculateSlopeFromPravac() {
+        const x1 = 0;
+        const y1 = pravac(x1);
+      
+        const x2 = 1;
+        const y2 = pravac(x2);
+      
+        const slope = (y2 - y1) / (x2 - x1);
+        return slope;
+    }
+
+    function perpendicularSlope(slope) {
+        return -1 / slope;
+    }
+
+    function findIntersection(slope1, intercept1, slope2, intercept2) {
+        const x = (intercept2 - intercept1) / (slope1 - slope2);
+        const y = slope1 * x + intercept1;
+        return { x: x, y: y };
+    }
+
+    function calculateIntersectionWithPerpendicular() {
+        const slope1 = calculateSlopeFromPravac();
+        const intercept1 = pravac(0);
+        
+        const slope2 = perpendicularSlope(slope1);
+        const intercept2 = 0;
+        
+        return findIntersection(slope1, intercept1, slope2, intercept2);
+    }
+    
     function draw() {
         
         gks.initRenderer();
@@ -92,23 +123,14 @@ window.onload = function() {
         gks.povuciLiniju();
 
         let matrix = new MT2D();
-        // calculate the reflection matrix m
-        const m = 3;
-        const m2 = m * m;
-        const scalar = 1 / (m2 + 1);
-        // matrix.mult([
-            // [scalar * ( m2 -1  ), scalar * 2 * m, -4],
-            // [scalar * 2 * m, scalar * ( m2-1 ), -2],
-            // [0, 0, 1]
-        // ]);
-        matrix.zrcaliNaX();
+        const intersection = calculateIntersectionWithPerpendicular();
         
-        matrix.rotiraj(2 * Math.atan(m) * 180 / Math.PI);
-        // matrix.pomakni(0, pravac(0));
-
+        matrix.pomakni(2 * intersection.x, 2 * -intersection.y);
+        matrix.rotiraj(2 * (90 - Math.atan(calculateSlopeFromPravac()) * 180 / Math.PI));
+        matrix.zrcaliNaY();
+        
         gks.trans(matrix);
         gks.koristiBoju("purple");
-        gks.nacrtajKoordinatneOsi();
         drawTruck("blue");
 
     }

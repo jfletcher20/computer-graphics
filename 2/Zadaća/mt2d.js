@@ -52,7 +52,7 @@ class MT2D {
         this.mult(m);
     }
 
-    sklairaj(sx, sy) {
+    skaliraj(sx, sy) {
         let m = [
             [sx, 0, 0],
             [0, sy, 0],

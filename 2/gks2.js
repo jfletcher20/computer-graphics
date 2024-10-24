@@ -29,35 +29,28 @@ class GKS2 {
         this.renderer = this.platno.getContext("2d");
         this.xDefault = this.platno.width / 2;
         this.yDefault = this.platno.height / 2;
-        this.scalarX = 1;
-        this.scalarY = 1;
+        this.m = new MT2D();
     }
 
-    units(x, useXScalar = false, useYScalar = false, scaleTo640wh = false) {
-        var defaultUnitsAt640wh = this.unit;
-        var un = defaultUnitsAt640wh * ((this.platno.width > this.platno.height ? this.platno.height : this.platno.width) / 640);
-        return x * (scaleTo640wh ? un : defaultUnitsAt640wh) * (useXScalar ? this.scalarX : 1) * (useYScalar ? this.scalarY : 1);
+    units(x, useXScalar = false, useYScalar = false) {
+        // if(this.m.matrica[0][2] == 0 && this.m.matrica[1][2] == 0) return x * this.unit;
+        return x * this.unit;
     }
 
     postaviNa(x, y) {
         this.x = x;
         this.y = y;
         this.renderer.beginPath();
-        this.renderer.moveTo(this.xDefault + this.units(x, true), this.yDefault + -this.units(y, false, true));
+        
+        var valx = this.m.matrica[0][0] * (x) + this.m.matrica[0][1] * y + this.m.matrica[0][2];
+        var valy = this.m.matrica[1][0] * (x) + this.m.matrica[1][1] * y + this.m.matrica[1][2]
+        this.renderer.moveTo(this.xDefault + this.units(valx, true), this.yDefault + -this.units(valy, false, true));
     }
 
     linijaDo(x, y) {
-        y = -y;
-        var xCoord = this.xDefault + this.units(x, true);
-        var yCoord = this.yDefault + this.units(y, false, true);
-
-        if (xCoord < this.xmin || xCoord > this.xmax || yCoord < this.ymin || yCoord > this.ymax) {
-            // console.log("Koordinati (" + x + ", " + y + ") su izvan granica x ε (" + this.xmin + ", " + this.xmax + ") & y ε (" + this.ymin + ", " + this.ymax + ")");
-            xCoord = Math.min(Math.max(xCoord, this.xmin), this.xmax);
-            yCoord = Math.min(Math.max(yCoord, this.ymin), this.ymax);
-        }
-
-        this.renderer.lineTo(this.xDefault + this.units(x, true), this.yDefault + this.units(y, false, true));
+        var valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2];
+        var valy = this.m.matrica[1][0] * x + this.m.matrica[1][1] * y + this.m.matrica[1][2];
+        this.renderer.lineTo(this.xDefault + this.units(x), this.yDefault + this.units(-valy, false, true));
     }
 
     koristiBoju(c) {
@@ -66,6 +59,17 @@ class GKS2 {
 
     povuciLiniju() {
         this.renderer.stroke();
+    }
+
+    /*
+    
+    2.3. U klasu GKS dodajte metodu trans(m) kojom se zadaje matrica transformacije (objekt klase MT2D) koja se primjenjuje prije crtanja u globalnim koordinatama (to je zapravo transformacija iz lokalnih u globalne koordinate - po defaultu postaviti na identitet, tj. jediničnu matricu!).
+    
+    */
+
+    trans(m) {
+        this.m == undefined || this.m == null ? this.m = m : null;
+        this.m.mult(m);
     }
 }
 

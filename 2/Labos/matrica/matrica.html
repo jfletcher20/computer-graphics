@@ -5,6 +5,7 @@
 		<title>Zadaća</title>
 		<link rel="stylesheet" href="../../style.css">
 		<script src="../../gks2.js"></script>
+		<script src="../../mt2d.js"></script>
 		<script src="logic.js"></script>
 	</head>
 
@@ -12,8 +13,8 @@
 		<h1>Zadatak 2</h1>
 		<nav>
 			<a href="../labos.html">Labos</a>
-			<a href="elipsa.html" class="selected">Elipsa</a>
-			<a href="../matrica/matrica.html">Matrica</a>
+			<a href="../elipsa/elipsa.html">Elipsa</a>
+			<a href="matrica.html" class="selected">Matrica</a>
 		</nav>
 		<div class="container">
 			<input type="range" id="unit" min="20" max="120" value="70" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
@@ -23,7 +24,7 @@
 
 			<input type="range" id="focus-a" min="1" max="5" value="4" style="transform: rotate(90deg); position: absolute; margin-top: 215px; margin-left: 700px;">
 			<input type="range" id="focus-b" min="1" max="5" value="2" style="transform: rotate(90deg); position: absolute; margin-top: 415px; margin-left: 700px;">
-			<input type="range" id="radius-r" min="1" max="5" value="4" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-left: 745px;">
+			<input type="range" id="degrees" min="0" max="360" value="30" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-left: 745px;">
 			<canvas id="renderer" width="640" height="640">
 				Vaš preglednik ne podržava HTML5 canvas.
 			</canvas>

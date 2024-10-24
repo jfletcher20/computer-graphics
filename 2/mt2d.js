@@ -26,7 +26,11 @@
 
 class MT2D {
 
-    #matrica;
+    #matrica = [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+    ];
     constructor() {
         this.#matrica = this.indentitet();
     }
@@ -40,44 +44,49 @@ class MT2D {
     }
 
     pomakni(px, py) {
-        this.#matrica = [
+        var m = [
             [1, 0, px],
             [0, 1, py],
             [0, 0, 1]
         ];
+        this.mult(m);
     }
 
     sklairaj(sx, sy) {
-        this.#matrica = [
+        let m = [
             [sx, 0, 0],
             [0, sy, 0],
             [0, 0, 1]
         ];
+        this.mult(m);
     }
 
     zrcaliNaX() {
-        this.#matrica = [
+        let m = [
             [1, 0, 0],
             [0, -1, 0],
             [0, 0, 1]
         ];
+        this.mult(m);
     }
 
     zrcaliNaY() {
-        this.#matrica = [
+        let m = [
             [-1, 0, 0],
             [0, 1, 0],
             [0, 0, 1]
         ];
+        this.mult(m);
     }
 
     rotiraj(kut) {
         var kutRad = kut * Math.PI / 180;
-        this.#matrica = [
+        let m = [
             [this.#cos(kutRad), -this.#sin(kutRad), 0],
             [this.#sin(kutRad), this.#cos(kutRad), 0],
             [0, 0, 1]
         ];
+        this.mult(m);
     }
 
     #cos(φ) {
@@ -89,13 +98,30 @@ class MT2D {
     }
 
     smicanje(α, β) {
-        this.#matrica = [
+        let m = [
             [1, Math.tan(β), 0],
             [Math.tan(α), 1, 0],
             [0, 0, 1]
         ];
+        this.mult(m);
     }
 
     get matrica() { return this.#matrica; }
+
+    mult(m) {
+        let m1 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        for (let i = 0; i < 3; i++)
+            for (let j = 0; j < 3; j++)
+                for (let k = 0; k < 3; k++) {
+                    try {
+                        m1[i][j] += this.#matrica[k][j] * m[i][k];
+                    } catch (e) {
+                        console.log("Trying to access " + i + " " + j + " " + k + " of " + this.#matrica + " and " + m + ", but encountered an error: " + e);
+                        m = m.matrica;
+                        // m1[i][j] += this.#matrica[i][k] * m[k][j];
+                    }
+                }
+        this.#matrica = m1;
+    }
 
 }

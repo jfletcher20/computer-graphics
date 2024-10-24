@@ -27,5 +27,75 @@
 class MT2D {
 
     #matrica;
+    constructor() {
+        this.#matrica = this.indentitet();
+    }
+
+    indentitet() {
+        return [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ];
+    }
+
+    pomakni(px, py) {
+        this.#matrica = [
+            [1, 0, px],
+            [0, 1, py],
+            [0, 0, 1]
+        ];
+    }
+
+    sklairaj(sx, sy) {
+        this.#matrica = [
+            [sx, 0, 0],
+            [0, sy, 0],
+            [0, 0, 1]
+        ];
+    }
+
+    zrcaliNaX() {
+        this.#matrica = [
+            [1, 0, 0],
+            [0, -1, 0],
+            [0, 0, 1]
+        ];
+    }
+
+    zrcaliNaY() {
+        this.#matrica = [
+            [-1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ];
+    }
+
+    rotiraj(kut) {
+        var kutRad = kut * Math.PI / 180;
+        this.#matrica = [
+            [this.#cos(kutRad), -this.#sin(kutRad), 0],
+            [this.#sin(kutRad), this.#cos(kutRad), 0],
+            [0, 0, 1]
+        ];
+    }
+
+    #cos(φ) {
+        return Math.cos(φ * Math.PI / 180);
+    }
+
+    #sin(φ) {
+        return Math.sin(φ * Math.PI / 180);
+    }
+
+    smicanje(α, β) {
+        this.#matrica = [
+            [1, Math.tan(β), 0],
+            [Math.tan(α), 1, 0],
+            [0, 0, 1]
+        ];
+    }
+
+    get matrica() { return this.#matrica; }
 
 }

@@ -1,17 +1,26 @@
+/*
+
+    Zadatak 1
+    
+        Koristeći jednostavne geometrijske likove (pravokutnike, kružnice, elipse, . . . ) nacrtajte lokomotivu (kamion, automobil ili slično) u crnoj boji.
+        Nakona toga crvenom bojom nacrtajte pravac y = 3x + 6.
+        Konačno, plavom bojom nacrtajte zrcalnu sliku početnog objekta s obzirom na crveni pravac.
+    
+    Koristite metode iz klasa GKS i MT2D.
+    Nije poanta da ručno računate koordinate zrcalnog objekta, nego da to radite pomoću metoda iz navedenih klasa
+
+*/
+
 const unit = 40;
-const xmin = -6, xmax = 6, ymin = -6, ymax = 6;
+const xmin = -7, xmax = 10, ymin = -2, ymax = 10;
 
 window.onload = function() {
 
     const canvas = document.getElementById("renderer");
+
     const canvasHeightSlider = document.getElementById("canvas-height");
     const canvasWidthSlider = document.getElementById("canvas-width");
-
     const unitSlider = document.getElementById("unit");
-    
-    const aFocusSlider = document.getElementById("focus-a");
-    const bFocusSlider = document.getElementById("focus-b");
-    const radiusSlider = document.getElementById("radius-r");
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -32,57 +41,64 @@ window.onload = function() {
     var gks = new GKS2(canvas, xmin, xmax, ymin, ymax);
     gks.unit = unitSlider.value;
 
-    /*
+    function drawTruck(color = "black") {
 
-        2.1. Nacrtajte koordinatne osi te kružnicu polumjera r = 4 i elipsu s poluosima a = 4 i b = 2 sa središtem u ishodištu uz pomoć metoda klase GKS iz zadatka 1.4. Raspon vrijednosti x i y koordinata neka bude od -5 do 5.
-
-    */
-
-    function drawCircle() {
-
-        gks.koristiBoju("blue");
-        const r = radiusSlider.value;
-
-        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-            var x = r * Math.cos(t);
-            var y = r * Math.sin(t);
-            var xNext = r * Math.cos(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-            var yNext = r * Math.sin(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-            gks.postaviNa(x, y);
-            gks.linijaDo(xNext, yNext);
-            gks.povuciLiniju();
-        }
+        gks.koristiBoju(color);
+        drawRectangle(a = [1, 2], b = [5, 4]);
+        drawRectangle(a = [5, 2], b = [7, 5]);
+        drawRectangle(a = [5.3, 4], b = [6.7, 4.8]);
+        drawCircle(r = 0.5, x = 2, y = 2);
+        drawCircle(r = 0.5, x = 6, y = 2);
 
     }
 
-    function drawEllipsis() {
+    function drawCircle(r = 1, x = 0, y = 0) {
 
-        gks.koristiBoju("red");
-        const a = aFocusSlider.value, b = bFocusSlider.value;
-
-        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-            var x = a * Math.cos(t);
-            var y = b * Math.sin(t);
-            var xNext = a * Math.cos(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-            var yNext = b * Math.sin(t + 0.01 <= 2 * Math.PI ? t + 0.01 : 2 * Math.PI);
-            gks.postaviNa(x, y);
-            gks.linijaDo(xNext, yNext);
-            gks.povuciLiniju();
+        gks.postaviNa(x + r, y);
+        for (var i = 0; i <= 360; i++) {
+            var rad = i * Math.PI / 180;
+            gks.linijaDo(x + r * Math.cos(rad), y + r * Math.sin(rad));
         }
+        gks.povuciLiniju();
 
-        gks.nacrtajSlova("Elipsa", 3, -4.2, 1, /*"purple"*/ "lavender");
+    }
+
+    function drawRectangle(a = [1, 2], b = [5, 4]) {
         
+        gks.postaviNa(a[0], a[1]);
+        gks.linijaDo(b[0], a[1]);
+        gks.linijaDo(b[0], b[1]);
+        gks.linijaDo(a[0], b[1]);
+        gks.linijaDo(a[0], a[1]);
+        gks.povuciLiniju();
+
     }
 
+    function pravac(x) {
+        return 3 * x + 6;
+    }
 
     function draw() {
         
+        gks.initRenderer();
+        gks.placeCenterAt(0.425, 0.65);
+
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         gks.nacrtajKoordinatniSustav(false, false, true, 10000, 10000);
 
-        drawCircle();
-        drawEllipsis();
-    
+        drawTruck();
+
+        gks.koristiBoju("red");
+        gks.postaviNa(-7.1 / 3, pravac(-7.1 / 3));
+        gks.linijaDo(1, pravac(1));
+        gks.povuciLiniju();
+
+        let m = new MT2D();
+        m.zrcaliNaX();
+        m.zrcaliNaY();
+        gks.trans(m);
+        drawTruck("blue");
+
     }
 
     unitSlider.oninput = function() {
@@ -90,7 +106,6 @@ window.onload = function() {
         draw();
     }
 
-    aFocusSlider.oninput = bFocusSlider.oninput = radiusSlider.oninput = draw;
     draw();
 
 }

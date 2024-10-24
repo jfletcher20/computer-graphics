@@ -43,11 +43,12 @@ window.onload = function() {
     gks.unit = unitSlider.value;
     gksCoordsDrawer.unit = unitSlider.value;
 
-    function drawEllipsis(a, b, color) {
+    function drawEllipsis(a, b, color, color2) {
 
         gks.koristiBoju(color);
 
         for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
+            if(color2 != undefined && t >= Math.PI) gks.koristiBoju(color2);
             const x = a * Math.cos(t);
             const y = b * Math.sin(t);
             gks.postaviNa(x, y);
@@ -68,7 +69,7 @@ window.onload = function() {
         gks.initRenderer();
         gks.unit = unitSlider.value;
 
-        const m = new MT2D();
+        var m = new MT2D();
         m.rotiraj(-30, rotation3dCheckbox.checked);
         m.pomakni(4, 0);
         gks.trans(m);
@@ -77,7 +78,7 @@ window.onload = function() {
 
         gks.initRenderer();
         gks.unit = unitSlider.value;
-        m.identitet();
+        m = new MT2D();
 
         m.pomakni(4, 0);
         m.rotiraj(-30, rotation3dCheckbox.checked);
@@ -87,14 +88,14 @@ window.onload = function() {
 
         gks.initRenderer();
         gks.unit = unitSlider.value;
-        m.identitet();
+        m = new MT2D();
 
         m.rotiraj(75, rotation3dCheckbox.checked);
         m.pomakni(3, 0);
         m.zrcaliNaY();
         gks.trans(m);
 
-        drawEllipsis(4, 1, "green");
+        drawEllipsis(4, 1, "green", "lime");
     
     }
 

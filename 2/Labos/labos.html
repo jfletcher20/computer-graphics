@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="hr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Zadaća 1</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="../gks2.js"></script>
+	</head>
+
+	<body>
+		<h1>Rješenja</h1>
+		<nav>
+			<a href="labos.html" class="selected">Labos</a>
+			<a href="elipsa/elipsa.html">Elipsa</a>
+		</nav>
+
+		<div class="code-block" style="width: 820px; margin-left: auto; margin-right: auto;">
+			<pre>
+<span class="keyword">class</span> <span class="function-name">GKS</span> {
+	<span class="variable">unit</span> = <span class="number">60</span>;
+	<span class="keyword">constructor</span>(<span class="variable">platno</span>, <span class="variable">xmin</span>, <span class="variable">xmax</span>, <span class="variable">ymin</span>, <span class="variable">ymax</span>) {
+		<span class="keyword">this</span>.<span class="variable">platno</span> = <span class="variable">platno</span>;
+		<span class="keyword">this</span>.<span class="variable">xmin</span> = <span class="variable">xmin</span>;
+		<span class="keyword">this</span>.<span class="variable">xmax</span> = <span class="variable">xmax</span>;
+		<span class="keyword">this</span>.<span class="variable">ymin</span> = <span class="variable">ymin</span>;
+		<span class="keyword">this</span>.<span class="variable">ymax</span> = <span class="variable">ymax</span>;
+		<span class="keyword">this</span>.<span class="function-name">initRenderer</span>();
+	}
+
+	<span class="function-name">initRenderer</span>() {
+		<span class="keyword">this</span>.<span class="variable">renderer</span> = <span class="keyword">this</span>.<span class="variable">platno</span>.<span class="function-name">getContext</span>(<span class="string">"2d"</span>);
+		<span class="keyword">this</span>.<span class="variable">xDefault</span> = <span class="keyword">this</span>.<span class="variable">platno</span>.<span class="variable">width</span> / <span class="number">2</span>;
+		<span class="keyword">this</span>.<span class="variable">yDefault</span> = <span class="keyword">this</span>.<span class="variable">platno</span>.<span class="variable">height</span> / <span class="number">2</span>;
+	}
+
+	<span class="function-name">units</span>(<span class="variable">x</span>) { <span class="keyword">return</span> <span class="variable">x</span> * <span class="variable">this.unit</span>; }
+
+	<span class="function-name">postaviNa</span>(<span class="variable">x</span>, <span class="variable">y</span>) {
+		<span class="keyword">this</span>.<span class="variable">x</span> = <span class="variable">x</span>;
+		<span class="keyword">this</span>.<span class="variable">y</span> = <span class="variable">y</span>;
+		<span class="keyword">this</span>.<span class="variable">renderer</span>.<span class="function-name">beginPath</span>();
+		<span class="keyword">this</span>.<span class="variable">renderer</span>.<span class="function-name">moveTo</span>(<span class="keyword">this</span>.<span class="variable">xDefault</span> + <span class="keyword">this</span>.<span class="function-name">units</span>(<span class="variable">x</span>), <span class="keyword">this</span>.<span class="variable">yDefault</span> + -<span class="keyword">this</span>.<span class="function-name">units</span>(<span class="variable">y</span>));
+	}
+
+	<span class="function-name">linijaDo</span>(<span class="variable">x</span>, <span class="variable">y</span>) {
+		<span class="variable">y</span> = -<span class="variable">y</span>;
+		<span class="keyword">var</span> <span class="variable">xCoord</span> = <span class="keyword">this</span>.<span class="variable">xDefault</span> + <span class="keyword">this</span>.<span class="function-name">units</span>(<span class="variable">x</span>);
+		<span class="keyword">var</span> <span class="variable">yCoord</span> = <span class="keyword">this</span>.<span class="variable">yDefault</span> + <span class="keyword">this</span>.<span class="function-name">units</span>(<span class="variable">y</span>);
+
+		<span class="keyword">if</span> (<span class="variable">xCoord</span> < <span class="variable">this.xmin</span> || <span class="variable">xCoord</span> > <span class="variable">this.xmax</span> || <span class="variable">yCoord</span> < <span class="variable">this.ymin</span> || <span class="variable">yCoord</span> > <span class="variable">this.ymax</span>) {
+			<span class="comment">// console.log("Koordinati (" + x + ", " + y + ") su izvan granica x ε (" + this.xmin + ", " + this.xmax + ") & y ε (" + this.ymin + ", " + this.ymax + ")");</span>
+			<span class="variable">xCoord</span> = <span class="function-name">Math.min</span>(<span class="function-name">Math.max</span>(<span class="variable">xCoord</span>, <span class="variable">this.xmin</span>), <span class="variable">this.xmax</span>);
+			<span class="variable">yCoord</span> = <span class="function-name">Math.min</span>(<span class="function-name">Math.max</span>(<span class="variable">yCoord</span>, <span class="variable">this.ymin</span>), <span class="variable">this.ymax</span>);
+		}
+
+		<span class="keyword">this</span>.<span class="variable">renderer</span>.<span class="function-name">lineTo</span>(<span class="keyword">this</span>.<span class="variable">xDefault</span> + <span class="keyword">this</span>.<span class="function-name">units</span>(<span class="variable">x</span>), <span class="keyword">this</span>.<span class="variable">yDefault</span> + <span class="keyword">this</span>.<span class="function-name">units</span>(<span class="variable">y</span>));
+	}
+
+	<span class="function-name">koristiBoju</span>(<span class="variable">c</span>) {
+		<span class="keyword">this</span>.<span class="variable">renderer</span>.<span class="variable">strokeStyle</span> = <span class="variable">c</span>;
+	}
+
+	<span class="function-name">povuciLiniju</span>() {
+		<span class="keyword">this</span>.<span class="variable">renderer</span>.<span class="function-name">stroke</span>();
+	}
+}
+		</pre>
+		</div>
+	</body>
+</html>

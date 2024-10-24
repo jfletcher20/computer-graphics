@@ -79,11 +79,10 @@ class MT2D {
         this.mult(m);
     }
 
-    rotiraj(kut) {
-        var kutRad = kut * Math.PI / 180;
+    rotiraj(φ) {
         let m = [
-            [this.#cos(kutRad), -this.#sin(kutRad), 0],
-            [this.#sin(kutRad), this.#cos(kutRad), 0],
+            [this.#cos(φ), this.#sin(φ), 0],
+            [this.#sin(φ), this.#cos(φ), 0],
             [0, 0, 1]
         ];
         this.mult(m);
@@ -114,11 +113,10 @@ class MT2D {
             for (let j = 0; j < 3; j++)
                 for (let k = 0; k < 3; k++) {
                     try {
-                        m1[i][j] += this.#matrica[k][j] * m[i][k];
+                        m1[i][j] += this.#matrica[i][k] * m[k][j];
                     } catch (e) {
-                        console.log("Trying to access " + i + " " + j + " " + k + " of " + this.#matrica + " and " + m + ", but encountered an error: " + e);
                         m = m.matrica;
-                        // m1[i][j] += this.#matrica[i][k] * m[k][j];
+                        m1[i][j] += this.#matrica[i][k] * m[k][j];
                     }
                 }
         this.#matrica = m1;

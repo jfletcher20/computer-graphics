@@ -29,28 +29,35 @@ class GKS2 {
         this.renderer = this.platno.getContext("2d");
         this.xDefault = this.platno.width / 2;
         this.yDefault = this.platno.height / 2;
+        this.sx = this.unit;
+        this.sy = this.unit;
         this.m = new MT2D();
     }
 
     units(x, useXScalar = false, useYScalar = false) {
-        // if(this.m.matrica[0][2] == 0 && this.m.matrica[1][2] == 0) return x * this.unit;
         return x * this.unit;
+    }
+
+    #calcMatrixX(x, y) {
+        var valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2];
+        if (valx == 0) return this.xDefault + this.units(x, true);
+        return this.xDefault + this.units(valx, true);
+    }
+
+    #calcMatrixY(x, y) {
+        var valy = this.m.matrica[1][0] * x + this.m.matrica[1][1] * y + this.m.matrica[1][2];
+        return this.yDefault + this.units(valy, false, true);
     }
 
     postaviNa(x, y) {
         this.x = x;
         this.y = y;
         this.renderer.beginPath();
-        
-        var valx = this.m.matrica[0][0] * (x) + this.m.matrica[0][1] * y + this.m.matrica[0][2];
-        var valy = this.m.matrica[1][0] * (x) + this.m.matrica[1][1] * y + this.m.matrica[1][2]
-        this.renderer.moveTo(this.xDefault + this.units(valx, true), this.yDefault + -this.units(valy, false, true));
+        this.renderer.moveTo(this.#calcMatrixX(x, y), this.#calcMatrixY(x, -y));
     }
 
     linijaDo(x, y) {
-        var valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2];
-        var valy = this.m.matrica[1][0] * x + this.m.matrica[1][1] * y + this.m.matrica[1][2];
-        this.renderer.lineTo(this.xDefault + this.units(x), this.yDefault + this.units(-valy, false, true));
+        this.renderer.lineTo(this.#calcMatrixX(x, y), this.#calcMatrixY(x, -y));
     }
 
     koristiBoju(c) {
@@ -60,12 +67,6 @@ class GKS2 {
     povuciLiniju() {
         this.renderer.stroke();
     }
-
-    /*
-    
-    2.3. U klasu GKS dodajte metodu trans(m) kojom se zadaje matrica transformacije (objekt klase MT2D) koja se primjenjuje prije crtanja u globalnim koordinatama (to je zapravo transformacija iz lokalnih u globalne koordinate - po defaultu postaviti na identitet, tj. jediničnu matricu!).
-    
-    */
 
     trans(m) {
         this.m == undefined || this.m == null ? this.m = m : null;

@@ -9,7 +9,7 @@
 
 
 const unit = 40;
-const xmin = -10, xmax = 10, ymin = -5, ymax = 5;
+const xmin = -5, xmax = 5, ymin = -5, ymax = 5;
 
 window.onload = function() {
 
@@ -43,27 +43,29 @@ window.onload = function() {
 
     var gks = new GKS2(canvas, xmin, xmax, ymin, ymax), gksCoordsDrawer = new GKS2(canvas, xmin, xmax, ymin, ymax);
     gks.unit = unitSlider.value;
+    gksCoordsDrawer.unit = unitSlider.value;
 
-    function drawEllipsis1() {
+    function drawEllipsis1(a = aFocusSlider.value, b = bFocusSlider.value, angle = degreesSlider.value) {
+
 
         gks = new GKS2(canvas, xmin, xmax, ymin, ymax);
         gks.unit = unitSlider.value;
 
         gks.koristiBoju("red");
-        const a = aFocusSlider.value, b = bFocusSlider.value;
-        const angle = degreesSlider.value;
 
         const m = new MT2D();
-        m.pomakni(4, 2);
-        // m.rotiraj(angle);
+        // m.pomakni(4, -2);
+        m.rotiraj(angle);
 
         gks.trans(m);
 
         for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-            var x = a * Math.cos(t);
-            var y = b * Math.sin(t);
+            const x = a * Math.cos(t);
+            const y = b * Math.sin(t);
+            if(t < Math.PI) gks.koristiBoju("red");
+            else gks.koristiBoju("purple");
             gks.postaviNa(x, y);
-            gks.linijaDo(x, y);
+            gks.linijaDo(x + x > 0 ? 0.1 : -0.1, y + y > 0 ? 0.1 : -0.1);
             gks.povuciLiniju();
         }
 

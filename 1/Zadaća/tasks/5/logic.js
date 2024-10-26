@@ -40,7 +40,6 @@ window.onload = function() {
         const a = sizeSlider.value / 2;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        // gks.nacrtajKoordinatniSustav(true, true, true);
         gks.unit = unitSlider.value;
         gks.koristiBoju("red");
         gks.koristiDebljinu(1);

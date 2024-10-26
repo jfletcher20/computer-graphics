@@ -69,8 +69,9 @@ class GKS2 {
     }
 
     trans(m) {
-        this.m == undefined || this.m == null ? this.m = m : null;
-        this.m.mult(m);
+        // this.m == undefined || this.m == null ? this.m = m : null;
+        // this.m.mult(m);
+        this.m = m;
     }
 }
 

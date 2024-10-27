@@ -21,6 +21,7 @@ window.onload = function() {
     const canvasHeightSlider = document.getElementById("canvas-height");
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
+    const rotationSlider = document.getElementById("rotation");
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -86,26 +87,6 @@ window.onload = function() {
         const slope = (y2 - y1) / (x2 - x1);
         return slope;
     }
-
-    function perpendicularSlope(slope) {
-        return -1 / slope;
-    }
-
-    function findIntersection(slope1, intercept1, slope2, intercept2) {
-        const x = (intercept2 - intercept1) / (slope1 - slope2);
-        const y = slope1 * x + intercept1;
-        return { x: x, y: y };
-    }
-
-    function calculateIntersectionWithPerpendicular() {
-        const slope1 = calculateSlopeFromPravac();
-        const intercept1 = pravac(0);
-        
-        const slope2 = perpendicularSlope(slope1);
-        const intercept2 = 0;
-        
-        return findIntersection(slope1, intercept1, slope2, intercept2);
-    }
     
     function draw() {
         
@@ -123,13 +104,9 @@ window.onload = function() {
         gks.povuciLiniju();
 
         let matrix = new MT2D();
-        const intersection = calculateIntersectionWithPerpendicular();
-        
-        matrix.pomakni(2 * intersection.x, 2 * -intersection.y);
-        matrix.rotiraj(2 * (90 - Math.atan(calculateSlopeFromPravac()) * 180 / Math.PI));
-        matrix.zrcaliNaY();
-        
+        matrix.zrcaliNa(calculateSlopeFromPravac(), pravac(0));
         gks.trans(matrix);
+        // gks.nacrtajKoordinatniSustav();
         gks.koristiBoju("purple");
         drawTruck("blue");
 
@@ -139,6 +116,7 @@ window.onload = function() {
         gks.zoom = this.value;
         draw();
     }
+    rotationSlider.oninput = draw;
 
     draw();
 

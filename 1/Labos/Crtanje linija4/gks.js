@@ -44,7 +44,7 @@ class GKS {
         var yCoord = this.platno.height / 2 + this.units(y);
 
         if (xCoord < this.xmin || xCoord > this.xmax || yCoord < this.ymin || yCoord > this.ymax) {
-            console.log("Koordinate (" + x + ", " + y + ") su izvan granica x ε (" + this.xmin + ", " + this.xmax + ") & y ε (" + this.ymin + ", " + this.ymax + ")");
+            console.log("Koordinati (" + x + ", " + y + ") su izvan granica x ε (" + this.xmin + ", " + this.xmax + ") & y ε (" + this.ymin + ", " + this.ymax + ")");
             xCoord = Math.min(Math.max(xCoord, this.xmin), this.xmax);
             yCoord = Math.min(Math.max(yCoord, this.ymin), this.ymax);
         }

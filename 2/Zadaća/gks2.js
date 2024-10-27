@@ -29,13 +29,18 @@ class GKS2 {
         this.renderer = this.platno.getContext("2d");
         this.xDefault = this.platno.width / 2;
         this.yDefault = this.platno.height / 2;
-        this.sx = this.unit;
-        this.sy = this.unit;
+        
+        const minUnit = Math.min(this.xmin, this.ymin);
+        const maxUnit = Math.max(this.xmax, this.ymax);
+        const maxCanvas = Math.max(this.xDefault, this.yDefault);
+        
+        this.sx = this.sy = maxCanvas / (maxUnit - minUnit);
+
         this.m = new MT2D();
     }
 
     units(x, useXScalar = false, useYScalar = false) {
-        return x * this.unit;
+        return x * this.sx * this.unit / 10;
     }
 
     #calcMatrixX(x, y) {

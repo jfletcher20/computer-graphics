@@ -129,18 +129,15 @@ window.onload = function() {
         drawButterfly(butterflyColor);
         drawFlower(flowerColor);
     }
-    
-    function draw() {
 
-        const lineLength = 2.7;
-        const yDisplacement = -3.75;
-        
+    const lineLength = 2.7;
+    const yDisplacement = -3.75;
+
+    function middleFlower() {
         gks.initRenderer();
         gks.displace(0, yDisplacement);
-        // gks.placeCenterAt(0.425, 0.65);
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        // gks.nacrtajKoordinatniSustav(false, false, false, 10000, 10000);
         var matrix = new MT2D();
         matrix.rotiraj(45 / 2);
         gks.trans(matrix);
@@ -151,25 +148,39 @@ window.onload = function() {
         gks.postaviNa(0, 0);
         gks.linijaDo(0, flowerSize * lineLength);
         gks.povuciLiniju();
-        // gks.nacrtajKoordinatneOsi();
+    }
 
-        matrix = new MT2D();
+    function flower(matrix = new MT2D(), mirror = false) {
+        gks.initRenderer();
+
+        if (mirror) matrix.zrcaliNaY();
         matrix.rotiraj(-60);
         gks.trans(matrix);
-        gks.koristiBoju("purple");
+        gks.koristiBoju("orange");
         gks.displace(0, yDisplacement + flowerSize * lineLength);
         gks.postaviNa(0, 0);
         gks.linijaDo(0, flowerSize * lineLength);
         gks.povuciLiniju();
         
         matrix = new MT2D();
+        if (mirror) matrix.zrcaliNaY();
         matrix.pomakni(0, -yDisplacement-flowerSize * lineLength);
         matrix.rotiraj(240);
         matrix.pomakni(0, flowerSize * lineLength);
         gks.initRenderer();
         gks.trans(matrix);
-        gks.nacrtajKoordinatnuMrezu();
+        matrix.identitet();
+        matrix.rotiraj(20);
+        gks.trans(matrix);
         drawFlower("orange");
+    }
+    
+    function draw() {
+        
+        middleFlower();
+
+        flower();
+        flower(new MT2D(), true);
 
     }
 

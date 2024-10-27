@@ -68,7 +68,7 @@ GKS.prototype.koristiDebljinu = function(debljina) {
 GKS.prototype.nacrtajKoordinatniSustav = function() {
 
     var inicijalnaBoja = this.renderer.strokeStyle;
-    this.koristiBoju("black");
+    // this.koristiBoju("black");
     var inicijalnaDebljina = this.renderer.lineWidth;
     this.koristiDebljinu(1.5);
 
@@ -117,7 +117,7 @@ GKS.prototype.nacrtajStrijeliceKoordinatnogSustava = function() {
 GKS.prototype.nacrtajKoordinatnuMrezu = function(expand = 0) {
 
     var inicijalnaBoja = this.renderer.strokeStyle;
-    this.koristiBoju("lightgray");
+    // this.koristiBoju("lightgray");
 
     var inicijalnaDebljina = this.renderer.lineWidth;
     this.koristiDebljinu(1);

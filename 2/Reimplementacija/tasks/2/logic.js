@@ -148,22 +148,24 @@ window.onload = function() {
         gks.koristiBoju("red");
         matrix = new MT2D();
         if (mirror) matrix.zrcaliNaY();
+        matrix.pomakni(0, -yDisplacement-flowerSize * lineLength);
+        matrix.rotiraj(0);
         matrix.pomakni(0, flowerSize * lineLength);
-        matrix.rotiraj(45/2);
+        gks.initRenderer();
+        gks.trans(matrix);
+        matrix.identitet();
+        matrix.rotiraj(22);
         gks.trans(matrix);
         drawFlower("red");
     }
 
     function flower(matrix = new MT2D(), mirror = false) {
-        gks.koristiBoju("orange");
+        gks.koristiBoju("blue");
         gks.initRenderer();
 
-        // nacrtaj liniju
         if (mirror) matrix.zrcaliNaY();
-        // line is drawn at 60 degrees
-        matrix.rotiraj(60);
+        matrix.rotiraj(-60);
         gks.trans(matrix);
-        // move the coordinate system's center
         gks.displace(0, yDisplacement + flowerSize * lineLength);
         gks.postaviNa(0, 0);
         gks.linijaDo(0, flowerSize * lineLength);
@@ -171,15 +173,13 @@ window.onload = function() {
         
         matrix = new MT2D();
         if (mirror) matrix.zrcaliNaY();
-
-        // move the coordinate system's center
+        matrix.pomakni(0, -yDisplacement-flowerSize * lineLength);
         matrix.rotiraj(120);
         matrix.pomakni(0, flowerSize * lineLength);
+        gks.initRenderer();
         gks.trans(matrix);
-        // flower needs to be rotated with regards to the line
-        matrix.rotiraj(-45/2);
-        // adjust size because matrix has scaled the flower size
-        matrix.skaliraj(0.8, 0.8);
+        matrix.identitet();
+        matrix.rotiraj(-20);
         gks.trans(matrix);
         drawFlower();
     }

@@ -21,6 +21,8 @@ window.onload = function() {
     const unitSlider = document.getElementById("unit");
     const rotation3dCheckbox = document.getElementById("3d");
 
+    const rotationSlider = document.getElementById("rotation");
+
     if (!canvas) alert("Greška - nema platna!");
 
     canvasHeightSlider.oninput = function() {
@@ -78,11 +80,12 @@ window.onload = function() {
 
         gks.initRenderer();
         gks.unit = unitSlider.value;
+        gks.koristiBoju("blue");
         m = new MT2D();
-
         m.pomakni(4, 0);
-        m.rotiraj(-30, rotation3dCheckbox.checked);
+        m.rotiraj(rotationSlider.value, rotation3dCheckbox.checked);
         gks.trans(m);
+        // gks.nacrtajKoordinatneOsi();
 
         drawEllipsis(6, 3, "blue");
 
@@ -105,7 +108,7 @@ window.onload = function() {
         draw();
     }
 
-    rotation3dCheckbox.oninput = draw;
+    rotation3dCheckbox.oninput = rotationSlider.oninput = draw;
     draw();
 
 }

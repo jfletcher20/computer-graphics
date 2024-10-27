@@ -39,7 +39,7 @@ class GKS2 {
     }
 
     #calcMatrixX(x, y) {
-        var valx = -this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2];
+        var valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2];
         if (valx == 0) return this.xDefault + this.units(x, true);
         return this.xDefault + this.units(valx, true);
     }
@@ -69,8 +69,9 @@ class GKS2 {
     }
 
     trans(m) {
-        this.m == undefined || this.m == null ? this.m = m : null;
-        this.m.mult(m);
+        // this.m == undefined || this.m == null ? this.m = m : null;
+        // this.m.mult(m);
+        this.m = m;
     }
 }
 

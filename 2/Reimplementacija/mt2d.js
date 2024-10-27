@@ -81,7 +81,7 @@ class MT2D {
 
     rotiraj(φ, invertSine = false) {
         let m = [
-            [this.#cos(φ), -(invertSine ? -1 : 1) * this.#sin(φ), 0],
+            [this.#cos(φ), (invertSine ? -1 : 1) * this.#sin(φ), 0],
             [this.#sin(φ), this.#cos(φ), 0],
             [0, 0, 1]
         ];
@@ -113,10 +113,10 @@ class MT2D {
             for (let j = 0; j < 3; j++)
                 for (let k = 0; k < 3; k++) {
                     try {
-                        m1[i][j] += this.#matrica[k][j] * m[i][k];
+                        m1[i][j] += this.#matrica[i][k] * m[k][j];
                     } catch (e) {
                         m = m.matrica;
-                        m1[i][j] += this.#matrica[k][j] * m[i][k];
+                        m1[i][j] += this.#matrica[i][k] * m[k][j];
                     }
                 }
         this.#matrica = m1;

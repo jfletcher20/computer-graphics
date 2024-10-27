@@ -15,7 +15,7 @@
 */
 
 class GKS2 {
-    unit = 60;
+    zoom = 60;
     constructor(platno, xmin, xmax, ymin, ymax) {
         this.platno = platno;
         this.xmin = xmin;
@@ -40,7 +40,7 @@ class GKS2 {
     }
 
     units(x, useXScalar = false, useYScalar = false) {
-        return x * this.sx * this.unit / 10;
+        return x * this.sx * (this.zoom / 10);
     }
 
     #calcMatrixX(x, y) {

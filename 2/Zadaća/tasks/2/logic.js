@@ -36,7 +36,7 @@ window.onload = function() {
     }
 
     var gks = new GKS2(canvas, xmin, xmax, ymin, ymax);
-    gks.unit = unitSlider.value;
+    gks.zoom = unitSlider.value;
 
     function cos(x) { return Math.cos(x); }
     function sin(x) { return Math.sin(x); }
@@ -195,7 +195,7 @@ window.onload = function() {
     }
 
     unitSlider.oninput = function() {
-        gks.unit = this.value;
+        gks.zoom = this.value;
         draw();
     }
 

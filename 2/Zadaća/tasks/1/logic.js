@@ -39,7 +39,7 @@ window.onload = function() {
     }
 
     var gks = new GKS2(canvas, xmin, xmax, ymin, ymax);
-    gks.unit = unitSlider.value;
+    gks.zoom = unitSlider.value;
 
     function drawTruck(color = "black") {
 
@@ -136,7 +136,7 @@ window.onload = function() {
     }
 
     unitSlider.oninput = function() {
-        gks.unit = this.value;
+        gks.zoom = this.value;
         draw();
     }
 

@@ -24,6 +24,22 @@
 
 */
 
+/*
+
+    Zadatak 3
+
+        a) Dodajte u MT2D klasu metodu rotiraj_oko_tocke (x0 ,y0 , kut) za rotaciju oko točke (x0, y0) za odredeni kut.
+
+        b) Dodajte u MT2D klasu metodu zrcaliNa (k,l) za zrcaljenje na proizvoljnom pravcu s jednadžbom y = kx + l.
+
+    Napomene za treći zadatak
+
+        • Navedene metode neka budu uskladene s kompozicijom transformacija kao i preostale metode u klasi MT2D kako je to već ranije opisano.
+
+        • Uočite da navedene metode možete implementirati pozivanjem već postojećih metoda u klasi MT2D u odgovarajućem redoslijedu kako je to objašnjeno na predavanjima.
+
+*/
+
 class MT2D {
 
     #matrica = [
@@ -120,6 +136,40 @@ class MT2D {
                     }
                 }
         this.#matrica = m1;
+    }
+
+    rotiraj_oko_tocke(x0, y0, φ) {
+        this.pomakni(-x0, -y0);
+        this.rotiraj(φ);
+        this.pomakni(x0, y0);
+    }
+
+    zrcaliNa(k, l) {
+
+        function perpendicularSlope(slope) {
+            return -1 / slope;
+        }
+        
+        function findIntersection(slope1, intercept1, slope2, intercept2) {
+            const x = (intercept2 - intercept1) / (slope1 - slope2);
+            const y = slope1 * x + intercept1;
+            return { x: x, y: y };
+        }
+
+        let φ = 2 * (90 - Math.atan(k) * 180 / Math.PI);
+        
+        const slope1 = k;
+        const intercept1 = l;
+
+        const slope2 = perpendicularSlope(slope1);
+        const intercept2 = 0;
+
+        const intersection = findIntersection(slope1, intercept1, slope2, intercept2);
+
+        this.pomakni(2 * intersection.x, 2 * -intersection.y);
+        this.rotiraj(φ);
+        this.zrcaliNaY();
+
     }
 
 }

@@ -19,6 +19,11 @@ window.onload = function() {
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
 
+    
+    const xSlider = document.getElementById("x-coord");
+    const ySlider = document.getElementById("y-coord");
+    const rotationSlider = document.getElementById("rotation");
+
     if (!canvas) alert("Greška - nema platna!");
 
     canvasHeightSlider.oninput = function() {
@@ -40,7 +45,7 @@ window.onload = function() {
 
     function cos(x) { return Math.cos(x); }
     function sin(x) { return Math.sin(x); }
-    const iteratorBump = 0.02;
+    const iteratorBump = 0.04;
 
     function drawButterfly() {
 
@@ -93,6 +98,16 @@ window.onload = function() {
     const lineLength = 2.7;
     const yDisplacement = -4.5;
 
+    function calculateDistance(a) {
+        // 120 degrees in radians
+        const angle = (120 * Math.PI) / 180;
+      
+        // Calculate the distance between two points separated by 120 degrees
+        const distance = Math.sqrt(2 * Math.pow(a, 2) * (1 - Math.cos(angle)));
+        
+        return distance;
+    }
+      
     function middleFlower(mirror = false) {
 
         var matrix = new MT2D();
@@ -144,7 +159,7 @@ window.onload = function() {
         matrix.skaliraj(0.75, 0.75);
         gks.trans(matrix);
         // gks.nacrtajKoordinatnuMrezu();
-        drawFlower();
+        // drawFlower();
 
     }
 
@@ -192,12 +207,36 @@ window.onload = function() {
         squishedButterfly();
         squishedButterfly(true);
 
+        gks.initRenderer();
+        gks.koristiBoju("lime");
+        let m = new MT2D();
+        gks.displace(0, yDisplacement + flowerSize * lineLength);
+        const dist = calculateDistance(flowerSize * lineLength);
+        m.rotiraj_oko_tocke(3, 9, rotationSlider.value);
+        // m.rotiraj_oko_tocke(m.matrica[0][1], m.matrica[1][0], 45 / 2);
+        gks.trans(m);
+        m = new MT2D();
+        // gks.nacrtajKoordinatniSustav();
+        drawFlower("blue");
+
+        gks.initRenderer();
+        gks.koristiBoju("lime");
+        m = new MT2D();
+        gks.displace(0, yDisplacement + flowerSize * lineLength);
+        m.rotiraj_oko_tocke(-3, 9, -rotationSlider.value);
+        // m.rotiraj_oko_tocke(m.matrica[0][1], m.matrica[1][0], 45 / 2);
+        gks.trans(m);
+        m = new MT2D();
+        // gks.nacrtajKoordinatniSustav();
+        drawFlower("blue");
     }
 
     unitSlider.oninput = function() {
         gks.zoom = this.value;
         draw();
     }
+
+    xSlider.oninput = ySlider.oninput = rotationSlider.oninput = draw;
 
     draw();
 

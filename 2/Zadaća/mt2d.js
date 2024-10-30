@@ -52,11 +52,12 @@ class MT2D {
     }
 
     identitet() {
-        return [
+        this.#matrica = [
             [1, 0, 0],
             [0, 1, 0],
             [0, 0, 1]
         ];
+        return this.#matrica;
     }
 
     pomakni(px, py) {

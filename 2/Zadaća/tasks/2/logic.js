@@ -193,42 +193,162 @@ window.onload = function() {
     function draw() {
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-                
-        gks.koristiBoju("blue");
-        middleFlower();
-        flower();
-        flower(true);
-        
-        gks.koristiBoju("black");
-        elongatedButterfly();
-        elongatedButterfly(true);
 
-        gks.koristiBoju("red");
-        squishedButterfly();
-        squishedButterfly(true);
+        function nacrtajLeptireCrvene(gks) {
+            gks.koristiBoju("red");
+          
+            let distX = 13;
+            let distY = 5;
+          
+            let transformacija = new MT2D();
+          
+            transformacija.rotiraj_oko_tocke(-distX, distY, -30);
+            transformacija.pomakni(-distX, distY);
+            transformacija.skaliraj(0.6, 0.5);
+            gks.trans(transformacija);
+            nacrtajLeptir(gks, 0, 12 * Math.PI);
+          
+            transformacija.identitet();
+            gks.trans(transformacija);
+          
+            transformacija.zrcaliNaY();
+            transformacija.rotiraj_oko_tocke(-distX, distY, -30);
+            transformacija.pomakni(-distX, distY);
+            transformacija.skaliraj(0.6, 0.5);
+            gks.trans(transformacija);
+            nacrtajLeptir(gks, 0, 12 * Math.PI);
+          
+            transformacija.identitet();
+            gks.trans(transformacija);
+          }
+          
+          function nacrtajLeptireCrne(gks) {
+            gks.koristiBoju("black");
+          
+            let distX = 8;
+            let distY = -10;
+          
+            let transformacija = new MT2D();
+          
+            transformacija.pomakni(-distX, distY);
+            transformacija.rotiraj(130);
+            transformacija.skaliraj(0.5, 1.3);
+            gks.trans(transformacija);
+            nacrtajLeptir(gks, 0, 12 * Math.PI);
+          
+            transformacija.identitet();
+            gks.trans(transformacija);
+          
+            transformacija.zrcaliNaY();
+            transformacija.pomakni(-distX, distY);
+            transformacija.rotiraj(130);
+            transformacija.skaliraj(0.5, 1.3);
+            gks.trans(transformacija);
+            nacrtajLeptir(gks, 0, 12 * Math.PI);
+          
+            transformacija.identitet();
+            gks.trans(transformacija);
+          }
+          
+          function nacrtajCvjetove(gks) {
+            gks.koristiBoju("blue");
+            let transformacija = new MT2D();
+          
+            let dist = 10;
+          
+            transformacija.pomakni(0, -dist);
+            transformacija.skaliraj(0.3, 0.3);
+            transformacija.rotiraj(22);
+            gks.trans(transformacija);
+            nacrtajCvijet(gks, 0, 12 * Math.PI, 9);
+          
+            transformacija.identitet();
+            gks.trans(transformacija);
+          
+            transformacija.pomakni(-dist, dist);
+            transformacija.skaliraj(0.3, 0.3);
+            transformacija.rotiraj(22);
+            gks.trans(transformacija);
+            nacrtajCvijet(gks, 0, 12 * Math.PI, 9);
+          
+            transformacija.identitet();
+            gks.trans(transformacija);
+          
+            transformacija.pomakni(dist, dist);
+            transformacija.skaliraj(0.3, 0.3);
+            transformacija.rotiraj(22);
+            gks.trans(transformacija);
+            nacrtajCvijet(gks, 0, 12 * Math.PI, 9);
+          
+            transformacija.identitet();
+            gks.trans(transformacija);
+          }
+          
+          function poveziCvjetove(gks) {
+            gks.koristiBoju("blue");
+          
+            gks.postaviNa(-10, 10);
+            gks.linijaDo(0, 0);
+            gks.povuciLiniju();
+          
+            gks.postaviNa(10, 10);
+            gks.linijaDo(0, 0);
+            gks.povuciLiniju();
+          
+            gks.postaviNa(0, -10);
+            gks.linijaDo(0, 0);
+            gks.povuciLiniju();
+          }
 
-        gks.initRenderer();
-        gks.koristiBoju("lime");
-        let m = new MT2D();
-        gks.displace(0, yDisplacement + flowerSize * lineLength);
-        const dist = calculateDistance(flowerSize * lineLength);
-        m.rotiraj_oko_tocke(3, 9, rotationSlider.value);
-        // m.rotiraj_oko_tocke(m.matrica[0][1], m.matrica[1][0], 45 / 2);
-        gks.trans(m);
-        m = new MT2D();
-        // gks.nacrtajKoordinatniSustav();
-        drawFlower("blue");
+          function nacrtajLeptir(gks, tMin, tMax) {
+            gks.postaviNa(
+              (Math.pow(Math.E, Math.cos(tMin)) -
+                2 * Math.cos(4 * tMin) +
+                Math.pow(Math.sin(tMin / 12), 5)) *
+                Math.sin(tMin),
+              (Math.pow(Math.E, Math.cos(tMin)) -
+                2 * Math.cos(4 * tMin) +
+                Math.pow(Math.sin(tMin / 12), 5)) *
+                Math.cos(tMin)
+            );
+          
+            for (let t = tMin; t <= tMax; t += 0.01) {
+              let x =
+                (Math.pow(Math.E, Math.cos(t)) -
+                  2 * Math.cos(4 * t) +
+                  Math.pow(Math.sin(t / 12), 5)) *
+                Math.sin(t);
+              let y =
+                (Math.pow(Math.E, Math.cos(t)) -
+                  2 * Math.cos(4 * t) +
+                  Math.pow(Math.sin(t / 12), 5)) *
+                Math.cos(t);
+          
+              gks.linijaDo(x, y);
+            }
+            gks.povuciLiniju();
+          }
+          
+          function nacrtajCvijet(gks, tMin, tMax, aParam) {
+            gks.postaviNa(tMin, aParam * Math.cos(4 * tMin) * Math.sin(tMin));
+          
+            for (let a = aParam; a > 0; a--) {
+              for (let t = tMin; t <= tMax; t += 0.01) {
+                let x = a * Math.cos(4 * t) * Math.cos(t);
+                let y = a * Math.cos(4 * t) * Math.sin(t);
+                gks.linijaDo(x, y);
+              }
+            }
+            gks.povuciLiniju();
+          }
 
-        gks.initRenderer();
-        gks.koristiBoju("lime");
-        m = new MT2D();
-        gks.displace(0, yDisplacement + flowerSize * lineLength);
-        m.rotiraj_oko_tocke(-3, 9, -rotationSlider.value);
-        // m.rotiraj_oko_tocke(m.matrica[0][1], m.matrica[1][0], 45 / 2);
-        gks.trans(m);
-        m = new MT2D();
-        // gks.nacrtajKoordinatniSustav();
-        drawFlower("blue");
+          var gks = new GKS2(canvas, xmin, xmax, ymin, ymax);
+          gks.zoom = unitSlider.value;
+          
+          nacrtajLeptireCrvene(gks);
+            nacrtajLeptireCrne(gks);
+            nacrtajCvjetove(gks);
+            poveziCvjetove(gks);
     }
 
     unitSlider.oninput = function() {

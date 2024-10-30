@@ -43,13 +43,19 @@ window.onload = function() {
     gks.zoom = unitSlider.value;
 
     function drawTruck(color = "black") {
-
+        
+        var matrix = new MT2D();
         gks.koristiBoju(color);
-        drawRectangle(a = [1, 2], b = [5, 4]);
-        drawRectangle(a = [5, 2], b = [7, 5]);
-        drawRectangle(a = [5.3, 4], b = [6.7, 4.8]);
-        drawCircle(r = 0.5, x = 2, y = 2);
-        drawCircle(r = 0.5, x = 6, y = 2);
+
+        matrix.pomakni(0, 0);
+        matrix.pomakni(1, 2);
+
+        // need to convert to matrix transformations with lengths
+        // drawRectangle(a = [1, 2], b = [5, 4]);
+        // drawRectangle(a = [5, 2], b = [7, 5]);
+        // drawRectangle(a = [5.3, 4], b = [6.7, 4.8]);
+        // drawCircle(r = 0.5, x = 2, y = 2);
+        // drawCircle(r = 0.5, x = 6, y = 2);
 
     }
 
@@ -64,13 +70,13 @@ window.onload = function() {
 
     }
 
-    function drawRectangle(a = [1, 2], b = [5, 4]) {
+    function drawRectangle(width, height) {
         
-        gks.postaviNa(a[0], a[1]);
-        gks.linijaDo(b[0], a[1]);
-        gks.linijaDo(b[0], b[1]);
-        gks.linijaDo(a[0], b[1]);
-        gks.linijaDo(a[0], a[1]);
+        gks.postaviNa(0, 0);
+        gks.linijaDo(width, 0);
+        gks.linijaDo(width, height);
+        gks.linijaDo(0, height);
+        gks.linijaDo(0, 0);
         gks.povuciLiniju();
 
     }
@@ -107,7 +113,6 @@ window.onload = function() {
         matrix.zrcaliNa(calculateSlopeFromPravac(), pravac(0));
         gks.trans(matrix);
         // gks.nacrtajKoordinatniSustav();
-        gks.koristiBoju("purple");
         drawTruck("blue");
 
     }

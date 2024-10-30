@@ -37,32 +37,38 @@ class GKS2 {
         this.sx = this.sy = maxCanvas / (maxUnit - minUnit);
 
         this.m = new MT2D();
-    }
+    } // al to ne objasnjava zasto mi je 
 
     units(x, useXScalar = false, useYScalar = false) {
         return x * this.sx * (this.zoom / 10);
     }
 
-    #calcMatrixX(x, y) {
-        var valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2];
-        if (valx == 0) return this.xDefault + this.units(x, true);
-        return this.xDefault + this.units(valx, true);
+    transform(x, y) {
+        const vec = [x, y, 1];  // Convert (x, y) to homogeneous coordinates
+        const t = this.multMatrixVector(this.m.matrica, vec);  // Apply matrix
+        return [this.xDefault + this.units(t[0]), this.yDefault + -this.units(t[1])];  // Return transformed x and y
+    } 
+    
+    multMatrixVector(m, v) {
+        const result = [0, 0, 0];
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                result[i] += m[i][j] * v[j];
+            }
+        }
+        return result;
     }
-
-    #calcMatrixY(x, y) {
-        var valy = this.m.matrica[1][0] * x + this.m.matrica[1][1] * y + this.m.matrica[1][2];
-        return this.yDefault + this.units(valy, false, true);
-    }
+    
 
     postaviNa(x, y) {
         this.x = x;
         this.y = y;
         this.renderer.beginPath();
-        this.renderer.moveTo(this.#calcMatrixX(x, y), this.#calcMatrixY(x, -y));
+        this.renderer.moveTo(this.transform(x, y)[0], this.transform(x, y)[1]);
     }
 
     linijaDo(x, y) {
-        this.renderer.lineTo(this.#calcMatrixX(x, y), this.#calcMatrixY(x, -y));
+        this.renderer.lineTo(this.transform(x, y)[0], this.transform(x, y)[1]);
     }
 
     koristiBoju(c) {
@@ -74,8 +80,6 @@ class GKS2 {
     }
 
     trans(m) {
-        // this.m == undefined || this.m == null ? this.m = m : null;
-        // this.m.mult(m);
         this.m = m;
     }
 }

@@ -48,7 +48,7 @@ class MT2D {
         [0, 0, 1]
     ];
     constructor() {
-        this.#matrica = this.identitet();
+        this.identitet();
     }
 
     identitet() {
@@ -98,7 +98,7 @@ class MT2D {
 
     rotiraj(φ, invertSine = false) {
         let m = [
-            [this.#cos(φ), (invertSine ? -1 : 1) * this.#sin(φ), 0],
+            [this.#cos(φ), -this.#sin(φ), 0],
             [this.#sin(φ), this.#cos(φ), 0],
             [0, 0, 1]
         ];
@@ -146,31 +146,12 @@ class MT2D {
     }
 
     zrcaliNa(k, l) {
-
-        function perpendicularSlope(slope) {
-            return -1 / slope;
-        }
-        
-        function findIntersection(slope1, intercept1, slope2, intercept2) {
-            const x = (intercept2 - intercept1) / (slope1 - slope2);
-            const y = slope1 * x + intercept1;
-            return { x: x, y: y };
-        }
-
-        let φ = 2 * (90 - Math.atan(k) * 180 / Math.PI);
-        
-        const slope1 = k;
-        const intercept1 = l;
-
-        const slope2 = perpendicularSlope(slope1);
-        const intercept2 = 0;
-
-        const intersection = findIntersection(slope1, intercept1, slope2, intercept2);
-
-        this.pomakni(2 * intersection.x, 2 * -intersection.y);
-        this.rotiraj(φ);
-        this.zrcaliNaY();
-
-    }
+        let kut = Math.atan(k);
+        this.pomakni(0, l);
+        this.rotiraj(kut, false);
+        this.zrcaliNaX();
+        this.rotiraj(-kut, false);
+        this.pomakni(0, -l);
+      }
 
 }

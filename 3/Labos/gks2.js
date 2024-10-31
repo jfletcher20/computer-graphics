@@ -15,7 +15,6 @@
 */
 
 class GKS2 {
-    zoom = 60;
     constructor(platno, xmin, xmax, ymin, ymax) {
         this.platno = platno;
         this.xmin = xmin;
@@ -27,8 +26,8 @@ class GKS2 {
 
     initRenderer() {
         this.renderer = this.platno.getContext("2d");
-        this.xDefault = this.platno.width / 2;
-        this.yDefault = this.platno.height / 2;
+        this.xDefault = this.px = this.platno.width / 2;
+        this.yDefault = this.py = this.platno.height / 2;
         
         const minUnit = Math.min(this.xmin, this.ymin);
         const maxUnit = Math.max(this.xmax, this.ymax);
@@ -40,7 +39,7 @@ class GKS2 {
     }
 
     units(x, useXScalar = false, useYScalar = false) {
-        return x * this.sx //* (this.zoom / 10);
+        return x * this.sx;
     }
 
     #calcMatrixX(x, y) {

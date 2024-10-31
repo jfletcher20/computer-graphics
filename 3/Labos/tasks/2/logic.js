@@ -41,37 +41,40 @@ window.onload = function() {
 
     var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
     ortho.zoom = unitSlider.value;
-
     
     function draw() {
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
+        ortho.zoom = unitSlider.value;
         
         // draw 3 vectors for the 3 different axis
+        // ortho.m.identitet();
+        // ortho.m.rotirajX(rotationSliderX.value);
+        // ortho.m.rotirajY(rotationSliderY.value);
+        // ortho.m.rotirajZ(rotationSliderZ.value);
+        // ortho.nacrtajOsi();
+        
         ortho.m.identitet();
-        ortho.m.rotirajX(rotationSliderX.value);
-        ortho.m.rotirajY(rotationSliderY.value);
-        ortho.m.rotirajZ(rotationSliderZ.value);
-        ortho.postaviBoju("red");
-        ortho.postaviNa(0, 0, 0);
-        ortho.linijaDo(1, 0, 0);
-        ortho.povuciLiniju();
-        ortho.postaviBoju("green");
-        ortho.postaviNa(0, 0, 0);
-        ortho.linijaDo(0, -1, 0);
-        ortho.povuciLiniju();
-        ortho.postaviBoju("blue");
-        ortho.postaviNa(0, 0, 0);
-        ortho.linijaDo(0, 0, 1);
-        ortho.povuciLiniju();
-
-        drawCube();
+        ortho.m.rotirajX(30);
+        drawCube("red");
+        ortho.m.identitet();
+        ortho.m.rotirajY(30);
+        drawCube("green");
+        ortho.m.identitet();
+        ortho.m.rotirajZ(30);
+        drawCube("blue");
+        ortho.m.identitet();
+        ortho.m.rotirajX(30);
+        ortho.m.rotirajY(30);
+        ortho.m.rotirajZ(30);
+        drawCube("black");
 
     }
 
-    function drawCube() {
+    function drawCube(color) {
             
-        ortho.postaviBoju("black");
+        if (color) ortho.postaviBoju(color);
         ortho.postaviNa(-1, -1, -1);
         ortho.linijaDo(1, -1, -1);
         ortho.linijaDo(1, 1, -1);

@@ -89,3 +89,18 @@ class Ortho {
     }
 
 }
+
+Ortho.prototype.nacrtajOsi = function() {
+    this.postaviBoju("red");
+    this.postaviNa(0, 0, 0);
+    this.linijaDo(1, 0, 0);
+    this.povuciLiniju();
+    this.postaviBoju("green");
+    this.postaviNa(0, 0, 0);
+    this.linijaDo(0, -1, 0);
+    this.povuciLiniju();
+    this.postaviBoju("blue");
+    this.postaviNa(0, 0, 0);
+    this.linijaDo(0, 0, 1);
+    this.povuciLiniju();
+}

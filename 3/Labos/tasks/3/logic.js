@@ -49,13 +49,25 @@ window.onload = function() {
             i += 1;
             if (i >= 360) i = 0;
         }
-        drawCube("black");
+        drawCube();
 
     }
 
     function drawCube(color) {
             
         if (color) ortho.postaviBoju(color);
+        function red() {
+            if (!color) ortho.postaviBoju("red");
+        }
+        function green() {
+            if (!color) ortho.postaviBoju("green");
+        }
+        function blue() {
+            if (!color) ortho.postaviBoju("blue");
+        }
+
+        // if color is not defined, draw colors for the different axis appropriately - rgb
+        red();
         ortho.postaviNa(-1, -1, -1);
         ortho.linijaDo(1, -1, -1);
         ortho.linijaDo(1, 1, -1);
@@ -63,6 +75,7 @@ window.onload = function() {
         ortho.linijaDo(-1, -1, -1);
         ortho.povuciLiniju();
 
+        blue();
         ortho.postaviNa(-1, -1, 1);
         ortho.linijaDo(1, -1, 1);
         ortho.linijaDo(1, 1, 1);
@@ -70,18 +83,22 @@ window.onload = function() {
         ortho.linijaDo(-1, -1, 1);
         ortho.povuciLiniju();
 
+        green();
         ortho.postaviNa(-1, -1, -1);
         ortho.linijaDo(-1, -1, 1);
         ortho.povuciLiniju();
 
+        green();
         ortho.postaviNa(1, -1, -1);
         ortho.linijaDo(1, -1, 1);
         ortho.povuciLiniju();
 
+        green();
         ortho.postaviNa(1, 1, -1);
         ortho.linijaDo(1, 1, 1);
         ortho.povuciLiniju();
 
+        green();
         ortho.postaviNa(-1, 1, -1);
         ortho.linijaDo(-1, 1, 1);
         ortho.povuciLiniju();

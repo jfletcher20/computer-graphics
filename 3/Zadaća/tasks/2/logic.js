@@ -44,10 +44,25 @@ window.onload = function() {
     var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
     ortho.zoom = unitSlider.value;
 
-    function circle(r = 1, angle = 30, x = 0, y = 0, pivot = 0) {
+    function astroid(progress = 1) {
+        var temp = ortho.renderer.strokeStyle;
+        ortho.postaviBoju("red");
+        for (var t = 0; t <= 2 * Math.PI * progress; t += 0.01) {
+            const x = Math.pow(Math.cos(t), 3);
+            const y = Math.pow(Math.sin(t), 3);
+            var xNext = Math.pow(Math.cos(t + 0.01), 3);
+            var yNext = Math.pow(Math.sin(t + 0.01), 3);
+            ortho.postaviNa(x, y, 0);
+            ortho.linijaDo(xNext, yNext, 0);
+            ortho.povuciLiniju();
+        }
+        ortho.postaviBoju(temp);
+    }
 
+    function circle(r = 1, angle = 0, x = 0, y = 0) {
         const m = new MT3D();
-        m.rotirajZ(angle);
+        m.pomakni(rotationSliderX.value / 360, rotationSliderY.value / 360, 0);
+        m.rotirajZ(rotationSliderZ.value);
         ortho.trans(m);
         for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
             const x = r * Math.cos(t);
@@ -60,6 +75,16 @@ window.onload = function() {
         }
         ortho.linijaDo(0, 0, 0);
         ortho.povuciLiniju();
+        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
+            const x = 0.03 * Math.cos(t);
+            const y = 0.03 * Math.sin(t);
+            var xNext = 0.03 * Math.cos(t + 0.01);
+            var yNext = 0.03 * Math.sin(t + 0.01);
+            ortho.postaviNa(x, y, 0);
+            ortho.linijaDo(xNext, yNext, 0);
+            ortho.povuciLiniju();
+        }
+        ortho.povuciLiniju();
     }
     
     function draw() {
@@ -69,9 +94,8 @@ window.onload = function() {
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         // ortho.nacrtajKoordinatniSustav(false, false, true, 10000, 10000);
         
-        const a = 1, b = 4;
-        const angle = 0;
         circle();
+        astroid(rotationSliderZ.value / 360);
 
     }
 
@@ -79,6 +103,8 @@ window.onload = function() {
         ortho.zoom = this.value;
         draw();
     }
+
+    rotationSliderX.oninput = rotationSliderY.oninput = rotationSliderZ.oninput = draw;
 
     draw();
 

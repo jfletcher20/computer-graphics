@@ -64,7 +64,7 @@ class MT3D {
         this.#matrica = m;
     }
 
-    pomakni(px, py, pz) {
+    pomakni(px, py, pz = 0) {
         var m = [
             [1, 0, 0, px],
             [0, 1, 0, py],
@@ -74,7 +74,7 @@ class MT3D {
         this.mult(m);
     }
 
-    skaliraj(sx, sy, sz) {
+    skaliraj(sx, sy, sz = 0) {
         let m = [
             [sx, 0, 0, 0],
             [0, sy, 0, 0],

@@ -53,13 +53,11 @@ class Ortho {
     }
 
     #calcMatrixX(x, y, z) {
-        // Incorporate z in the x-calculation for 3D projection.
         const valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2] * z + this.m.matrica[0][3];
         return this.xDefault + this.units(valx, true);
     }
     
     #calcMatrixY(x, y, z) {
-        // Incorporate z in the y-calculation for 3D projection.
         const valy = this.m.matrica[1][0] * x + this.m.matrica[1][1] * y + this.m.matrica[1][2] * z + this.m.matrica[1][3];
         return this.yDefault + this.units(valy, false, true);
     }

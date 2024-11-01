@@ -1,31 +1,45 @@
 /*
 
-    3.1. Upotrijebite klasu matričnih transformacija u 2D MT3D (zadatak 2.2.) i klasu ortho (zadatak 1.4.), te rutinu za crtanje elipsi (zadatak 2.1.) da bi isprogramirali animirani ventilator.
+    Zadaća 3.1. Klasi MT3D matričnih reprezentacija geometrijskih transformacija u 3D (zadatak 3.2) dodajte rotaciju oko proizvoljne osi koja se zadaje dvjema točkama: rotiraj(x1, y1, z1, x2, y2, z2, kut).
+    
+    Animirajte rotaciju kocke oko osi zadane točkama P1 = (2, -5, 2) i P2 = (-3, 5, -3).
+    U početnom položaju, lijevi donji vrh kocke je u ishodištu, a stranice duljine a = 2 su na koordinatnim osima.
 
 */
 
 const unit = 40;
 const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
-window.onload = function() {
+window.onload = function () {
 
     const canvas = document.getElementById("renderer");
 
     const canvasHeightSlider = document.getElementById("canvas-height");
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
-    const rotationSlider = document.getElementById("rotation");
+
+    const rotSlider = document.getElementById("rotation");
+    const rotSliderX = document.getElementById("rotation-x");
+    const rotSliderY = document.getElementById("rotation-y");
+    const rotSliderZ = document.getElementById("rotation-z");
+
+    const animateView = document.getElementById("animate-view");
+    const animateCube = document.getElementById("animate-cube");
+
+    const uX = document.getElementById("ux");
+    const uY = document.getElementById("uy");
+    const uZ = document.getElementById("uz");
 
     if (!canvas) alert("Greška - nema platna!");
 
-    canvasHeightSlider.oninput = function() {
+    canvasHeightSlider.oninput = function () {
         canvas.height = this.value;
         canvas.width = canvasWidthSlider.value;
         ortho.initRenderer();
         draw();
     }
 
-    canvasWidthSlider.oninput =  function() {
+    canvasWidthSlider.oninput = function () {
         canvas.width = this.value;
         canvas.height = canvasHeightSlider.value;
         ortho.initRenderer();
@@ -35,63 +49,108 @@ window.onload = function() {
     var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
     ortho.zoom = unitSlider.value;
 
-    function drawEllipsis(a = 1, b = 3, angle = rotationSlider.value, x = 0, y = 0, pivot = 0) {
+    function drawCube(baseX = 0, baseY = 0, baseZ = 0) {
 
-        ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-        ortho.unit = unitSlider.value;
+        const side = 2;
 
-        // ortho.koristiBoju("red");
+        // draw the cube but start from 000 and only go in the positive directionsconst side = 2;
 
-        const m = new MT3D();
-        m.pomakni(x, y, 0);
-        // if (pivot) m.rotiraj_oko_tocke(x, y, pivot);
-        m.rotirajZ(pivot);
-        ortho.trans(m);
+        ortho.postaviBoju("red");
+        ortho.postaviNa(baseX, baseY, baseZ);
+        ortho.linijaDo(baseX + side, baseY, baseZ);
+        ortho.linijaDo(baseX + side, baseY + side, baseZ);
+        ortho.linijaDo(baseX, baseY + side, baseZ);
+        ortho.linijaDo(baseX, baseY, baseZ);
+        ortho.povuciLiniju();
 
-        // m.identitet();
-        m.rotirajZ(angle);
-        
-        
-        // m.rotiraj_oko_tocke(x, y, angle);
-        ortho.trans(m);
-        // switch a and b
-        const temp = a;
-        a = b;
-        b = temp;
+        ortho.postaviBoju("blue");
+        ortho.postaviNa(baseX, baseY, baseZ + side);
+        ortho.linijaDo(baseX + side, baseY, baseZ + side);
+        ortho.linijaDo(baseX + side, baseY + side, baseZ + side);
+        ortho.linijaDo(baseX, baseY + side, baseZ + side);
+        ortho.linijaDo(baseX, baseY, baseZ + side);
+        ortho.povuciLiniju();
 
-        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-            const x = a * Math.cos(t);
-            const y = b * Math.sin(t);
-            ortho.postaviNa(x, y, 0);
-            // ortho.linijaDo(x + x > 0 ? 0.1 : -0.1, y + y > 0 ? 0.1 : -0.1);
-            var xNext = a * Math.cos(t + 0.01);
-            var yNext = b * Math.sin(t + 0.01);
-            ortho.linijaDo(xNext, yNext, 0);
-            ortho.povuciLiniju();
-        }
+        ortho.postaviBoju("green");
+        ortho.postaviNa(baseX, baseY, baseZ);
+        ortho.linijaDo(baseX, baseY, baseZ + side);
+        ortho.povuciLiniju();
+
+        ortho.postaviNa(baseX + side, baseY, baseZ);
+        ortho.linijaDo(baseX + side, baseY, baseZ + side);
+        ortho.povuciLiniju();
+
+        ortho.postaviNa(baseX + side, baseY + side, baseZ);
+        ortho.linijaDo(baseX + side, baseY + side, baseZ + side);
+        ortho.povuciLiniju();
+
+        ortho.postaviNa(baseX, baseY + side, baseZ);
+        ortho.linijaDo(baseX, baseY + side, baseZ + side);
+        ortho.povuciLiniju();
 
     }
-    
+
+    const p1 = [2, -5, 2], p2 = [-3, 5, -3];
+    uX.value = p2[0] - p1[0];
+    uY.value = p2[1] - p1[1];
+    uZ.value = p2[2] - p1[2];
+
     function draw() {
-        
+
         ortho.initRenderer();
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        // ortho.nacrtajKoordinatniSustav(false, false, true, 10000, 10000);
+
+        ortho.m.identitet();
+
+        const rotX = rotSliderX.value;
+        const rotY = animateView.checked ? iView : rotSliderY.value;
+        const rotZ = rotSliderZ.value;
+        ortho.m.rotirajX(rotX);
+        ortho.m.rotirajY(rotY);
+        ortho.m.rotirajZ(rotZ);
         
-        const a = 1, b = 4;
-        drawEllipsis(a, b, rotationSlider.value, -3, 0, -60);
-        drawEllipsis(a, b, rotationSlider.value, 3, 0);
-        drawEllipsis(a, b, rotationSlider.value, -3, 0, 60);
+        ortho.postaviBoju("black");
+        ortho.postaviNa(p1[0], p1[1], p1[2]);
+        ortho.linijaDo(p2[0], p2[1], p2[2]);
+        ortho.povuciLiniju();
+
+        var u = [uX.value, uY.value, uZ.value];
+        u = [
+            u[0] / Math.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2),
+            u[1] / Math.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2),
+            u[2] / Math.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2)
+        ]
+
+        const rotCube = animateCube.checked ? iCube : rotSlider.value;
+        ortho.m.rotiraj_oko_osi(p1[0], p1[1], p1[2], u[0], u[1], u[2], rotCube);
+
+        ortho.postaviBoju("red");
+        drawCube();
+        
 
     }
 
-    unitSlider.oninput = function() {
+    unitSlider.oninput = function () {
         ortho.zoom = this.value;
         draw();
     }
 
-    rotationSlider.oninput = draw;
+    rotSlider.oninput = rotSliderX.oninput = rotSliderY.oninput = rotSliderZ.oninput = draw;
+    uX.oninput = uY.oninput = uZ.oninput = draw;
+
+    var iView = 0, iCube = 0;
+    setInterval(() => {
+        if (animateView.checked) {
+            iView += 1;
+            if (iView > 360) iView = 0;
+        }
+        if (animateCube.checked) {
+            iCube += 1;
+            if (iCube > 360) iCube = 0;
+        }
+        if (animateCube.checked || animateView.checked) draw();
+    }, 1000 / 60);
 
     draw();
 

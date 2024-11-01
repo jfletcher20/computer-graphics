@@ -10,6 +10,15 @@ body {
     background: linear-gradient(rgb(41, 6, 87), cadetblue 50%);
 }
 
+input[type="text"], input[type="number"] {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #000000;
+    margin: 4px;
+    width: 1rem;
+    text-align: center;
+}
+
 h1 {
     text-align: center;
 }

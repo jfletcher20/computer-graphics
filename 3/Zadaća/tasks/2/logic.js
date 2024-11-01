@@ -48,26 +48,19 @@ window.onload = function() {
         ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
         ortho.zoom = unitSlider.value;
         
-        // draw 3 vectors for the 3 different axis
-        // ortho.m.identitet();
-        // ortho.m.rotirajX(rotationSliderX.value);
-        // ortho.m.rotirajY(rotationSliderY.value);
-        // ortho.m.rotirajZ(rotationSliderZ.value);
-        // ortho.nacrtajOsi();
-        
         ortho.m.identitet();
-        ortho.m.rotirajX(30);
+        ortho.m.rotirajX(rotationSliderX.value);
         drawCube("red");
         ortho.m.identitet();
-        ortho.m.rotirajY(30);
+        ortho.m.rotirajY(rotationSliderY.value);
         drawCube("green");
         ortho.m.identitet();
-        ortho.m.rotirajZ(30);
+        ortho.m.rotirajZ(rotationSliderZ.value);
         drawCube("blue");
         ortho.m.identitet();
-        ortho.m.rotirajX(30);
-        ortho.m.rotirajY(30);
-        ortho.m.rotirajZ(30);
+        ortho.m.rotirajX(rotationSliderX.value);
+        ortho.m.rotirajY(rotationSliderY.value);
+        ortho.m.rotirajZ(rotationSliderZ.value);
         drawCube("black");
 
     }

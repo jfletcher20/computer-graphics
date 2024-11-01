@@ -173,16 +173,31 @@ class MT3D {
         ];
         this.mult(m);
     }
-
-    rotiraj(x1, y1, z1, x2, y2, z2, φ) {
-        let x = x2 - x1;
-        let y = y2 - y1;
-        let z = z2 - z1;
-        let d = Math.sqrt(x * x + y * y + z * z);
-        let a = Math.atan2(y, x);
-        let b = Math.acos(z / d);
-        this.rotiraj_oko_tocke(x1, y1, z1, φ, a, b);
+    
+    rotiraj_oko_osi(x0, y0, z0, u1, u2, u3, kut) {
+        this.pomakni(-x0, -y0, -z0);
+        this.rotiraj(x0, y0, z0, u1, u2, u3, kut, true);
+        this.pomakni(x0, y0, z0);
     }
+
+    rotiraj(x1, y1, z1, x2, y2, z2, kut, secondSetIsVector = false) {
+        let a = kut * Math.PI / 180;
+        let u1 = secondSetIsVector ? x2 : x2 - x1;
+        let u2 = secondSetIsVector ? y2 : y2 - y1;
+        let u3 = secondSetIsVector ? z2 : z2 - z1;
+        let cos = Math.cos(a);
+        let sin = Math.sin(a);
+        let m = [
+            [1 + (1 - cos) * (u1 ** 2 - 1), u3 * sin + u1 * u2 * (1 - cos), -u2 * sin + u1 * u3 * (1 - cos), 0],
+            [-u3 * sin + u1 * u2 * (1 - cos), 1 + (1 - cos) * (u2 ** 2 - 1), u1 * sin + u2 * u3 * (1 - cos), 0],
+            [u2 * sin + u1 * u3 * (1 - cos), -u1 * sin + u2 * u3 * (1 - cos), 1 + (1 - cos) * (u3 ** 2 - 1), 0],
+            [0, 0, 0, 1]
+        ];
+        this.pomakni(2 * x1, 2 * y1, 2 * z1);
+        this.mult(m);
+        this.pomakni(2 * -x1, 2 * -y1, 2 * -z1);
+    }
+    
 
     #cos(φ) {
         return Math.cos(φ * Math.PI / 180);

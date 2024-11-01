@@ -52,17 +52,17 @@ class Ortho {
         return x * this.sx * this.zoom;
     }
 
-    #calcMatrixX(x, y, z) {
+    #calcMatrixX(x, y, z = 0) {
         const valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2] * z + this.m.matrica[0][3];
         return this.xDefault + this.units(valx, true);
     }
     
-    #calcMatrixY(x, y, z) {
+    #calcMatrixY(x, y, z = 0) {
         const valy = this.m.matrica[1][0] * x + this.m.matrica[1][1] * y + this.m.matrica[1][2] * z + this.m.matrica[1][3];
         return this.yDefault + this.units(valy, false, true);
     }
     
-    postaviNa(x, y, z) {
+    postaviNa(x, y, z = 0) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -70,7 +70,7 @@ class Ortho {
         this.renderer.moveTo(this.#calcMatrixX(x, y, z), this.#calcMatrixY(x, y, z));
     }
     
-    linijaDo(x, y, z) {
+    linijaDo(x, y, z = 0) {
         this.renderer.lineTo(this.#calcMatrixX(x, y, z), this.#calcMatrixY(x, y, z));
     }
 

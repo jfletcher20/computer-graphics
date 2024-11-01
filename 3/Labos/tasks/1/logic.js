@@ -51,7 +51,6 @@ window.onload = function() {
         // m.identitet();
         m.rotirajZ(angle);
         
-        
         // m.rotiraj_oko_tocke(x, y, angle);
         ortho.trans(m);
         // switch a and b

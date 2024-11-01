@@ -39,72 +39,46 @@ window.onload = function() {
         draw();
     }
 
+    // we're only going to be using x and y coordinates; this task is 2D
+
     var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
     ortho.zoom = unitSlider.value;
+
+    function circle(r = 1, angle = 30, x = 0, y = 0, pivot = 0) {
+
+        const m = new MT3D();
+        m.rotirajZ(angle);
+        ortho.trans(m);
+        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
+            const x = r * Math.cos(t);
+            const y = r * Math.sin(t);
+            var xNext = r * Math.cos(t + 0.01);
+            var yNext = r * Math.sin(t + 0.01);
+            ortho.postaviNa(x, y, 0);
+            ortho.linijaDo(xNext, yNext, 0);
+            ortho.povuciLiniju();
+        }
+        ortho.linijaDo(0, 0, 0);
+        ortho.povuciLiniju();
+    }
     
     function draw() {
+        
+        ortho.initRenderer();
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-        ortho.zoom = unitSlider.value;
+        // ortho.nacrtajKoordinatniSustav(false, false, true, 10000, 10000);
         
-        ortho.m.identitet();
-        ortho.m.rotirajX(rotationSliderX.value);
-        drawCube("red");
-        ortho.m.identitet();
-        ortho.m.rotirajY(rotationSliderY.value);
-        drawCube("green");
-        ortho.m.identitet();
-        ortho.m.rotirajZ(rotationSliderZ.value);
-        drawCube("blue");
-        ortho.m.identitet();
-        ortho.m.rotirajX(rotationSliderX.value);
-        ortho.m.rotirajY(rotationSliderY.value);
-        ortho.m.rotirajZ(rotationSliderZ.value);
-        drawCube("black");
+        const a = 1, b = 4;
+        const angle = 0;
+        circle();
 
-    }
-
-    function drawCube(color) {
-            
-        if (color) ortho.postaviBoju(color);
-        ortho.postaviNa(-1, -1, -1);
-        ortho.linijaDo(1, -1, -1);
-        ortho.linijaDo(1, 1, -1);
-        ortho.linijaDo(-1, 1, -1);
-        ortho.linijaDo(-1, -1, -1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(-1, -1, 1);
-        ortho.linijaDo(1, -1, 1);
-        ortho.linijaDo(1, 1, 1);
-        ortho.linijaDo(-1, 1, 1);
-        ortho.linijaDo(-1, -1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(-1, -1, -1);
-        ortho.linijaDo(-1, -1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(1, -1, -1);
-        ortho.linijaDo(1, -1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(1, 1, -1);
-        ortho.linijaDo(1, 1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(-1, 1, -1);
-        ortho.linijaDo(-1, 1, 1);
-        ortho.povuciLiniju();
     }
 
     unitSlider.oninput = function() {
         ortho.zoom = this.value;
         draw();
     }
-
-    rotationSliderX.oninput = rotationSliderY.oninput = rotationSliderZ.oninput = draw;
 
     draw();
 

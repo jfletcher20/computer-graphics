@@ -19,9 +19,9 @@ window.onload = function() {
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
 
-    const rotationSliderX = document.getElementById("rotation-x");
-    const rotationSliderY = document.getElementById("rotation-y");
-    const rotationSliderZ = document.getElementById("rotation-z");
+    const rotationSlider = document.getElementById("rotation");
+
+    const animateCheckbox = document.getElementById("animate");
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -46,20 +46,22 @@ window.onload = function() {
 
     function astroid(r = 4, progress = 1) {
         var temp = ortho.renderer.strokeStyle;
+        ortho.m.rotirajZ(-90);
         ortho.postaviBoju("red");
         var x = r * Math.pow(Math.cos(t), 3);
         var y = r * Math.pow(Math.sin(t), 3);
-        ortho.postaviNa(x, y, 0);
-        for (var t = 0; t <= 2 * Math.PI * progress; t += 0.01) {
+        ortho.postaviNa(y, x, 0);
+        for (var t = 0; t <= 2 * Math.PI * (1-progress); t += 0.01) {
             x = r * Math.pow(Math.cos(t), 3);
             y = r * Math.pow(Math.sin(t), 3);
-            ortho.linijaDo(x, y, 0);
+            ortho.linijaDo(y, x, 0);
         }
         ortho.povuciLiniju();
+        t += Math.PI / 2;
         const x2 = 3 * Math.cos(t);
         const y2 = 3 * Math.sin(t);
         ortho.postaviBoju(temp);
-        circle(1, -progress * 3 * 360, x2, y2, true);
+        circle(1, -progress * 3 * 360, y2, x2, true);
         temp = ortho.renderer.strokeStyle;
         ortho.postaviBoju("blue");
         circle(4, 0, 0, 0, false)
@@ -107,6 +109,8 @@ window.onload = function() {
             ortho.povuciLiniju();
         }
     }
+
+    var iProgress = 0;
     
     function draw() {
         
@@ -114,7 +118,8 @@ window.onload = function() {
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         
-        astroid(4, 1 - rotationSliderZ.value / 360);
+        const rot = animateCheckbox.checked ? iProgress : rotationSlider.value;
+        astroid(4, 1 - rot / 360);
 
     }
 
@@ -123,7 +128,13 @@ window.onload = function() {
         draw();
     }
 
-    rotationSliderX.oninput = rotationSliderY.oninput = rotationSliderZ.oninput = draw;
+    rotationSlider.oninput = draw;
+
+    setInterval(() => {
+        if (animateCheckbox.checked) iProgress++;
+        if (iProgress > 360) iProgress = 0;
+        draw();
+    }, 1000 / 60);
 
     draw();
 

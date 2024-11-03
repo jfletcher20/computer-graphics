@@ -53,8 +53,6 @@ window.onload = function () {
 
         const side = 2;
 
-        // draw the cube but start from 000 and only go in the positive directionsconst side = 2;
-
         ortho.postaviBoju("red");
         ortho.postaviNa(baseX, baseY, baseZ);
         ortho.linijaDo(baseX + side, baseY, baseZ);
@@ -127,7 +125,6 @@ window.onload = function () {
 
         ortho.postaviBoju("red");
         drawCube();
-        
 
     }
 

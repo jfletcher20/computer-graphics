@@ -1,14 +1,3 @@
-/*
-
-    Zadatak 2
-    Koristeći klase ortho i MT2D nacrtajte leptire i cvjetove kako je prikazano na slici.
-
-        Za leptire i cvjetove koristite formule iz prve zadaće.
-        Primijenite odgovarajuće transformacije na leptire i cvjetove da ih dovedete u odgovarajući položaj i dobijete odgovarajući oblik (uočite da postoje veći i manji leptiri).
-
-
-*/
-
 const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
 window.onload = function() {
@@ -38,8 +27,6 @@ window.onload = function() {
         ortho.initRenderer();
         draw();
     }
-
-    // we're only going to be using x and y coordinates; this task is 2D
 
     var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
     ortho.zoom = unitSlider.value;

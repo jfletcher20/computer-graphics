@@ -175,27 +175,49 @@ class MT3D {
     }
     
     rotiraj_oko_osi(x0, y0, z0, u1, u2, u3, kut) {
-        this.pomakni(-x0, -y0, -z0);
         this.rotiraj(x0, y0, z0, u1, u2, u3, kut, true);
-        this.pomakni(x0, y0, z0);
     }
 
     rotiraj(x1, y1, z1, x2, y2, z2, kut, secondSetIsVector = false) {
-        let a = kut * Math.PI / 180;
         let u1 = secondSetIsVector ? x2 : x2 - x1;
         let u2 = secondSetIsVector ? y2 : y2 - y1;
         let u3 = secondSetIsVector ? z2 : z2 - z1;
-        let cos = Math.cos(a);
-        let sin = Math.sin(a);
-        let m = [
-            [1 + (1 - cos) * (u1 ** 2 - 1), u3 * sin + u1 * u2 * (1 - cos), -u2 * sin + u1 * u3 * (1 - cos), 0],
-            [-u3 * sin + u1 * u2 * (1 - cos), 1 + (1 - cos) * (u2 ** 2 - 1), u1 * sin + u2 * u3 * (1 - cos), 0],
-            [u2 * sin + u1 * u3 * (1 - cos), -u1 * sin + u2 * u3 * (1 - cos), 1 + (1 - cos) * (u3 ** 2 - 1), 0],
-            [0, 0, 0, 1]
+        let length = Math.sqrt(u1 ** 2 + u2 ** 2 + u3 ** 2);
+        u1 /= length;
+        u2 /= length;
+        u3 /= length;
+        let d = Math.sqrt(u2 * u2 + u3 * u3);
+        let Rx1 = [
+          [1, 0, 0, 0],
+          [0, u3 / d, -u2 / d, 0],
+          [0, u2 / d, u3 / d, 0],
+          [0, 0, 0, 1],
         ];
-        this.pomakni(2 * x1, 2 * y1, 2 * z1);
-        this.mult(m);
-        this.pomakni(2 * -x1, 2 * -y1, 2 * -z1);
+        let Ry1 = [
+          [d, 0, -u1, 0],
+          [0, 1, 0, 0],
+          [u1, 0, d, 0],
+          [0, 0, 0, 1],
+        ];
+        let Rx2 = [
+          [1, 0, 0, 0],
+          [0, u3 / d, u2 / d, 0],
+          [0, -u2 / d, u3 / d, 0],
+          [0, 0, 0, 1],
+        ];
+        let Ry2 = [
+          [d, 0, u1, 0],
+          [0, 1, 0, 0],
+          [-u1, 0, d, 0],
+          [0, 0, 0, 1],
+        ];
+        this.pomakni(x1, y1, z1);
+        this.mult(Rx2);
+        this.mult(Ry2);
+        this.rotirajZ(kut);
+        this.mult(Ry1);
+        this.mult(Rx1);
+        this.pomakni(-x1, -y1, -z1);
     }
     
 

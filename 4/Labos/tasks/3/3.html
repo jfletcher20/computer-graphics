@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="hr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Zadaća</title>
+		<link rel="stylesheet" href="../../style.css">
+		<script src="../../ortho.js"></script>
+		<script src="../../mt3d.js"></script>
+		<script src="logic.js"></script>
+	</head>
+
+	<body>
+		<h1>Zadatak 2</h1>
+		<nav>
+			<a href="../../labos.html">Labos 3</a>
+			<a href="../../tasks/1/1.html">Zadatak 1</a>
+			<a href="../../tasks/2/2.html">Zadatak 2</a>
+			<a href="../../tasks/3/3.html" class="selected">Zadatak 3</a>
+		</nav>
+		<div class="container">
+			<input type="range" id="unit" min="1" max="100" value="10" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
+
+			<input type="range" id="canvas-height" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 700px;">
+			<input type="range" id="canvas-width" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 700px;">
+
+			<div style="position: absolute; margin-top: 15px; margin-left: 490px; background-color: rgba(0, 0, 0, 0.5); padding: 8px; border-radius: 5px;">
+				<input type="checkbox" checked name="animation" id="animation">
+				<label for="animation" 
+					style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;"
+				>3D rotacija</label>
+			</div>
+			
+			<canvas id="renderer" width="640" height="640">
+				Vaš preglednik ne podržava HTML5 canvas.
+			</canvas>
+		</div>
+	</body>
+</html>

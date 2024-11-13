@@ -14,34 +14,6 @@
 
 */
 
-/*
-
-    Zadaća 3.1. Klasi MT3D matričnih reprezentacija geometrijskih transformacija u 3D (zadatak 3.2) dodajte rotaciju oko proizvoljne osi koja se zadaje dvjema točkama: rotiraj(x1, y1, z1, x2, y2, z2, kut).
-    
-    -- example --
-    Animirajte rotaciju kocke oko osi zadane točkama P1 = (2, -5, 2) i P2 = (-3, 5, -3). U početnom položaju, lijevi donji vrh kocke je u ishodištu, a stranice duljine a = 2 su na koordinatnim osima.
-
-*/
-
-/*
-
-    Zadatak 1
-
-    U klasu MT3D dodajte metodu rotiraj_oko_osi(x0, y0, z0, u1, u2, u3, kut) za rotaciju oko pravca koji prolazi točkom (x0, y0, z0) i ima vektor smjera (u1, u2, u3).
-    
-    Kut rotacije se unosi u stupnjevima. Pomoću gornje metode napravite u ortogonalnoj projekciji animaciju rotacije kocke oko pravca koji prolazi točkama P1(2, −5, 2) i P2(−3, 5, −3).
-    
-    Kocka se u početnom položaju nalazi u prvom oktantu s jednim vrhom u ishodištu, jedna njezina strana
-    leži u xy-ravnini, a duljina stranice jednaka je 2.
-
-    rotiraj_oko_osi(x0, y0, z0, u1, u2, u3, kut) {
-        pomakni (-x0 , -y0 , -z0);
-        rotiraj (u1 ,u2 ,u3 ,kut);
-        pomakni (x0 ,y0 ,z0);
-    }
-    
-*/
-
 class MT3D {
 
     #matrica = [
@@ -64,7 +36,7 @@ class MT3D {
         this.#matrica = m;
     }
 
-    pomakni(px, py, pz = 0) {
+    pomakni(px, py, pz) {
         var m = [
             [1, 0, 0, px],
             [0, 1, 0, py],
@@ -74,7 +46,7 @@ class MT3D {
         this.mult(m);
     }
 
-    skaliraj(sx, sy, sz = 0) {
+    skaliraj(sx, sy, sz) {
         let m = [
             [sx, 0, 0, 0],
             [0, sy, 0, 0],
@@ -174,28 +146,6 @@ class MT3D {
         this.mult(m);
     }
 
-    rotiraj_oko_osi(x0, y0, z0, u1, u2, u3, kut) {
-        this.pomakni(x0, y0, z0);
-        this.rotiraj(x0, y0, z0, u1, u2, u3, kut, true);
-        this.pomakni(-x0, -y0, -z0);
-    }
-
-    rotiraj(x1, y1, z1, x2, y2, z2, kut, secondSetIsVector = false) {
-        let u1 = secondSetIsVector ? x2 : x2 - x1;
-        let u2 = secondSetIsVector ? y2 : y2 - y1;
-        let u3 = secondSetIsVector ? z2 : z2 - z1;
-        u1 /= Math.sqrt(u1 ** 2 + u2 ** 2 + u3 ** 2);
-        u2 /= Math.sqrt(u1 ** 2 + u2 ** 2 + u3 ** 2);
-        u3 /= Math.sqrt(u1 ** 2 + u2 ** 2 + u3 ** 2);
-        const d = Math.sqrt(u2 ** 2 + u3 ** 2);
-        this.mult([ [1, 0, 0, 0], [0, u3 / d, u2 / d, 0], [0, -u2 / d, u3 / d, 0], [0, 0, 0, 1] ]);
-        this.mult([ [d, 0, u1, 0], [0, 1, 0, 0], [-u1, 0, d, 0], [0, 0, 0, 1] ]);
-        this.rotirajZ(kut);
-        this.mult([ [d, 0, -u1, 0], [0, 1, 0, 0], [u1, 0, d, 0], [0, 0, 0, 1] ]);
-        this.mult([ [1, 0, 0, 0], [0, u3 / d, -u2 / d, 0], [0, u2 / d, u3 / d, 0], [0, 0, 0, 1] ]);
-    }
-
-
     #cos(φ) {
         return Math.cos(φ * Math.PI / 180);
     }
@@ -227,12 +177,18 @@ class MT3D {
         this.#matrica = m1;
     }
 
+    rotiraj_oko_tocke(x0, y0, φ) {
+        this.pomakni(-x0, -y0);
+        this.rotiraj(φ);
+        this.pomakni(x0, y0);
+    }
+
     zrcaliNa(k, l) {
 
         function perpendicularSlope(slope) {
             return -1 / slope;
         }
-
+        
         function findIntersection(slope1, intercept1, slope2, intercept2) {
             const x = (intercept2 - intercept1) / (slope1 - slope2);
             const y = slope1 * x + intercept1;
@@ -240,7 +196,7 @@ class MT3D {
         }
 
         let φ = 2 * (90 - Math.atan(k) * 180 / Math.PI);
-
+        
         const slope1 = k;
         const intercept1 = l;
 

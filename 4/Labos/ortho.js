@@ -1,23 +1,21 @@
 /*
 
-    3.3. Implementirajte klasu Ortho koja omogućava ortogonalnu projekciju linija definiranih u 3D globalnom koordinatnom sustavu na xy-ravninu sa sljedećim metodama (modificirajte klasu GKS!):
+    Treba dodati (privatni) atribut kamera u kojemu se čuva transformacija
+    pogleda. U konstruktoru se taj atribut postavi na jediničnu matricu reda 4.
+    To znači da je po defaultu kamera već u ishodištu i da gleda u negativnom smjeru z-osi.
 
-        postaviNa(x, y, z) – postavlja početak linije na poziciju (x, y, z) u 3D globalnim koordinatama;
-        
-        linijaDo(x, y, z) – povlači liniju od posljednje zapamćene pozicije do (x, y, z) u 3D globalnim koordinatama;
-        
-        trans(m) – zadaje se matrica transformacije m (objekt klase MT3D) koja se primjenjuje prije crtanja u globalnim koordinatama (to je zapravo transformacija iz lokalnih u globalne koordinate - po defaultu postaviti identitet, tj. jediničnu matricu);
-        
-        postaviBoju(c) – postavlja boju linije;
+    Treba implementirati metodu VP za računanje vektorskog produkta.
 
-    Konstruktorom Ortho(platno, xmin, xmax, ymin, ymax) zadaje se raspon projiciranih koordinata koje će biti prikazane u canvasu.
+    Treba implementirati metodu mnoziMatrice za računanje produkta dvije matrice.
 
-    Radi testiranja klasa MT3D i Ortho nacrtajte ortogonalne projekcije kocke zarotirane oko različitih osi u različitim bojama:
-        
-        Rotacija oko osi x za 30° - crveno
-        Rotacija oko osi y za 30° - zeleno
-        Rotacija oko osi z za 30° - plavo
-        Rotacija najprije oko osi x, pa y, pa z, svaki put za 30° - crno
+    Kod je sličan kao za mult metodu, samo na ulazu trebaju biti dva
+    parametra (matrice koje zelimo pomnožiti u danom poretku).
+
+    Treba implementirati metodu postaviKameru koja će generirati transformaciju pogleda.
+
+    Treba modificirati metodu trans tako da uz matricu transformacije bude uključena
+    i matrica pogleda, tj. da se uvijek nakon geometrijskih transformacija primijeni
+    i transformacija pogleda.
 
 */
 
@@ -53,17 +51,15 @@ class Ortho {
     }
 
     #calcMatrixX(x, y, z) {
-        // Incorporate z in the x-calculation for 3D projection.
         const valx = this.m.matrica[0][0] * x + this.m.matrica[0][1] * y + this.m.matrica[0][2] * z + this.m.matrica[0][3];
         return this.xDefault + this.units(valx, true);
     }
-    
+
     #calcMatrixY(x, y, z) {
-        // Incorporate z in the y-calculation for 3D projection.
         const valy = this.m.matrica[1][0] * x + this.m.matrica[1][1] * y + this.m.matrica[1][2] * z + this.m.matrica[1][3];
         return this.yDefault + this.units(valy, false, true);
     }
-    
+
     postaviNa(x, y, z) {
         this.x = x;
         this.y = y;
@@ -71,7 +67,7 @@ class Ortho {
         this.renderer.beginPath();
         this.renderer.moveTo(this.#calcMatrixX(x, y, z), this.#calcMatrixY(x, y, z));
     }
-    
+
     linijaDo(x, y, z) {
         this.renderer.lineTo(this.#calcMatrixX(x, y, z), this.#calcMatrixY(x, y, z));
     }
@@ -84,13 +80,36 @@ class Ortho {
         this.renderer.strokeStyle = c;
     }
 
+    #product(u, v) {
+        var vek = [0, 0, 0];
+        vek[0] = u[1] * v[2] - u[2] * v[1];
+        vek[1] = u[2] * v[0] - u[0] * v[2];
+        vek[2] = u[0] * v[1] - u[1] * v[0];
+        return vek;
+    }
+
+    postaviKameru(x0, y0, z0, x1, y1, z1, Vx, Vy, Vz) {
+        let V = [Vx, Vy, Vz];
+        let normaN = Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1) + (z0 - z1) * (z0 - z1));
+        let n = [(x0 - x1) / normaN, (y0 - y1) / normaN, (z0 - z1) / normaN];
+        let U = this.#product(V, n);
+        let normaU = Math.sqrt(U[0] * U[0] + U[1] * U[1] + U[2] * U[2]);
+        let u = [U[0] / normaU, U[1] / normaU, U[2] / normaU];
+        let v = this.#product(n, u);
+        let mtr = [[u[0], u[1], u[2], -u[0] * x0 - u[1] * y0 - u[2] * z0],
+        [v[0], v[1], v[2], -v[0] * x0 - v[1] * y0 - v[2] * z0],
+        [n[0], n[1], n[2], -n[0] * x0 - n[1] * y0 - n[2] * z0],
+        [0, 0, 0, 1]];
+        this._kamera = mtr;
+    }
+
     trans(m) {
-        this.m = m;
+        this.m.matrica = m.mnoziMatrice(m.kamera, m.matrica);
     }
 
 }
 
-Ortho.prototype.nacrtajOsi = function() {
+Ortho.prototype.nacrtajOsi = function () {
     this.postaviBoju("red");
     this.postaviNa(0, 0, 0);
     this.linijaDo(1, 0, 0);

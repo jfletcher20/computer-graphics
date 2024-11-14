@@ -1,35 +1,220 @@
-<!doctype html>
-<html lang="hr">
-	<head>
-		<meta charset="UTF-8">
-		<title>Zadaća</title>
-		<link rel="stylesheet" href="../../style.css">
-		<script src="../../ortho.js"></script>
-		<script src="../../mt3d.js"></script>
-		<script src="logic.js"></script>
-	</head>
+<!DOCTYPE html>
 
-	<body>
-		<h1>Zadatak 2</h1>
-		<nav>
-			<a href="../../labos.html">Labos 3</a>
-			<a href="../../tasks/1/1.html">Zadatak 1</a>
-			<a href="../../tasks/2/2.html" class="selected">Zadatak 2</a>
-			<a href="../../tasks/3/3.html">Zadatak 3</a>
-		</nav>
-		<div class="container">
-			<input type="range" id="unit" min="1" max="100" value="10" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
+<html>
 
-			<input type="range" id="canvas-height" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 700px;">
-			<input type="range" id="canvas-width" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 700px;">
+<head>
 
-			<input type="range" id="rotation-x" min="-180" max="180" value="30" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-left: 700px;">
-			<input type="range" id="rotation-y" min="-180" max="180" value="30" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-left: 700px;">
-			<input type="range" id="rotation-z" min="-180" max="180" value="30" style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-left: 700px;">
-			
-			<canvas id="renderer" width="640" height="640">
-				Vaš preglednik ne podržava HTML5 canvas.
+	<meta charset="utf-8">
+	<title>slovo F persp</title>
+
+	<link rel="stylesheet" type="text/css" href="../RG.css">
+
+	<script src="../../persp.js"></script>
+	<script src="../../mt3d.js"></script>
+
+	<script language="JavaScript">
+
+		//canvas aplikaciju pokreni nakon sto se ucita cijela stranica
+		window.onload = canApp;
+
+		function canApp() {
+			//dobivanje canvas objekta
+			var kan_element = document.getElementById("kan");
+
+			//testiranje postoji li canvas objekt i kontekst
+			if (!kan_element || !kan_element.getContext) {
+				return;
+			}
+
+			//dobivanje 2d konteksta
+			var kan = kan_element.getContext("2d");
+
+			//dimenzije canvasa
+			var w = kan_element.width;
+			var h = kan_element.height;
+
+			//parametri za crtanje
+			//var parametri = {'canvas': kan, 'xmin': -10, 'xmax': 10, 'xsize': w, 'ysize': h, 'dist': 10};
+			var per = new Persp(kan_element, -10, 10, -10, 10, 10);
+			var mat = new MT3D();
+
+			//rotiranje kamere
+			var phi = 0;
+			var dfi = 1;
+
+			//udaljenost kamere od objekta
+			var r = 10;
+
+			//podizanje i spustanje kamere
+			var dy = 1;
+
+			//smjer podizanja ispustanja kamere
+			var smjer = 0.01;
+
+			//vrijeme
+			var pauza = false;
+			var sekunde = 0;
+			//var fps = 60;
+			var now;
+			var old = Date.now();
+			//var interval = 1000/fps;
+			//var delta;
+
+			function kocka(a) {
+				per.postaviNa(0, 0, 0);
+				per.linijaDo(a, 0, 0);
+				per.linijaDo(a, a, 0);
+				per.linijaDo(0, a, 0);
+				per.linijaDo(0, 0, 0);
+				per.linijaDo(0, 0, a);
+				per.linijaDo(a, 0, a);
+				per.linijaDo(a, a, a);
+				per.linijaDo(0, a, a);
+				per.linijaDo(0, 0, a);
+				per.povuciLiniju();
+
+				per.postaviNa(a, 0, 0);
+				per.linijaDo(a, 0, a);
+				per.povuciLiniju();
+
+				per.postaviNa(a, a, 0);
+				per.linijaDo(a, a, a);
+				per.povuciLiniju();
+
+				per.postaviNa(0, a, 0);
+				per.linijaDo(0, a, a);
+				per.povuciLiniju();
+			}
+
+			function slovoF(a) {
+				kan.strokeStyle = "black";
+				per.trans(mat);
+				kocka(a);
+
+				mat.pomakni(0, a, 0);
+				per.trans(mat);
+				kocka(a);
+
+				mat.pomakni(0, a, 0);
+				per.trans(mat);
+				kocka(a);
+
+				mat.pomakni(-a, 0, 0);
+				per.trans(mat);
+				kocka(a);
+
+				mat.pomakni(a, a, 0);
+				per.trans(mat);
+				kocka(a);
+
+				mat.pomakni(0, a, 0);
+				per.trans(mat);
+				kocka(a);
+
+				mat.pomakni(-a, 0, 0);
+				per.trans(mat);
+				kocka(a);
+
+				mat.pomakni(-a, 0, 0);
+				per.trans(mat);
+				kocka(a);
+
+				mat.identitet();
+			}
+
+			function mreza() {
+				per.trans(mat);
+				kan.strokeStyle = "red";
+				for (let i = -5; i <= 5; i += 0.5) {
+					per.postaviNa(i, 0, -5);
+					per.linijaDo(i, 0, 5);
+					per.povuciLiniju();
+					per.postaviNa(-5, 0, i);
+					per.linijaDo(5, 0, i);
+					per.povuciLiniju();
+				}
+			}
+
+			function drawScreen() {
+				//pozadina
+				kan.fillStyle = "#FFFFE0";
+				kan.fillRect(0, 0, w, h);
+
+				kan.textAlign = "left";
+				kan.textBaseline = "top";
+				kan.fillStyle = "black";
+				kan.font = "20px Sans-Serif";
+				kan.fillText("Time: " + Math.round(sekunde), 2, 2);
+
+				mat.postaviKameru(r * Math.cos(phi * Math.PI / 180), dy, r * Math.sin(phi * Math.PI / 180), 0, 0, 0, 0, 1, 0);
+
+				mreza();
+				slovoF(1);
+			}
+
+			function animacija() {
+				if (!pauza) {
+					requestAnimationFrame(animacija);
+					now = Date.now();
+
+					if (phi < 360) phi += dfi;
+					else phi = 0;
+					sekunde += (now - old) / 1000;
+					if ((dy >= 10) || (dy < 0.2)) smjer = -smjer;
+					dy += smjer;
+
+					old = now;
+				}
+			}
+
+			animacija();
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<div id="container">
+
+		<div id="naslov">
+			<h1>Slovo F u perspektivnoj projekciji</h1>
+		</div>
+
+		<div id="content" style="width:750px;">
+			<canvas id="kan" width="700" tabindex="0" height="500">
+				Your browser does not support HTML5 canvas.
 			</canvas>
 		</div>
-	</body>
+
+		<div id="sidebar" style="top:20px;">
+			<div class="box" style="width: 250px;">
+				<p>Udaljenost kamere od objekta</p>
+				<div style="padding-bottom:5px;">
+					<div id="dkamera" style="width:50%;"> </div> <span class="razmak10"></span> <span
+						id="str_dkamera">10</span>
+				</div>
+				<p>Udaljenost projicirajuće ravnine od kamere</p>
+				<div style="padding-bottom:5px;"></span>
+					<div id="dravnina" style="width:50%;"> </div> <span class="razmak10"></span> <span
+						id="str_dravnina">10</span>
+				</div>
+				<p>Brzina okretanja kamere</p>
+				<div style="padding-bottom:20px;"></span>
+					<div id="dfi" style="width:50%;"> </div> <span class="razmak10"></span> <span id="str_dfi">1</span>
+				</div>
+				<div id="radio">
+					Pauza<span class="razmak10"></span> <input type="radio" id="radio1" name="radio"><label
+						for="radio1">Da</label>
+					<input type="radio" id="radio2" name="radio" checked="checked"><label for="radio2">Ne</label>
+				</div>
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</body>
+
 </html>

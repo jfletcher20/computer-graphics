@@ -57,7 +57,6 @@ window.onload = function () {
     }
 
     function drawLetterF() {
-        persp.postaviBoju("black");
         var f = [
             [1, 1, 1],
             [1, 0, 0],
@@ -87,8 +86,6 @@ window.onload = function () {
     }
 
     function drawGrid() {
-        persp.trans(matrix);
-        persp.postaviBoju("green");
         for (let i = -5; i <= 5; i += 0.5) {
             persp.postaviNa(i, 0, -5);
             persp.linijaDo(i, 0, 5);
@@ -122,12 +119,13 @@ window.onload = function () {
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         matrix.postaviKameru(
-            r * cos(φ),
-            φ2,
-            r * sin(φ),
-            0, 0, 0, 0, 1, 0
+            r * cos(360 - φ), φ2, r * sin(360 - φ),
+            0, 0, 0,
+            0, 1, 0
         );
+        persp.postaviBoju("green");
         drawGrid();
+        persp.postaviBoju("black");
         drawLetterF();
 
     }

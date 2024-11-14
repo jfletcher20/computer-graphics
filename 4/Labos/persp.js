@@ -132,70 +132,14 @@ class Persp {
 
     linijaDo(x, y, z) {
 
-        var x1, y1, x2, y2;
-        var xc = this.#calcX(x, y, z);
-        var yc = this.#calcY(x, y, z);
-        var zc = this.#calcZ(x, y, z);
+        this.lastPos.x = this.#calcX(x, y, z);
+        this.lastPos.y = this.#calcY(x, y, z);
+        this.lastPos.z = this.#calcZ(x, y, z);
 
-        if ((this.lastPos.z <= -0.01) && (zc <= -0.01)) {
-            this.lastPos.x = xc;
-            this.lastPos.y = yc;
-            this.lastPos.z = zc;
-
-            x2 = this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x);
-            y2 = this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y);
-
-            this.renderer.lineTo(x2, y2);
-
-        } else if ((this.lastPos.z > -0.01) && (zc > -0.01)) {
-            this.lastPos.x = xc;
-            this.lastPos.y = yc;
-            this.lastPos.z = zc;
-
-            x2 = this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x);
-            y2 = this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y);
-
-            this.renderer.moveTo(x2, y2);
-
-        } else if (this.lastPos.z > -0.01) {
-            var t = (this.lastPos.z + 0.01) / (this.lastPos.z - zc);
-            this.lastPos.x = this.lastPos.x + (xc - this.lastPos.x) * t;
-            this.lastPos.y = this.lastPos.y + (yc - this.lastPos.y) * t;
-            this.lastPos.z = -0.01;
-
-            x1 = this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x);
-            y1 = this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y);
-
-            this.lastPos.x = xc;
-            this.lastPos.y = yc;
-            this.lastPos.z = zc;
-
-            x2 = this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x);
-            y2 = this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y);
-
-            this.renderer.moveTo(x1, y1);
-            this.renderer.lineTo(x2, y2);
-
-        } else if (zc > -0.01) {
-            x1 = this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x);
-            y1 = this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y);
-
-            var t = (this.lastPos.z + 0.01) / (this.lastPos.z - zc);
-            this.lastPos.x = this.lastPos.x + (xc - this.lastPos.x) * t;
-            this.lastPos.y = this.lastPos.y + (yc - this.lastPos.y) * t;
-            this.lastPos.z = -0.01;
-
-            x2 = this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x);
-            y2 = this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y);
-
-            this.lastPos.x = xc;
-            this.lastPos.y = yc;
-            this.lastPos.z = zc;
-
-            this.renderer.moveTo(x1, y1);
-            this.renderer.lineTo(x2, y2);
-        }
-        this.povuciLiniju();
+        this.renderer.lineTo(
+            this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x),
+            this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y)
+        );
     }
 
     //nacrtaj krivulju

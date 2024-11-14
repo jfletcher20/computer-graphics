@@ -93,6 +93,42 @@ class Persp {
         }
     }
 
+    /*
+    5.2. U klasu Persp dodajte metodu za crtanje žičanog modela valjka valjak(r, h, n) gdje je parametar r polumjer baze, h visina valjka, a n broj segmenata (u ovom slučaju pravokutnika) i linija koje čine plašt. Donju bazu nacrajte u xy-ravnini. Kretanje kamere neka bude kao što je zadano u zadatku 5.1.*/
+
+    valjak(r, h, n) {
+        for (let i = 0; i < n; i++) {
+            this.postaviNa(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), 0);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), h);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), h);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+            this.povuciLiniju();
+        }
+    }
+
+    /*
+    5.3. U klasu Persp dodajte metodu za crtanje žičanog modela kugle (sfere) kugla(r, m, n) gdje je parametar r polumjer kugle, m broj meridijana, a n broj paralela. Središte kugle je u ishodištu, a ekvator u xy-ravnini. Nacrtajte kuglu sa 17 paralela i 32 meridijana. Kretanje kamere neka bude kao što je zadano u zadatku 5.1.*/
+
+    kugla(r, m, n) {
+        for (let i = 0; i < m; i++) {
+            this.postaviNa(r * Math.cos(2 * Math.PI / m * i), r * Math.sin(2 * Math.PI / m * i), 0);
+            this.linijaDo(r * Math.cos(2 * Math.PI / m * (i + 1)), r * Math.sin(2 * Math.PI / m * (i + 1)), 0);
+            this.linijaDo(r * Math.cos(2 * Math.PI / m * (i + 1)), r * Math.sin(2 * Math.PI / m * (i + 1)), r);
+            this.linijaDo(r * Math.cos(2 * Math.PI / m * i), r * Math.sin(2 * Math.PI / m * i), r);
+            this.linijaDo(r * Math.cos(2 * Math.PI / m * i), r * Math.sin(2 * Math.PI / m * i), 0);
+            this.povuciLiniju();
+        }
+        for (let i = 0; i < n; i++) {
+            this.postaviNa(r * Math.cos(Math.PI / n * i), r * Math.sin(Math.PI / n * i), 0);
+            this.linijaDo(r * Math.cos(Math.PI / n * (i + 1)), r * Math.sin(Math.PI / n * (i + 1)), 0);
+            this.linijaDo(r * Math.cos(Math.PI / n * (i + 1)), r * Math.sin(Math.PI / n * (i + 1)), r);
+            this.linijaDo(r * Math.cos(Math.PI / n * i), r * Math.sin(Math.PI / n * i), r);
+            this.linijaDo(r * Math.cos(Math.PI / n * i), r * Math.sin(Math.PI / n * i), 0);
+            this.povuciLiniju();
+        }
+    }
+
     #distance;
     m = new MT3D();
     lastPos = { x: 0, y: 0, z: 0 };

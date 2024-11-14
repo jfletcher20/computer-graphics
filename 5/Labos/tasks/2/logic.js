@@ -1,9 +1,3 @@
-/*
-
-    3.1. Upotrijebite klasu matričnih transformacija u 2D MT3D (zadatak 2.2.) i klasu persp (zadatak 1.4.), te rutinu za crtanje elipsi (zadatak 2.1.) da bi isprogramirali animirani ventilator.
-
-*/
-
 const unit = 40;
 const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
@@ -62,39 +56,7 @@ window.onload = function () {
         persp.linijaDraw();
     }
 
-    function drawLetterF() {
-        persp.postaviBoju("black");
-        var f = [
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 1, 0],
-            [1, 0, 0],
-            [1, 0, 0],
-        ];
-
-        matrix.pomakni(0, -f.length - 1, 0);
-        for (let i = 0; i < f.length; i++) {
-            for (let j = 0; j < f[i].length; j++) {
-                if (f[i][j] === 1) {
-                    if (i === 0 && j === 0) {
-                        matrix.pomakni(-1, 1, 0);
-                        persp.trans(matrix);
-                    }
-                    drawCube(1);
-                }
-                matrix.pomakni(1, 0, 0);
-                persp.trans(matrix);
-            }
-            matrix.pomakni(-3, 1, 0);
-            persp.trans(matrix);
-        }
-
-
-    }
-
     function drawGrid() {
-        persp.trans(matrix);
-        persp.postaviBoju("green");
         for (let i = -5; i <= 5; i += 0.5) {
             persp.postaviNa(i, 0, -5);
             persp.linijaDo(i, 0, 5);
@@ -128,13 +90,14 @@ window.onload = function () {
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         matrix.postaviKameru(
-            r * cos(φ),
-            φ2,
-            r * sin(φ),
-            0, 0, 0, 0, 1, 0
+            r * cos(360 - φ), φ2, r * sin(360 - φ),
+            0, 0, 0,
+            0, 1, 0
         );
+        persp.postaviBoju("purple");
         drawGrid();
-        drawLetterF();
+        persp.postaviBoju("red");
+        persp.valjak(2, 5, 6);
 
     }
 

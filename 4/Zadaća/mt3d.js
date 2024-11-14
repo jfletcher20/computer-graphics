@@ -1,45 +1,39 @@
 /*
 
-    3.2. Implementirajte klasu MT3D matričnih reprezentacija geometrijskih transformacija u 3D: rota­cija oko osi x, y i z, translacije i skaliranja, te njihovu kompoziciju putem matričnog produkta (proširenje zadataka 2.2. i 2.4. na 3D).
+    Klasi MT3D dodajte metodu:
 
-        pomakni(px, py, pz) – translacija za pomak (px, py, pz);
-        skaliraj(sx, sy, sz) – skaliranje s faktorima sx, sy i sz;
-        rotirajX(kut) – rotacija oko osi x za kut u stupnjevima;
-        rotirajY(kut) – rotacija oko osi y za kut u stupnjevima;
-        rotirajZ(kut) – rotacija oko osi z za kut u stupnjevima;
-        identitet() – postavlja matricu transformacije na jediničnu;
-        mult(MT3D m) - matrica m množi matricu već sadržanu u klasi MT3D s desna.
-        
-    Napomena: nešto složenija, ali elegantnija implementacija gornjih metoda je da one u sebi već sadrže implicitno množenje, tj. kompoziciju transformacija. Dakle, umjesto da se kod poziva metode prebriše sadržaj matrice, postojeća matrice se množi s desna s matricom željene transformacije, što znači kompoziciju već sadržane transformacije u objektu klase MT3D s transformacijom koja odgovara pozvanoj metodi (u tom slučaju treba paziti da se matrica transformacije na početku inicijalizira kao jedinična).
-
+        postaviKameru(x0, y0, z0, x1, y1, z1, Vx, Vy, Vz)
+    
+    Ta funkcija omogućuje transformaciju u koordinatni sustav kamere
+    postavljene u točki (x0, y0, z0) globalnog koordinatnog sustava.
+    
+    Kamera je usmjerena prema točki (x1, y1, z1), a vektor (Vx, Vy, Vz)
+    odreduje smjer prema gore (view-up vector), tj. položaj y-osi koordinatnog sustava kamere.
+    
+    Matrica transformacije koja se generira kod poziva metode postaviKameru ostaje zapamćena i
+    primijenjuje se kod svakog sljedećeg crtanja (mijenja se tek novim pozivom metode postaviKameru).
+    
 */
 
 /*
 
-    Zadaća 3.1. Klasi MT3D matričnih reprezentacija geometrijskih transformacija u 3D (zadatak 3.2) dodajte rotaciju oko proizvoljne osi koja se zadaje dvjema točkama: rotiraj(x1, y1, z1, x2, y2, z2, kut).
-    
-    -- example --
-    Animirajte rotaciju kocke oko osi zadane točkama P1 = (2, -5, 2) i P2 = (-3, 5, -3). U početnom položaju, lijevi donji vrh kocke je u ishodištu, a stranice duljine a = 2 su na koordinatnim osima.
+    Treba dodati (privatni) atribut kamera u kojemu se čuva transformacija
+    pogleda. U konstruktoru se taj atribut postavi na jediničnu matricu reda 4.
+    To znači da je po defaultu kamera već u ishodištu i da gleda u negativnom smjeru z-osi.
 
-*/
+    Treba implementirati metodu #product za računanje vektorskog produkta.
 
-/*
+    Treba implementirati metodu mnoziMatrice za računanje produkta dvije matrice.
 
-    Zadatak 1
+    Kod je sličan kao za mult metodu, samo na ulazu trebaju biti dva
+    parametra (matrice koje zelimo pomnožiti u danom poretku).
 
-    U klasu MT3D dodajte metodu rotiraj_oko_osi(x0, y0, z0, u1, u2, u3, kut) za rotaciju oko pravca koji prolazi točkom (x0, y0, z0) i ima vektor smjera (u1, u2, u3).
-    
-    Kut rotacije se unosi u stupnjevima. Pomoću gornje metode napravite u ortogonalnoj projekciji animaciju rotacije kocke oko pravca koji prolazi točkama P1(2, −5, 2) i P2(−3, 5, −3).
-    
-    Kocka se u početnom položaju nalazi u prvom oktantu s jednim vrhom u ishodištu, jedna njezina strana
-    leži u xy-ravnini, a duljina stranice jednaka je 2.
+    Treba implementirati metodu postaviKameru koja će generirati transformaciju pogleda.
 
-    rotiraj_oko_osi(x0, y0, z0, u1, u2, u3, kut) {
-        pomakni (-x0 , -y0 , -z0);
-        rotiraj (u1 ,u2 ,u3 ,kut);
-        pomakni (x0 ,y0 ,z0);
-    }
-    
+    Treba modificirati metodu trans tako da uz matricu transformacije bude uključena
+    i matrica pogleda, tj. da se uvijek nakon geometrijskih transformacija primijeni
+    i transformacija pogleda.
+
 */
 
 class MT3D {
@@ -50,6 +44,13 @@ class MT3D {
         [0, 0, 1, 0],
         [0, 0, 0, 1]
     ];
+    kamera = [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ];
+
     constructor() {
         this.identitet();
     }
@@ -62,6 +63,15 @@ class MT3D {
             [0, 0, 0, 1]
         ];
         this.#matrica = m;
+    }
+
+    resetirajKameru() {
+        this.kamera = [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ];
     }
 
     pomakni(px, py, pz = 0) {
@@ -188,11 +198,11 @@ class MT3D {
         u2 /= Math.sqrt(u1 ** 2 + u2 ** 2 + u3 ** 2);
         u3 /= Math.sqrt(u1 ** 2 + u2 ** 2 + u3 ** 2);
         const d = Math.sqrt(u2 ** 2 + u3 ** 2);
-        this.mult([ [1, 0, 0, 0], [0, u3 / d, u2 / d, 0], [0, -u2 / d, u3 / d, 0], [0, 0, 0, 1] ]);
-        this.mult([ [d, 0, u1, 0], [0, 1, 0, 0], [-u1, 0, d, 0], [0, 0, 0, 1] ]);
+        this.mult([[1, 0, 0, 0], [0, u3 / d, u2 / d, 0], [0, -u2 / d, u3 / d, 0], [0, 0, 0, 1]]);
+        this.mult([[d, 0, u1, 0], [0, 1, 0, 0], [-u1, 0, d, 0], [0, 0, 0, 1]]);
         this.rotirajZ(kut);
-        this.mult([ [d, 0, -u1, 0], [0, 1, 0, 0], [u1, 0, d, 0], [0, 0, 0, 1] ]);
-        this.mult([ [1, 0, 0, 0], [0, u3 / d, -u2 / d, 0], [0, u2 / d, u3 / d, 0], [0, 0, 0, 1] ]);
+        this.mult([[d, 0, -u1, 0], [0, 1, 0, 0], [u1, 0, d, 0], [0, 0, 0, 1]]);
+        this.mult([[1, 0, 0, 0], [0, u3 / d, -u2 / d, 0], [0, u2 / d, u3 / d, 0], [0, 0, 0, 1]]);
     }
 
 
@@ -205,26 +215,81 @@ class MT3D {
     }
 
     get matrica() { return this.#matrica; }
+    set matrica(m) { this.#matrica = m; }
 
-    mult(m = new MT3D()) {
+    mult(m) {
         let m1 = [
             [0, 0, 0, 0],
             [0, 0, 0, 0],
             [0, 0, 0, 0],
             [0, 0, 0, 0]
         ];
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                for (let k = 0; k < 4; k++) {
+        for (let i = 0; i < 4; i++)
+            for (let j = 0; j < 4; j++)
+                for (let k = 0; k < 4; k++)
                     try {
                         m1[i][j] += this.#matrica[i][k] * m.matrica[k][j];
                     } catch (e) {
                         m1[i][j] += this.#matrica[i][k] * m[k][j];
                     }
-                }
-            }
-        }
         this.#matrica = m1;
+    }
+
+    mnoziMatrice(m1, m2) {
+        let m = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
+        for (let i = 0; i < 4; i++)
+            for (let j = 0; j < 4; j++)
+                for (let k = 0; k < 4; k++)
+                    m[i][j] += m1[i][k] * m2[k][j];
+        return m;
+    }
+
+    #normalize(x, y, z) {
+        return Math.sqrt(x ** 2 + y ** 2 + z ** 2);
+    }
+
+    postaviKameru(x0, y0, z0, x1, y1, z1, vecX, vecY, vecZ) {
+        
+        let vector = [vecX, vecY, vecZ];
+        
+        const distances = {
+            distX: x0 - x1,
+            distY: y0 - y1,
+            distZ: z0 - z1
+        }
+        let distance = this.#normalize(distances.distX, distances.distY, distances.distZ);
+
+        let n = [
+            distances.distX / distance,
+            distances.distY / distance,
+            distances.distZ / distance
+        ];
+
+        let vectU = this.#product(vector, n);
+        let distanceU = this.#normalize(vectU[0], vectU[1], vectU[2]);
+
+        let u = [
+            vectU[0] / distanceU,
+            vectU[1] / distanceU,
+            vectU[2] / distanceU
+        ];
+
+        let v = this.#product(n, u);
+        let mtr = [
+            [u[0], u[1], u[2], -u[0] * x0 - u[1] * y0 - u[2] * z0],
+            [v[0], v[1], v[2], -v[0] * x0 - v[1] * y0 - v[2] * z0],
+            [n[0], n[1], n[2], -n[0] * x0 - n[1] * y0 - n[2] * z0],
+            [0, 0, 0, 1]
+        ];
+
+        this.kamera = mtr;
+        return this.kamera;
+        
     }
 
     zrcaliNa(k, l) {
@@ -253,6 +318,14 @@ class MT3D {
         this.rotiraj(φ);
         this.zrcaliNaY();
 
+    }
+
+    #product(u, v) {
+        var vector = [0, 0, 0];
+        vector[0] = u[1] * v[2] - u[2] * v[1];
+        vector[1] = u[2] * v[0] - u[0] * v[2];
+        vector[2] = u[0] * v[1] - u[1] * v[0];
+        return vector;
     }
 
 }

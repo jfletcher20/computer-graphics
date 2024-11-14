@@ -58,11 +58,11 @@ window.onload = function () {
 
     function drawLetterF() {
         var f = [
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 1, 0],
-            [1, 0, 0],
-            [1, 0, 0],
+            [1, 1, 1, 0, 1, 1, 1],
+            [0, 1, 0, 0, 1, 0, 0],
+            [0, 1, 0, 0, 1, 1, 0],
+            [0, 1, 0, 0, 1, 0, 0],
+            [1, 0, 0, 0, 1, 0, 0],
         ];
 
         matrix.pomakni(0, -f.length - 1, 0);
@@ -78,7 +78,7 @@ window.onload = function () {
                 matrix.pomakni(1, 0, 0);
                 persp.trans(matrix);
             }
-            matrix.pomakni(-3, 1, 0);
+            matrix.pomakni(-f[0].length, 1, 0);
             persp.trans(matrix);
         }
 

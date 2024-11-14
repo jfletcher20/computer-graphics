@@ -53,16 +53,6 @@
 
 */
 
-/*
-
-    5.1. U klasu Persp dodajte metodu za crtanje žičanog modela stošca stozac(r, h, n) gdje je parametar r polumjer baze, h visina stošca, a n broj segmenata (u ovom slučaju trokuta) i linija koje čine plašt.
-    
-    Bazu nacrajte u xy-ravnini, a vrh stošca na koordinati (0, 0, h).
-    
-    Napravite animaciju u kojoj kamera kruži oko stošca i svaki puta nakon što prijeđe puni kut pomakne se na veću ili manju visinu ovisno o trenutnom smjeru promjene visine (visina kamere se naizmjenično mijenja unutar zadanih granica).
-    
-*/
-
 class Persp {
 
     stozac(r, h, n, smooth = false) {
@@ -88,9 +78,6 @@ class Persp {
         }
     }
 
-    /*
-    5.2. U klasu Persp dodajte metodu za crtanje žičanog modela valjka valjak(r, h, n) gdje je parametar r polumjer baze, h visina valjka, a n broj segmenata (u ovom slučaju pravokutnika) i linija koje čine plašt. Donju bazu nacrajte u xy-ravnini. Kretanje kamere neka bude kao što je zadano u zadatku 5.1.*/
-
     valjak(r, h, n) {
         for (let i = 0; i < n; i++) {
             this.postaviNa(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
@@ -102,53 +89,80 @@ class Persp {
         }
     }
 
-    /*
-    5.3. U klasu Persp dodajte metodu za crtanje žičanog modela kugle (sfere) kugla(r, m, n) gdje je parametar r polumjer kugle, m broj meridijana, a n broj paralela. Središte kugle je u ishodištu, a ekvator u xy-ravnini. Nacrtajte kuglu sa 17 paralela i 32 meridijana. Kretanje kamere neka bude kao što je zadano u zadatku 5.1.*/
-
-    stepG = 0.01;
-    krug(r, horizontal = false) {
-        this.postaviNa(
-            r,
-            horizontal ? 0 : r,
-            horizontal ? 0 : 0,
-        );
-        for (let i = 0; i <= 2 * Math.PI; i += this.stepG)
-            if (horizontal) {
-                this.linijaDo(r * Math.cos(i), 0, r * Math.sin(i));
-            } else this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
-        this.linijaDo(r, 0, 0);
-        this.povuciLiniju();
-    }
-
-    polukrug(r) {
-        this.postaviNa(0, r, 0);
-        for (let i = 0; i <= Math.PI; i += this.stepG)
-            this.linijaDo(0, r * Math.cos(i), r * Math.sin(i));
-        this.linijaDo(0, -r, 0);
-        this.povuciLiniju();
-    }
-    
     kugla(r, m, n) {
 
         const currentColor = this.renderer.strokeStyle;
 
-        for (let i = 0; i <= n; i++) {
-            if (i > n / 2) this.postaviBoju("blue");
-            const yOffset = memoize(function (r, i, d, n) { return r - (i * d / n) })(r, i, r * 2, n);
-            this.m.pomakni(0, yOffset, 0);
-            const parallelRadius = memoize(function (r, y) { return Math.sqrt(r ** 2 - y ** 2); })(r, yOffset);
-            this.krug(parallelRadius, true);
-            this.m.pomakni(0, -yOffset, 0);
+        const meridianStep = 2 * Math.PI / m;
+        const parallelStep = Math.PI / (n + 1);
+
+        function _r(val) { return val * r; }
+
+        function cos(φ) {
+            return Math.cos(φ);
+        }
+        function sin(φ) {
+            return Math.sin(φ);
         }
 
+        const step = 0.01;
         this.postaviBoju("green");
-
-        for (let i = 0; i < m; i++) {
-            this.polukrug(r);
-            this.m.rotirajY(360 / m);
+        for (let i = 0; i < 2 * Math.PI; i += meridianStep) {
+            this.postaviNa(0, 0, r);
+            for (let j = meridianStep; j <= Math.PI; j += step)
+                this.linijaDo(_r(cos(i) * sin(j)), _r(sin(i) * sin(j)), _r(cos(j)));
+            this.povuciLiniju();
+        }
+        
+        this.postaviBoju("red")
+        for (let i = parallelStep; i < Math.PI; i += parallelStep) {
+            this.postaviNa(_r(sin(i)), 0, _r(cos(i)));
+            for (let j = step; j <= 2 * Math.PI; j += step)
+                this.linijaDo(_r(cos(j) * sin(i)), _r(sin(j) * sin(i)), _r(cos(i)));
+            if (i > Math.PI / 2) this.postaviBoju("blue");
+            this.povuciLiniju();
         }
 
         this.postaviBoju(currentColor);
+
+    }
+
+    polukugla(r, m, n) {
+
+        const currentColor = this.renderer.strokeStyle;
+
+        const meridianStep = Math.PI / m;
+        const parallelStep = Math.PI / (n + 1);
+
+        function _r(val) { return val * r; }
+
+        function cos(φ) {
+            return Math.cos(φ);
+        }
+        function sin(φ) {
+            return Math.sin(φ);
+        }
+
+        const step = 0.01;
+        this.postaviBoju("green");
+        for (let i = 0; i < Math.PI + meridianStep; i += meridianStep) {
+            this.postaviNa(0, 0, r);
+            for (let j = meridianStep; j <= Math.PI; j += step)
+                this.linijaDo(_r(cos(i) * sin(j)), _r(sin(i) * sin(j)), _r(cos(j)));
+            this.povuciLiniju();
+        }
+        
+        this.postaviBoju("red")
+        for (let i = parallelStep; i < Math.PI; i += parallelStep) {
+            this.postaviNa(_r(sin(i)), 0, _r(cos(i)));
+            for (let j = step; j <= Math.PI; j += step)
+                this.linijaDo(_r(cos(j) * sin(i)), _r(sin(j) * sin(i)), _r(cos(i)));
+            if (i > Math.PI / 2) this.postaviBoju("blue");
+            this.povuciLiniju();
+        }
+
+        this.postaviBoju(currentColor);
+    
     }
 
 

@@ -14,7 +14,6 @@ window.onload = function () {
     const canvasHeightSlider = document.getElementById("canvas-height");
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
-    const rotationSlider = document.getElementById("rotation");
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -33,20 +32,9 @@ window.onload = function () {
     }
 
     var persp = new Persp(canvas, xmin, xmax, ymin, ymax, 1);
-    // persp.zoom = unitSlider.value;
+    persp.zoom = unitSlider.value;
 
     const matrix = new MT3D();
-
-    // need to construct a 3d letter F out of cubes, stacked as such (each cube is 2x2x2):
-    /*
-        1 1 1 0 0
-        1 0 0 0 0
-        1 1 0 0 0
-        1 0 0 0 0
-        1 0 0 0 0
-    */
-    // where the base of the letter F is located at 0, 0, 0
-    // draw a grid on the floor to help with orientation, which is 16x16, each square being 1x1, so that the letter F is centered in the middle of the grid
 
     function drawCube(a = 1) {
         persp.postaviNa(0, 0, 0);
@@ -84,15 +72,20 @@ window.onload = function () {
             [1, 0, 0],
         ];
 
+        matrix.pomakni(0, -f.length - 1, 0);
         for (let i = 0; i < f.length; i++) {
             for (let j = 0; j < f[i].length; j++) {
                 if (f[i][j] === 1) {
-                    drawCube(2);
+                    if (i === 0 && j === 0) {
+                        matrix.pomakni(-1, 1, 0);
+                        persp.trans(matrix);
+                    }
+                    drawCube(1);
                 }
-                matrix.pomakni(2, 0, 0);
+                matrix.pomakni(1, 0, 0);
                 persp.trans(matrix);
             }
-            matrix.pomakni(-6, 2, 0);
+            matrix.pomakni(-3, 1, 0);
             persp.trans(matrix);
         }
 
@@ -120,29 +113,48 @@ window.onload = function () {
         return Math.sin(φ * Math.PI / 180);
     }
 
-    var rising = true;
+    var dist = 1;
 
     function draw() {
 
+        persp = new Persp(canvas, xmin, xmax, ymin, ymax, dist);
+        persp.zoom = unitSlider.value;
+
         persp.initRenderer();
         matrix.identitet();
-        matrix.resetirajKameru();
+        matrix.pomakni(0, 2, 0);
+        persp.trans(matrix);
         const r = 150;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        matrix.postaviKameru(r * cos(rotationSlider.value), rising ? 1 : 0, r * sin(rotationSlider.value), 0, 0, 0, 0, 1, 0);
+        matrix.postaviKameru(
+            r * cos(φ),
+            φ2,
+            r * sin(φ),
+            0, 0, 0, 0, 1, 0
+        );
         drawGrid();
         drawLetterF();
 
     }
+
+    φ = 0, φ2 = 69;
+    var rising = true;
+    function animationLoop() {
+        requestAnimationFrame(animationLoop);
+        φ += 1;
+        if (φ >= 360) φ = 0;
+        φ2 += rising ? 1 : -1;
+        if (φ2 <= 10 || Math.abs(φ2) >= 70) rising = !rising;
+        draw();
+    }
+
 
     unitSlider.oninput = function () {
         persp.zoom = this.value;
         draw();
     }
 
-    rotationSlider.oninput = draw;
-
-    draw();
+    animationLoop();
 
 }

@@ -65,35 +65,6 @@
 
 class Persp {
 
-    stepG = 2 * Math.PI / 30;
-    krug(r, horizontal = false) {
-        this.postaviNa(
-            r * Math.cos(0),
-            horizontal ? 0 : r * Math.sin(0),
-            horizontal ? r * Math.sin(0) : 0,
-        );
-        for (let i = 0; i <= 2 * Math.PI; i += this.stepG) {
-            if (horizontal) {
-                this.linijaDo(r * Math.cos(i), 0, r * Math.sin(i));
-            } else this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
-        }
-        this.povuciLiniju();
-    }
-
-    stepP = Math.PI / 15;
-    polukrug(r, horizontal = false) {
-        // if (!horizontal)
-        //     this.m.rotirajZ(90);
-        this.postaviNa(horizontal ? 0 : r * Math.cos(0), horizontal ? r * Math.sin(0) : 0, 0);
-        for (let i = 0; i <= Math.PI; i += this.stepP) {
-            if (horizontal) {
-                this.linijaDo(r * Math.cos(i), 0, r * Math.sin(i));
-            } else this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
-        }
-        // if (!horizontal) this.m.rotirajZ(-90);
-        this.povuciLiniju();
-    }
-
     stozac(r, h, n, smooth = false) {
         if (smooth) {
             for (let i = 0; i <= r; i += r / n) this.krug(i);
@@ -134,12 +105,32 @@ class Persp {
     /*
     5.3. U klasu Persp dodajte metodu za crtanje žičanog modela kugle (sfere) kugla(r, m, n) gdje je parametar r polumjer kugle, m broj meridijana, a n broj paralela. Središte kugle je u ishodištu, a ekvator u xy-ravnini. Nacrtajte kuglu sa 17 paralela i 32 meridijana. Kretanje kamere neka bude kao što je zadano u zadatku 5.1.*/
 
-    count = 0;
-    count = 0;
+    stepG = 0.01;
+    krug(r, horizontal = false) {
+        this.postaviNa(
+            r,
+            horizontal ? 0 : r,
+            horizontal ? 0 : 0,
+        );
+        for (let i = 0; i <= 2 * Math.PI; i += this.stepG)
+            if (horizontal) {
+                this.linijaDo(r * Math.cos(i), 0, r * Math.sin(i));
+            } else this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
+        this.linijaDo(r, 0, 0);
+        this.povuciLiniju();
+    }
+
+    polukrug(r) {
+        this.postaviNa(0, r, 0);
+        for (let i = 0; i <= Math.PI; i += this.stepG)
+            this.linijaDo(0, r * Math.cos(i), r * Math.sin(i));
+        this.linijaDo(0, -r, 0);
+        this.povuciLiniju();
+    }
+    
     kugla(r, m, n) {
 
         const currentColor = this.renderer.strokeStyle;
-        this.m.pomakni(0, -r, 0);
 
         for (let i = 0; i <= n; i++) {
             if (i > n / 2) this.postaviBoju("blue");
@@ -150,11 +141,11 @@ class Persp {
             this.m.pomakni(0, -yOffset, 0);
         }
 
-        this.m.pomakni(0, r, 0);
         this.postaviBoju("green");
 
         for (let i = 0; i < m; i++) {
-            this.polukrug(r, 360 / m);
+            this.polukrug(r);
+            this.m.rotirajY(360 / m);
         }
 
         this.postaviBoju(currentColor);

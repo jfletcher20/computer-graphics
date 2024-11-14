@@ -30,17 +30,16 @@ window.onload = function () {
 
     const matrix = new MT3D();
 
-    function drawGrid() {
-        for (let i = -5; i <= 5; i += 0.5) {
-            persp.postaviNa(i, 0, -5);
-            persp.linijaDo(i, 0, 5);
+    function drawGrid(fieldSize = 5, unitSize = 1) {
+        for (let i = -fieldSize; i <= fieldSize; i+=unitSize) {
+            persp.postaviNa(i, 0, -fieldSize);
+            persp.linijaDo(i, 0, fieldSize);
             persp.linijaDraw();
-            persp.postaviNa(-5, 0, i);
-            persp.linijaDo(5, 0, i);
+            persp.postaviNa(-fieldSize, 0, i);
+            persp.linijaDo(fieldSize, 0, i);
             persp.linijaDraw();
         }
     }
-    const phi = 45;
 
     function cos(φ) {
         return Math.cos(φ * Math.PI / 180);
@@ -68,7 +67,8 @@ window.onload = function () {
             0, 1, 0
         );
         persp.postaviBoju("purple");
-        // drawGrid();
+
+        drawGrid(12, 2);
         persp.postaviBoju("red");
         persp.m.pomakni(0, -6, 0);
         persp.kugla(6, 32, 17);

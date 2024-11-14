@@ -65,17 +65,38 @@
 
 class Persp {
 
-    krug(r) {
-        const step = 2 * Math.PI / 100;
-        this.postaviNa(r, 0, 0);
-        for (let i = 0; i <= 2 * Math.PI; i += step)
-            this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
+    stepG = 2 * Math.PI / 30;
+    krug(r, horizontal = false) {
+        this.postaviNa(
+            r * Math.cos(0),
+            horizontal ? 0 : r * Math.sin(0),
+            horizontal ? r * Math.sin(0) : 0,
+        );
+        for (let i = 0; i <= 2 * Math.PI; i += this.stepG) {
+            if (horizontal) {
+                this.linijaDo(r * Math.cos(i), 0, r * Math.sin(i));
+            } else this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
+        }
+        this.povuciLiniju();
+    }
+
+    stepP = Math.PI / 15;
+    polukrug(r, horizontal = false) {
+        // if (!horizontal)
+        //     this.m.rotirajZ(90);
+        this.postaviNa(horizontal ? 0 : r * Math.cos(0), horizontal ? r * Math.sin(0) : 0, 0);
+        for (let i = 0; i <= Math.PI; i += this.stepP) {
+            if (horizontal) {
+                this.linijaDo(r * Math.cos(i), 0, r * Math.sin(i));
+            } else this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
+        }
+        // if (!horizontal) this.m.rotirajZ(-90);
         this.povuciLiniju();
     }
 
     stozac(r, h, n, smooth = false) {
         if (smooth) {
-            for(let i = 0; i <= r; i += r / n) this.krug(i);
+            for (let i = 0; i <= r; i += r / n) this.krug(i);
             this.postaviNa(0, 0, h);
             for (let i = 0; i <= 2 * Math.PI; i += 2 * Math.PI / n) {
                 this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
@@ -83,13 +104,16 @@ class Persp {
                 this.postaviNa(0, 0, h);
             }
         } else {
+            const currentColor = this.renderer.strokeStyle;
             for (let i = 0; i < n; i++) {
+                if (i > n / 2 && i < n) this.postaviBoju("blue");
                 this.postaviNa(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
                 this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), 0);
                 this.linijaDo(0, 0, h);
                 this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
                 this.povuciLiniju();
             }
+            this.postaviBoju(currentColor);
         }
     }
 
@@ -110,24 +134,32 @@ class Persp {
     /*
     5.3. U klasu Persp dodajte metodu za crtanje žičanog modela kugle (sfere) kugla(r, m, n) gdje je parametar r polumjer kugle, m broj meridijana, a n broj paralela. Središte kugle je u ishodištu, a ekvator u xy-ravnini. Nacrtajte kuglu sa 17 paralela i 32 meridijana. Kretanje kamere neka bude kao što je zadano u zadatku 5.1.*/
 
+    count = 0;
+    count = 0;
     kugla(r, m, n) {
+
+        const currentColor = this.renderer.strokeStyle;
+        this.m.pomakni(0, -r, 0);
+
+        for (let i = 0; i <= n; i++) {
+            if (i > n / 2) this.postaviBoju("blue");
+            const yOffset = memoize(function (r, i, d, n) { return r - (i * d / n) })(r, i, r * 2, n);
+            this.m.pomakni(0, yOffset, 0);
+            const parallelRadius = memoize(function (r, y) { return Math.sqrt(r ** 2 - y ** 2); })(r, yOffset);
+            this.krug(parallelRadius, true);
+            this.m.pomakni(0, -yOffset, 0);
+        }
+
+        this.m.pomakni(0, r, 0);
+        this.postaviBoju("green");
+
         for (let i = 0; i < m; i++) {
-            this.postaviNa(r * Math.cos(2 * Math.PI / m * i), r * Math.sin(2 * Math.PI / m * i), 0);
-            this.linijaDo(r * Math.cos(2 * Math.PI / m * (i + 1)), r * Math.sin(2 * Math.PI / m * (i + 1)), 0);
-            this.linijaDo(r * Math.cos(2 * Math.PI / m * (i + 1)), r * Math.sin(2 * Math.PI / m * (i + 1)), r);
-            this.linijaDo(r * Math.cos(2 * Math.PI / m * i), r * Math.sin(2 * Math.PI / m * i), r);
-            this.linijaDo(r * Math.cos(2 * Math.PI / m * i), r * Math.sin(2 * Math.PI / m * i), 0);
-            this.povuciLiniju();
+            this.polukrug(r, 360 / m);
         }
-        for (let i = 0; i < n; i++) {
-            this.postaviNa(r * Math.cos(Math.PI / n * i), r * Math.sin(Math.PI / n * i), 0);
-            this.linijaDo(r * Math.cos(Math.PI / n * (i + 1)), r * Math.sin(Math.PI / n * (i + 1)), 0);
-            this.linijaDo(r * Math.cos(Math.PI / n * (i + 1)), r * Math.sin(Math.PI / n * (i + 1)), r);
-            this.linijaDo(r * Math.cos(Math.PI / n * i), r * Math.sin(Math.PI / n * i), r);
-            this.linijaDo(r * Math.cos(Math.PI / n * i), r * Math.sin(Math.PI / n * i), 0);
-            this.povuciLiniju();
-        }
+
+        this.postaviBoju(currentColor);
     }
+
 
     #distance;
     m = new MT3D();
@@ -235,4 +267,15 @@ class Persp {
         this.renderer.strokeStyle = c;
     }
 
+
+}
+memoizationCache = {};
+function memoize(func) {
+    return function (...args) {
+        const key = JSON.stringify(args);
+        if (memoizationCache[key] === undefined) {
+            memoizationCache[key] = func(...args);
+        }
+        return memoizationCache[key];
+    }
 }

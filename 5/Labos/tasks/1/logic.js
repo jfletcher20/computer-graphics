@@ -66,7 +66,6 @@ window.onload = function () {
             persp.linijaDraw();
         }
     }
-    const phi = 45;
 
     function cos(φ) {
         return Math.cos(φ * Math.PI / 180);
@@ -75,11 +74,9 @@ window.onload = function () {
         return Math.sin(φ * Math.PI / 180);
     }
 
-    var dist = 1;
-
     function draw() {
 
-        persp = new Persp(canvas, xmin, xmax, ymin, ymax, dist);
+        persp = new Persp(canvas, xmin, xmax, ymin, ymax, document.getElementById("distance").value);
         persp.zoom = unitSlider.value;
 
         persp.initRenderer();
@@ -97,7 +94,7 @@ window.onload = function () {
         persp.postaviBoju("purple");
         drawGrid();
         persp.postaviBoju("red");
-        persp.stozac(3, 1, 6);
+        persp.stozac(3, 4, 6);
 
     }
 
@@ -105,6 +102,7 @@ window.onload = function () {
     var rising = true;
     function animationLoop() {
         requestAnimationFrame(animationLoop);
+        if (!document.getElementById("animate").checked) return;
         φ += 1;
         if (φ >= 360) φ = 0;
         φ2 += rising ? 1 : -1;
@@ -118,6 +116,10 @@ window.onload = function () {
         draw();
     }
 
+    document.getElementById("distance").oninput = draw;
+
+    draw();
+    draw();
     animationLoop();
 
 }

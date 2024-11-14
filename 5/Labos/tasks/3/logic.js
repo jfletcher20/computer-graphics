@@ -30,32 +30,6 @@ window.onload = function () {
 
     const matrix = new MT3D();
 
-    function drawCube(a = 1) {
-        persp.postaviNa(0, 0, 0);
-        persp.linijaDo(a, 0, 0);
-        persp.linijaDo(a, a, 0);
-        persp.linijaDo(0, a, 0);
-        persp.linijaDo(0, 0, 0);
-        persp.linijaDo(0, 0, a);
-        persp.linijaDo(a, 0, a);
-        persp.linijaDo(a, a, a);
-        persp.linijaDo(0, a, a);
-        persp.linijaDo(0, 0, a);
-        persp.linijaDraw();
-
-        persp.postaviNa(a, 0, 0);
-        persp.linijaDo(a, 0, a);
-        persp.linijaDraw();
-
-        persp.postaviNa(a, a, 0);
-        persp.linijaDo(a, a, a);
-        persp.linijaDraw();
-
-        persp.postaviNa(0, a, 0);
-        persp.linijaDo(0, a, a);
-        persp.linijaDraw();
-    }
-
     function drawGrid() {
         for (let i = -5; i <= 5; i += 0.5) {
             persp.postaviNa(i, 0, -5);
@@ -75,7 +49,7 @@ window.onload = function () {
         return Math.sin(φ * Math.PI / 180);
     }
 
-    var dist = 1;
+    var dist = 0.5;
 
     function draw() {
 
@@ -84,9 +58,8 @@ window.onload = function () {
 
         persp.initRenderer();
         matrix.identitet();
-        matrix.pomakni(0, 2, 0);
         persp.trans(matrix);
-        const r = 150;
+        const r = 100;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         matrix.postaviKameru(
@@ -95,20 +68,22 @@ window.onload = function () {
             0, 1, 0
         );
         persp.postaviBoju("purple");
-        drawGrid();
+        // drawGrid();
         persp.postaviBoju("red");
-        persp.kugla(6, 17, 32);
+        persp.m.pomakni(0, -6, 0);
+        persp.kugla(6, 32, 17);
 
     }
 
-    φ = 0, φ2 = 69;
+    φ = 90, φ2 = 0;
     var rising = true;
     function animationLoop() {
         requestAnimationFrame(animationLoop);
+        if (!document.getElementById("animate").checked) return;
         φ += 1;
         if (φ >= 360) φ = 0;
         φ2 += rising ? 1 : -1;
-        if (φ2 <= 10 || Math.abs(φ2) >= 70) rising = !rising;
+        if (φ2 <= 0 || Math.abs(φ2) >= 85) rising = !rising;
         draw();
     }
 
@@ -118,6 +93,8 @@ window.onload = function () {
         draw();
     }
 
+    draw();
+    draw();
     animationLoop();
 
 }

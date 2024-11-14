@@ -53,9 +53,48 @@
 
 */
 
+/*
+
+    5.1. U klasu Persp dodajte metodu za crtanje žičanog modela stošca stozac(r, h, n) gdje je parametar r polumjer baze, h visina stošca, a n broj segmenata (u ovom slučaju trokuta) i linija koje čine plašt.
+    
+    Bazu nacrajte u xy-ravnini, a vrh stošca na koordinati (0, 0, h).
+    
+    Napravite animaciju u kojoj kamera kruži oko stošca i svaki puta nakon što prijeđe puni kut pomakne se na veću ili manju visinu ovisno o trenutnom smjeru promjene visine (visina kamere se naizmjenično mijenja unutar zadanih granica).
+    
+*/
+
 class Persp {
 
+    krug(r) {
+        const step = 2 * Math.PI / 100;
+        this.postaviNa(r, 0, 0);
+        for (let i = 0; i <= 2 * Math.PI; i += step)
+            this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
+        this.povuciLiniju();
+    }
+
+    stozac(r, h, n, smooth = false) {
+        if (smooth) {
+            for(let i = 0; i <= r; i += r / n) this.krug(i);
+            this.postaviNa(0, 0, h);
+            for (let i = 0; i <= 2 * Math.PI; i += 2 * Math.PI / n) {
+                this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
+                this.povuciLiniju();
+                this.postaviNa(0, 0, h);
+            }
+        } else {
+            for (let i = 0; i < n; i++) {
+                this.postaviNa(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+                this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), 0);
+                this.linijaDo(0, 0, h);
+                this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+                this.povuciLiniju();
+            }
+        }
+    }
+
     #distance;
+    m = new MT3D();
     lastPos = { x: 0, y: 0, z: 0 };
     zoom = 50;
 
@@ -133,7 +172,7 @@ class Persp {
             this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x),
             this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y)
         );
-        
+
     }
 
     linijaDo(x, y, z) {

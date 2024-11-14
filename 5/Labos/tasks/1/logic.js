@@ -1,108 +1,123 @@
-/*
-
-    3.1. Upotrijebite klasu matričnih transformacija u 2D MT3D (zadatak 2.2.) i klasu ortho (zadatak 1.4.), te rutinu za crtanje elipsi (zadatak 2.1.) da bi isprogramirali animirani ventilator.
-
-*/
-
 const unit = 40;
 const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
-window.onload = function() {
+window.onload = function () {
 
     const canvas = document.getElementById("renderer");
 
     const canvasHeightSlider = document.getElementById("canvas-height");
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
-    const rotationSlider = document.getElementById("rotation");
 
     if (!canvas) alert("Greška - nema platna!");
 
-    canvasHeightSlider.oninput = function() {
+    canvasHeightSlider.oninput = function () {
         canvas.height = this.value;
         canvas.width = canvasWidthSlider.value;
-        ortho.initRenderer();
+        persp.initRenderer();
         draw();
     }
 
-    canvasWidthSlider.oninput =  function() {
+    canvasWidthSlider.oninput = function () {
         canvas.width = this.value;
         canvas.height = canvasHeightSlider.value;
-        ortho.initRenderer();
+        persp.initRenderer();
         draw();
     }
 
-    var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-    ortho.zoom = unitSlider.value;
+    var persp = new Persp(canvas, xmin, xmax, ymin, ymax, 1);
+    persp.zoom = unitSlider.value;
 
-    // need to construct a 3d letter F out of cubes, stacked as such (each cube is 2x2x2):
-    /*
-        1 1 1 0 0
-        1 0 0 0 0
-        1 1 0 0 0
-        1 0 0 0 0
-        1 0 0 0 0
-    */
-    // where the base of the letter F is located at 0, 0, 0
-    // draw a grid on the floor to help with orientation, which is 16x16, each square being 1x1, so that the letter F is centered in the middle of the grid
+    const matrix = new MT3D();
 
-    function drawCube(x, y, z) {
-        ortho.postaviNa(x, y, z);
-        ortho.linijaDo(x + 2, y, z);
-        ortho.linijaDo(x + 2, y + 2, z);
-        ortho.linijaDo(x, y + 2, z);
-        ortho.linijaDo(x, y, z);
-        ortho.linijaDo(x, y, z + 2);
-        ortho.linijaDo(x + 2, y, z + 2);
-        ortho.linijaDo(x + 2, y + 2, z + 2);
-        ortho.linijaDo(x, y + 2, z + 2);
-        ortho.linijaDo(x, y, z + 2);
-        ortho.linijaDo(x, y, z);
-        ortho.linijaDo(x, y + 2, z);
-        ortho.linijaDo(x, y + 2, z + 2);
-        ortho.linijaDo(x + 2, y + 2, z + 2);
-        ortho.linijaDo(x + 2, y + 2, z);
-        ortho.linijaDo(x + 2, y, z);
-    }
+    function drawCube(a = 1) {
+        persp.postaviNa(0, 0, 0);
+        persp.linijaDo(a, 0, 0);
+        persp.linijaDo(a, a, 0);
+        persp.linijaDo(0, a, 0);
+        persp.linijaDo(0, 0, 0);
+        persp.linijaDo(0, 0, a);
+        persp.linijaDo(a, 0, a);
+        persp.linijaDo(a, a, a);
+        persp.linijaDo(0, a, a);
+        persp.linijaDo(0, 0, a);
+        persp.linijaDraw();
 
-    function drawLetterF() {
-        for (let i = 0; i < 5; i++) {
-            for (let j = 0; j < 5; j++) {
-                if (i === 0 || i === 2 || (i === 1 && j === 0)) {
-                    drawCube(i * 2, j * 2, 0);
-                }
-            }
-        }
+        persp.postaviNa(a, 0, 0);
+        persp.linijaDo(a, 0, a);
+        persp.linijaDraw();
+
+        persp.postaviNa(a, a, 0);
+        persp.linijaDo(a, a, a);
+        persp.linijaDraw();
+
+        persp.postaviNa(0, a, 0);
+        persp.linijaDo(0, a, a);
+        persp.linijaDraw();
     }
 
     function drawGrid() {
-        for (let i = -8; i < 8; i++) {
-            ortho.postaviNa(i, -8, 0);
-            ortho.linijaDo(i, 8, 0);
-            ortho.postaviNa(-8, i, 0);
-            ortho.linijaDo(8, i, 0);
+        for (let i = -5; i <= 5; i += 0.5) {
+            persp.postaviNa(i, 0, -5);
+            persp.linijaDo(i, 0, 5);
+            persp.linijaDraw();
+            persp.postaviNa(-5, 0, i);
+            persp.linijaDo(5, 0, i);
+            persp.linijaDraw();
         }
     }
+    const phi = 45;
+
+    function cos(φ) {
+        return Math.cos(φ * Math.PI / 180);
+    }
+    function sin(φ) {
+        return Math.sin(φ * Math.PI / 180);
+    }
+
+    var dist = 1;
+
     function draw() {
-        
-        ortho.initRenderer();
+
+        persp = new Persp(canvas, xmin, xmax, ymin, ymax, dist);
+        persp.zoom = unitSlider.value;
+
+        persp.initRenderer();
+        matrix.identitet();
+        matrix.pomakni(0, 2, 0);
+        persp.trans(matrix);
+        const r = 150;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        matrix.postaviKameru(
+            r * cos(360 - φ), φ2, r * sin(360 - φ),
+            0, 0, 0,
+            0, 1, 0
+        );
+        persp.postaviBoju("purple");
         drawGrid();
-        ortho.m.rotirajX(45);
-        ortho.m.pomakni(0, 0, 0);
-        ortho.m.rotirajZ(rotationSlider.value);
-        drawLetterF();
+        persp.postaviBoju("red");
+        persp.stozac(3, 1, 6);
 
     }
 
-    unitSlider.oninput = function() {
-        ortho.zoom = this.value;
+    φ = 0, φ2 = 69;
+    var rising = true;
+    function animationLoop() {
+        requestAnimationFrame(animationLoop);
+        φ += 1;
+        if (φ >= 360) φ = 0;
+        φ2 += rising ? 1 : -1;
+        if (φ2 <= 10 || Math.abs(φ2) >= 70) rising = !rising;
         draw();
     }
 
-    rotationSlider.oninput = draw;
 
-    draw();
+    unitSlider.oninput = function () {
+        persp.zoom = this.value;
+        draw();
+    }
+
+    animationLoop();
 
 }

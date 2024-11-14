@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<title>Zadaća</title>
 		<link rel="stylesheet" href="../../style.css">
-		<script src="../../persp.js"></script>
+		<script src="../../ortho.js"></script>
 		<script src="../../mt3d.js"></script>
 		<script src="logic.js"></script>
 	</head>
@@ -12,12 +12,15 @@
 	<body>
 		<h1>Zadatak 1</h1>
 		<nav>
-			<a href="../../labos.html">Labos 4</a>
-			<a href="../../tasks/1/1.html">Zadatak 1</a>
-			<a href="../../tasks/2/2.html" class="selected">Zadatak 2</a>
+			<a href="../../labos.html">Labos 3</a>
+			<a href="../../tasks/1/1.html" class="selected">Zadatak 1</a>
+			<a href="../../tasks/2/2.html">Zadatak 2</a>
+			<a href="../../tasks/3/3.html">Zadatak 3</a>
 		</nav>
 		<div class="container">
-			<input type="range" id="unit" min="100" max="400" value="300" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
+			<input type="range" id="unit" min="1" max="100" value="30" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
+
+			<input type="range" id="rotation" min="-180" max="180" value="0" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: -700px;">
 
 			<input type="range" id="canvas-height" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 700px;">
 			<input type="range" id="canvas-width" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 700px;">

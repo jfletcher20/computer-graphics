@@ -55,7 +55,119 @@
 
 class Persp {
 
+    stozac(r, h, n, smooth = false) {
+        if (smooth) {
+            for (let i = 0; i <= r; i += r / n) this.krug(i);
+            this.postaviNa(0, 0, h);
+            for (let i = 0; i <= 2 * Math.PI; i += 2 * Math.PI / n) {
+                this.linijaDo(r * Math.cos(i), r * Math.sin(i), 0);
+                this.povuciLiniju();
+                this.postaviNa(0, 0, h);
+            }
+        } else {
+            const currentColor = this.renderer.strokeStyle;
+            for (let i = 0; i < n; i++) {
+                if (i > n / 2 && i < n) this.postaviBoju("blue");
+                this.postaviNa(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+                this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), 0);
+                this.linijaDo(0, 0, h);
+                this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+                this.povuciLiniju();
+            }
+            this.postaviBoju(currentColor);
+        }
+    }
+
+    valjak(r, h, n) {
+        for (let i = 0; i < n; i++) {
+            this.postaviNa(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), 0);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), h);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), h);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+            this.povuciLiniju();
+        }
+    }
+
+    kugla(r, m, n) {
+
+        const currentColor = this.renderer.strokeStyle;
+
+        const meridianStep = 2 * Math.PI / m;
+        const parallelStep = Math.PI / (n + 1);
+
+        function _r(val) { return val * r; }
+
+        function cos(φ) {
+            return Math.cos(φ);
+        }
+        function sin(φ) {
+            return Math.sin(φ);
+        }
+
+        const step = 0.01;
+        this.postaviBoju("green");
+        for (let i = 0; i < 2 * Math.PI; i += meridianStep) {
+            this.postaviNa(0, 0, r);
+            for (let j = meridianStep; j <= Math.PI; j += step)
+                this.linijaDo(_r(cos(i) * sin(j)), _r(sin(i) * sin(j)), _r(cos(j)));
+            this.povuciLiniju();
+        }
+        
+        this.postaviBoju("red")
+        for (let i = parallelStep; i < Math.PI; i += parallelStep) {
+            this.postaviNa(_r(sin(i)), 0, _r(cos(i)));
+            for (let j = step; j <= 2 * Math.PI; j += step)
+                this.linijaDo(_r(cos(j) * sin(i)), _r(sin(j) * sin(i)), _r(cos(i)));
+            if (i > Math.PI / 2) this.postaviBoju("blue");
+            this.povuciLiniju();
+        }
+
+        this.postaviBoju(currentColor);
+
+    }
+
+    polukugla(r, m, n) {
+
+        const currentColor = this.renderer.strokeStyle;
+
+        const meridianStep = Math.PI / m;
+        const parallelStep = Math.PI / (n + 1);
+
+        function _r(val) { return val * r; }
+
+        function cos(φ) {
+            return Math.cos(φ);
+        }
+        function sin(φ) {
+            return Math.sin(φ);
+        }
+
+        const step = 0.01;
+        this.postaviBoju("green");
+        for (let i = 0; i < Math.PI + meridianStep; i += meridianStep) {
+            this.postaviNa(0, 0, r);
+            for (let j = meridianStep; j <= Math.PI; j += step)
+                this.linijaDo(_r(cos(i) * sin(j)), _r(sin(i) * sin(j)), _r(cos(j)));
+            this.povuciLiniju();
+        }
+        
+        this.postaviBoju("red")
+        for (let i = parallelStep; i < Math.PI; i += parallelStep) {
+            this.postaviNa(_r(sin(i)), 0, _r(cos(i)));
+            for (let j = step; j <= Math.PI; j += step)
+                this.linijaDo(_r(cos(j) * sin(i)), _r(sin(j) * sin(i)), _r(cos(i)));
+            if (i > Math.PI / 2) this.postaviBoju("blue");
+            this.povuciLiniju();
+        }
+
+        this.postaviBoju(currentColor);
+    
+    }
+
+
     #distance;
+    m = new MT3D();
     lastPos = { x: 0, y: 0, z: 0 };
     zoom = 50;
 
@@ -133,7 +245,7 @@ class Persp {
             this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x),
             this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y)
         );
-        
+
     }
 
     linijaDo(x, y, z) {
@@ -160,4 +272,15 @@ class Persp {
         this.renderer.strokeStyle = c;
     }
 
+
+}
+memoizationCache = {};
+function memoize(func) {
+    return function (...args) {
+        const key = JSON.stringify(args);
+        if (memoizationCache[key] === undefined) {
+            memoizationCache[key] = func(...args);
+        }
+        return memoizationCache[key];
+    }
 }

@@ -57,12 +57,15 @@ window.onload = function () {
         persp = new Persp(canvas, xmin, xmax, ymin, ymax, dist);
         persp.zoom = unitSlider.value;
 
-        persp.initRenderer();
-        matrix.identitet();
-        matrix.rotirajY(rotation);
-        if (cor) matrix.zrcaliNaX();
-        matrix.pomakni(0, 4, 0);
-        persp.trans(matrix);
+        function prepStage() {
+            persp.initRenderer();
+            matrix.identitet();
+            if (cor) matrix.zrcaliNaX();
+            matrix.pomakni(0, 4, 0);
+            persp.trans(matrix);
+        }
+
+        prepStage();
         const r = 100;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
@@ -74,10 +77,12 @@ window.onload = function () {
         persp.postaviBoju("purple");
 
         const coneHeight = 13;
-        const spokeLength = 10;
-
+        const spokeLength = 6;
         drawGrid(12, 2);
         drawCone(coneHeight);
+        
+// prepStage();
+        matrix.rotirajZ(rotation);
         drawCollar(coneHeight);
         persp.postaviBoju("green");
         matrix.pomakni(0, 0, coneHeight / 8);

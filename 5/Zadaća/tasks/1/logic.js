@@ -80,8 +80,7 @@ window.onload = function () {
         const spokeLength = 6;
         drawGrid(12, 2);
         drawCone(coneHeight);
-        
-// prepStage();
+
         matrix.rotirajZ(rotation);
         drawCollar(coneHeight);
         persp.postaviBoju("green");

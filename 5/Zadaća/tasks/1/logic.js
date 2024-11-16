@@ -1,4 +1,4 @@
-const cor = true;
+const cor = false;
 const unit = 40;
 const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
@@ -9,6 +9,9 @@ window.onload = function () {
     const canvasHeightSlider = document.getElementById("canvas-height");
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
+
+    const cameraSlider = document.getElementById("camera-rotation");
+    console.log(cameraSlider.value);
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -69,11 +72,13 @@ window.onload = function () {
         const r = 100;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        var camPivot = cameraSlider.value;
         matrix.postaviKameru(
-            r * cos(360 - φ), φ2, r * sin(360 - φ),
+            r * cos(360 - φ),  camPivot, r * sin(360 - φ),
             0, 0, 0,
             0, 1, 0
         );
+
         persp.postaviBoju("purple");
 
         const coneHeight = 13;
@@ -101,7 +106,7 @@ window.onload = function () {
         matrix.rotirajX(90);
         persp.postaviBoju("red");
         persp.trans(matrix);
-        persp.stozac(6, coneHeight, 15)
+        persp.stozac(6, coneHeight, 15);
     }
 
     function drawCollar(coneHeight) {
@@ -134,12 +139,12 @@ window.onload = function () {
         persp.postaviBoju(currentColor);
     }
 
-    φ = 45 + (cor ? 0 : 90 * 2), φ2 = 30;
+    φ = 45 + (cor ? 0 : 90 * 2);
     var rot = 0;
     function animationLoop() {
         requestAnimationFrame(animationLoop);
         if (!document.getElementById("wind").checked) return;
-        draw(rot--);
+        draw(cor ? rot-- : rot++);
     }
 
 
@@ -147,6 +152,8 @@ window.onload = function () {
         persp.zoom = this.value;
         draw();
     }
+
+    cameraSlider.oninput = () => draw(rot);
 
     draw();
     draw();

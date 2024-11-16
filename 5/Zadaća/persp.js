@@ -32,25 +32,6 @@
     
     Nakon toga projicirane točke prevodimo u piksel koordinate.
 
-
-
-    Treba dodati (privatni) atribut kamera u kojemu se čuva transformacija
-    pogleda. U konstruktoru se taj atribut postavi na jediničnu matricu reda 4.
-    To znači da je po defaultu kamera već u ishodištu i da gleda u negativnom smjeru z-osi.
-
-    Treba implementirati metodu VP za računanje vektorskog produkta.
-
-    Treba implementirati metodu mnoziMatrice za računanje produkta dvije matrice.
-
-    Kod je sličan kao za mult metodu, samo na ulazu trebaju biti dva
-    parametra (matrice koje zelimo pomnožiti u danom poretku).
-
-    Treba implementirati metodu postaviKameru koja će generirati transformaciju pogleda.
-
-    Treba modificirati metodu trans tako da uz matricu transformacije bude uključena
-    i matrica pogleda, tj. da se uvijek nakon geometrijskih transformacija primijeni
-    i transformacija pogleda.
-
 */
 
 class Persp {
@@ -89,6 +70,75 @@ class Persp {
         }
     }
 
+    kapsula(r, h, n) {
+        this.m.pomakni(0, 0, r);
+        this.valjak(r, h - 2 * r, n);
+        n /= 2;
+        this.m.rotirajX(90);
+        this.m.pomakni(0, h - 2 * r, 0);
+        this.polukugla(r, n, n);
+        this.m.rotirajX(180);
+        this.m.pomakni(0, h - 2 * r, 0);
+        this.polukugla(r, n, n);
+        this.postaviNa(0, 0, h - r);
+        this.povuciLiniju();
+    }
+
+    kocka(a) {
+        // should draw towards the x axis, only expanding towards there and not towards negative x
+
+        this.postaviNa(0, a / 2, a / 2);
+        this.linijaDo(a, a / 2, a / 2);
+        this.linijaDo(a, -a / 2, a / 2);
+        this.linijaDo(0, -a / 2, a / 2);
+        this.linijaDo(0, a / 2, a / 2);
+        this.povuciLiniju();
+
+        this.postaviNa(0, a / 2, -a / 2);
+        this.linijaDo(a, a / 2, -a / 2);
+        this.linijaDo(a, -a / 2, -a / 2);
+        this.linijaDo(0, -a / 2, -a / 2);
+        this.linijaDo(0, a / 2, -a / 2);
+        this.povuciLiniju();
+
+        this.postaviNa(0, a / 2, a / 2);
+        this.linijaDo(0, a / 2, -a / 2);
+        this.povuciLiniju();
+
+        this.postaviNa(a, a / 2, a / 2);
+        this.linijaDo(a, a / 2, -a / 2);
+        this.povuciLiniju();
+
+        this.postaviNa(a, -a / 2, a / 2);
+        this.linijaDo(a, -a / 2, -a / 2);
+        this.povuciLiniju();
+
+        this.postaviNa(0, -a / 2, a / 2);
+        this.linijaDo(0, -a / 2, -a / 2);
+        this.povuciLiniju();
+    }
+
+    koordinatneOsi(a = 1) {
+        const currentColor = this.renderer.strokeStyle;
+
+        this.postaviBoju("red");
+        this.postaviNa(0, 0, 0);
+        this.linijaDo(a, 0, 0);
+        this.povuciLiniju();
+
+        this.postaviBoju("green");
+        this.postaviNa(0, 0, 0);
+        this.linijaDo(0, a, 0);
+        this.povuciLiniju();
+
+        this.postaviBoju("blue");
+        this.postaviNa(0, 0, 0);
+        this.linijaDo(0, 0, a);
+        this.povuciLiniju();
+
+        this.postaviBoju(currentColor);
+    }
+
     kugla(r, m, n) {
 
         const currentColor = this.renderer.strokeStyle;
@@ -113,7 +163,7 @@ class Persp {
                 this.linijaDo(_r(cos(i) * sin(j)), _r(sin(i) * sin(j)), _r(cos(j)));
             this.povuciLiniju();
         }
-        
+
         this.postaviBoju("red")
         for (let i = parallelStep; i < Math.PI; i += parallelStep) {
             this.postaviNa(_r(sin(i)), 0, _r(cos(i)));
@@ -151,7 +201,7 @@ class Persp {
                 this.linijaDo(_r(cos(i) * sin(j)), _r(sin(i) * sin(j)), _r(cos(j)));
             this.povuciLiniju();
         }
-        
+
         this.postaviBoju("red")
         for (let i = parallelStep; i < Math.PI; i += parallelStep) {
             this.postaviNa(_r(sin(i)), 0, _r(cos(i)));
@@ -162,7 +212,7 @@ class Persp {
         }
 
         this.postaviBoju(currentColor);
-    
+
     }
 
 
@@ -273,14 +323,4 @@ class Persp {
     }
 
 
-}
-memoizationCache = {};
-function memoize(func) {
-    return function (...args) {
-        const key = JSON.stringify(args);
-        if (memoizationCache[key] === undefined) {
-            memoizationCache[key] = func(...args);
-        }
-        return memoizationCache[key];
-    }
 }

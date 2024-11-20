@@ -30,7 +30,7 @@ window.onload = function () {
     }
 
     var persp = new Persp(canvas, xmin, xmax, ymin, ymax, 1);
-    persp.zoom = unitSlider.value;
+    // persp.zoom = unitSlider.value;
 
     const matrix = new MT3D();
 
@@ -57,8 +57,9 @@ window.onload = function () {
 
     function draw(rotation = 0) {
 
-        persp = new Persp(canvas, xmin, xmax, ymin, ymax, dist);
-        persp.zoom = unitSlider.value;
+        persp = new Persp(canvas, xmin, xmax, ymin, ymax, 0.5);
+        persp.zoom = 10;
+        // alert("dist: " + persp.zoom);
 
         function prepStage() {
             persp.initRenderer();
@@ -69,12 +70,13 @@ window.onload = function () {
         }
 
         prepStage();
-        const r = 100;
+        const r = 12;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         var camPivot = cameraSlider.value;
+        θ = camPivot;
         matrix.postaviKameru(
-            r * cos(360 - φ),  camPivot, r * sin(360 - φ),
+            r * cos(φ) * sin(θ), r * cos(θ), r * sin(φ) * sin(θ),
             0, 0, 0,
             0, 1, 0
         );
@@ -139,7 +141,10 @@ window.onload = function () {
         persp.postaviBoju(currentColor);
     }
 
-    φ = 45 + (cor ? 0 : 90 * 2);
+    var φ = 45 + (cor ? 0 : 90 * 2);
+    var θ = 50;
+    var y = 1;
+
     var rot = 0;
     function animationLoop() {
         requestAnimationFrame(animationLoop);

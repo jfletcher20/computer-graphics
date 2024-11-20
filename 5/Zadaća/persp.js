@@ -1,39 +1,3 @@
-/*
-
-    Primjer 3. – Persp klasa
-    
-    Implementirajte klasu Persp koja omogućuje perspektivno projiciranje i ima sljedeće metode.
-
-        postaviNa(x, y, z) – postavlja početak linije na poziciju (x, y, z) u 3D globalnim koordinatama
-    
-        linijaDo(x, y, z) – povlači liniju od posljednje zapamćene pozicije do zadane pozicije (x, y, z) u 3D globalnim koordinatama
-    
-        trans(m) – zadaje se matrica transformacije iz klase MT3D koja se primjenjuje prije crtanja u globalnim koordinatama
-    
-        koristiBoju(c) – linija se crta bojom c
-    
-        povuciLiniju() – povlači liniju pozivom HTML5-rutine stroke()
-
-    Treba malo modificirati već implementiranu Ortho klasu tako da dodamo još
-    jedan (privatni) atribut distance u kojemu se čuva udaljenost kamere od
-    ravnine na koju se projicira.
-
-    Postojećim konstruktorima iz Ortho klase treba dodati još jednu varijablu za
-    udaljenost kamere od ravnine na koju se projicira.
-    trans metoda ostaje ista kao i u Ortho klasi.
-
-    Metode postaviNa i linijaDo treba takoder malo modificirati. Kao u Ortho
-    klasi, prije pretvaranja prirodnih koordinata u piksel koordinate, treba
-    primijeniti matricu transformacije da se dobiju transformirane točke.
-    
-    Nakon toga se transformirane točke perspektivno projiciraju na dvodimenzionalnu
-    ravninu (u ovom slučaju se z-koordinata ne zaboravlja, već se koristi za
-    odredivanje koordinata projiciranih točaka).
-    
-    Nakon toga projicirane točke prevodimo u piksel koordinate.
-
-*/
-
 class Persp {
 
     stozac(r, h, n, smooth = false) {
@@ -218,7 +182,7 @@ class Persp {
 
     #distance;
     m = new MT3D();
-    lastPos = { x: 0, y: 0, z: 0 };
+    last = { x: 0, y: 0, z: 0 };
     zoom = 50;
 
     constructor(platno, xmin, xmax, ymin, ymax, distance) {
@@ -243,7 +207,7 @@ class Persp {
         this.sx = this.sy = maxCanvas / (maxUnit - minUnit);
 
         this.m = new MT3D();
-        this.lastPos = { x: 0, y: 0, z: 0 };
+        this.last = { x: 0, y: 0, z: 0 };
     }
 
     units(val, useXScalar = false, useYScalar = false) {
@@ -287,27 +251,78 @@ class Persp {
 
         this.renderer.beginPath();
 
-        this.lastPos.x = this.#calcX(x, y, z);
-        this.lastPos.y = this.#calcY(x, y, z);
-        this.lastPos.z = this.#calcZ(x, y, z);
+        this.last.x = this.#calcX(x, y, z);
+        this.last.y = this.#calcY(x, y, z);
+        this.last.z = this.#calcZ(x, y, z);
 
         this.renderer.moveTo(
-            this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x),
-            this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y)
+            this.unitsX(-this.#distance / this.last.z * this.last.x),
+            this.unitsY(-this.#distance / this.last.z * this.last.y)
         );
 
     }
 
     linijaDo(x, y, z) {
 
-        this.lastPos.x = this.#calcX(x, y, z);
-        this.lastPos.y = this.#calcY(x, y, z);
-        this.lastPos.z = this.#calcZ(x, y, z);
+        if (this.last.z < 0 && z < 0) {
+            this.last.x = this.#calcX(x, y, z);
+            this.last.y = this.#calcY(x, y, z);
+            this.last.z = this.#calcZ(x, y, z);
+            this.renderer.lineTo(
+                this.unitsX(-this.#distance / this.last.z * this.last.x),
+                this.unitsY(-this.#distance / this.last.z * this.last.y)
+            );
+        }
 
-        this.renderer.lineTo(
-            this.unitsX(-this.#distance / this.lastPos.z * this.lastPos.x),
-            this.unitsY(-this.#distance / this.lastPos.z * this.lastPos.y)
-        );
+        else if (this.last.z >= 0 && z >= 0) {
+            this.last.x = this.#calcX(x, y, z);
+            this.last.y = this.#calcY(x, y, z);
+            this.last.z = this.#calcZ(x, y, z);
+            this.renderer.moveTo(
+                this.unitsX(-this.#distance / this.last.z * this.last.x),
+                this.unitsY(-this.#distance / this.last.z * this.last.y)
+            );
+        }
+
+        else if (this.last.z >= 0) {
+            var temp = (this.last.z + 0.01) / (this.last.z - z);
+            this.last.x += (x - this.last.x) * temp;
+            this.last.y += (y - this.last.y) * temp;
+            this.last.z -= 0.01;
+
+            const x1 = this.unitsX(-this.#distance / this.last.z * this.last.x);
+            const y1 = this.unitsY(-this.#distance / this.last.z * this.last.y);
+
+            this.last.x = this.#calcX(x, y, z);
+            this.last.y = this.#calcY(x, y, z);
+            this.last.z = this.#calcZ(x, y, z);
+
+            const x2 = this.unitsX(-this.#distance / this.last.z * this.last.x);
+            const y2 = this.unitsY(-this.#distance / this.last.z * this.last.y);
+
+            this.renderer.moveTo(x1, y1);
+            this.renderer.lineTo(x2, y2);
+        }
+
+        else if (z >= 0) {
+            const x1 = this.unitsX(-this.#distance / this.last.z * this.last.x);
+            const y1 = this.unitsY(-this.#distance / this.last.z * this.last.y);
+
+            var temp= (this.last.z + 0.01) / (this.last.z - z);
+            this.last.x += (x - this.last.x) * temp;
+            this.last.y += (y - this.last.y) * temp;
+            this.last.z -= 0.01;
+
+            const x2 = this.unitsX(-this.#distance / this.last.z * this.last.x);
+            const y2 = this.unitsY(-this.#distance / this.last.z * this.last.y);
+
+            this.last.x = this.#calcX(x, y, z);
+            this.last.y = this.#calcY(x, y, z);
+            this.last.z = this.#calcZ(x, y, z);
+
+            this.renderer.moveTo(x1, y1);
+            this.renderer.lineTo(x2, y2);
+        }
 
     }
 

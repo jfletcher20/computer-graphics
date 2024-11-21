@@ -77,13 +77,15 @@ window.onload = function () {
 
     φ = 90, φ2 = 0;
     var rising = true;
+    const maxφ2 = 85;
+    const φstep = 2;
     function animationLoop() {
         requestAnimationFrame(animationLoop);
         if (!document.getElementById("animate").checked) return;
-        φ += 1;
+        φ += φstep;
         if (φ >= 360) φ = 0;
-        φ2 += rising ? 1 : -1;
-        if (φ2 <= 0 || Math.abs(φ2) >= 85) rising = !rising;
+        φ2 += (rising ? φstep : -φstep) * maxφ2 / 360;
+        if (φ2 <= 0 || Math.abs(φ2) >= maxφ2) rising = !rising;
         draw();
     }
 

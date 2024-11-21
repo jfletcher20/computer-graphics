@@ -114,6 +114,15 @@ class Persp {
         this.m.rotirajX(-180);
         this.m.pomakni(0, 0, h - 2 * r);
         this.polukugla2(r, n, divisions);
+        this.m.pomakni(0, 0, -(h - r));
+    }
+
+    trokut(a) {
+        this.postaviNa(0, 0, 0);
+        this.linijaDo(a, 0, 0);
+        this.linijaDo(a / 2, a * Math.sqrt(3) / 2, 0);
+        this.linijaDo(0, 0, 0);
+        this.povuciLiniju();
     }
 
     kocka(a) {

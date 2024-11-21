@@ -11,7 +11,7 @@ window.onload = function () {
     const unitSlider = document.getElementById("unit");
 
     const camRotSlider = document.getElementById("camera-rotation");
-    const camPivSlider = document.getElementById("camera-rotation");
+    const camPivSlider = document.getElementById("camera-pivot");
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -74,6 +74,11 @@ window.onload = function () {
         if(camPiv == 0) camPiv = 0.0001;
         θ = camRot;
         φ = camPiv;
+
+        const subLength = 5;
+        const subDivs = 20, horizDivs = 10;
+        const subRad = 1;
+
         matrix.postaviKameru(
             r * cos(φ) * sin(θ), r * cos(θ), r * sin(φ) * sin(θ),
             0, y, 0,
@@ -83,7 +88,20 @@ window.onload = function () {
         drawGrid(2, 0.5);
 
         persp.postaviBoju("purple");
-        persp.kapsula2(1, 5, 20, 10);
+        persp.kapsula2(subRad, subLength, subDivs, horizDivs);
+        persp.m.rotirajX(180);
+        persp.valjak2(subRad, subLength/10, subDivs, 2);
+
+        persp.m.rotirajZ(rotation);
+        persp.valjak2(subRad/10, subLength/10, subDivs/2, 2);
+
+        persp.m.pomakni(0, 0, subLength/10/2);
+        persp.postaviBoju("black");
+        persp.trokut(1);
+        persp.m.rotirajZ(120);
+        persp.trokut(1);
+        persp.m.rotirajZ(120);
+        persp.trokut(1);
 
     }
 

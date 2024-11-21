@@ -70,6 +70,7 @@ window.onload = function () {
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         var camPivot = cameraSlider.value;
+        if(camPivot == 0) camPivot = 0.0001;
         θ = camPivot;
         matrix.postaviKameru(
             r * cos(φ) * sin(θ), r * cos(θ), r * sin(φ) * sin(θ),

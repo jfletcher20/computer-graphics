@@ -105,6 +105,17 @@ class Persp {
         this.povuciLiniju();
     }
 
+    kapsula2(r, h, n, divisions) {
+        this.m.pomakni(0, 0, r);
+        this.valjak2(r, h - 2 * r, n, divisions);
+        n /= 2;
+        this.m.rotirajX(180);
+        this.polukugla2(r, n, divisions);
+        this.m.rotirajX(-180);
+        this.m.pomakni(0, 0, h - 2 * r);
+        this.polukugla2(r, n, divisions);
+    }
+
     kocka(a) {
         // should draw towards the x axis, only expanding towards there and not towards negative x
 

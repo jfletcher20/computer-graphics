@@ -10,7 +10,8 @@ window.onload = function () {
     const canvasWidthSlider = document.getElementById("canvas-width");
     const unitSlider = document.getElementById("unit");
 
-    const cameraSlider = document.getElementById("camera-rotation");
+    const camRotSlider = document.getElementById("camera-rotation");
+    const camPivSlider = document.getElementById("camera-rotation");
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -54,14 +55,13 @@ window.onload = function () {
 
     function draw(rotation = 0) {
 
-        persp = new Persp(canvas, xmin, xmax, ymin, ymax, 4);
+        persp = new Persp(canvas, xmin, xmax, ymin, ymax, 8);
         persp.zoom = unitSlider.value;
 
         function prepStage() {
             persp.initRenderer();
             matrix.identitet();
             if (cor) matrix.zrcaliNaX();
-            matrix.pomakni(0, 2, 0);
             persp.trans(matrix);
         }
 
@@ -69,16 +69,21 @@ window.onload = function () {
         const r = 6;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        var camPivot = cameraSlider.value;
-        if(camPivot == 0) camPivot = 0.0001;
-        θ = camPivot;
+        var camRot = camRotSlider.value, camPiv = camPivSlider.value;
+        if(camRot == 0) camRot = 0.0001;
+        if(camPiv == 0) camPiv = 0.0001;
+        θ = camRot;
+        φ = camPiv;
         matrix.postaviKameru(
             r * cos(φ) * sin(θ), r * cos(θ), r * sin(φ) * sin(θ),
             0, y, 0,
             0, 1, 0
         );
 
+        drawGrid(2, 0.5);
+
         persp.postaviBoju("purple");
+        persp.kapsula2(1, 5, 20, 10);
 
     }
 
@@ -98,7 +103,7 @@ window.onload = function () {
         draw();
     }
 
-    cameraSlider.oninput = () => draw(rot);
+    camRotSlider.oninput = () => draw(rot);
 
     draw();
     draw();

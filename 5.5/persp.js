@@ -52,6 +52,41 @@ class Persp {
         }
     }
 
+    valjak3(r, h, n, innerRadius) {
+        for (let i = 0; i < n; i++) {
+            const φ = (2 * Math.PI / n) * i;
+            const nextφ = (2 * Math.PI / n) * (i + 1);
+            this.postaviNa(r * Math.cos(φ), r * Math.sin(φ), 0);
+            this.linijaDo(r * Math.cos(nextφ), r * Math.sin(nextφ), 0);
+            this.linijaDo(r * Math.cos(nextφ), r * Math.sin(nextφ), h);
+            this.linijaDo(r * Math.cos(φ), r * Math.sin(φ), h);
+            this.linijaDo(r * Math.cos(φ), r * Math.sin(φ), 0);
+            this.povuciLiniju();
+        }
+        for (let i = 0; i < n; i++) {
+            const φ = (2 * Math.PI / n) * i;
+            const innerX = innerRadius * Math.cos(φ);
+            const innerY = innerRadius * Math.sin(φ);
+            const innerXTop = innerRadius * Math.cos(φ);
+            const innerYTop = innerRadius * Math.sin(φ);
+            this.postaviNa(r * Math.cos(φ), r * Math.sin(φ), 0);
+            this.linijaDo(innerX, innerY, 0);
+            this.postaviNa(r * Math.cos(φ), r * Math.sin(φ), h);
+            this.linijaDo(innerXTop, innerYTop, h);
+            this.povuciLiniju();
+        }
+        for (let i = 0; i < n; i++) {
+            const φ = (2 * Math.PI / n) * i;
+            const nextφ = (2 * Math.PI / n) * (i + 1);
+            this.postaviNa(innerRadius * Math.cos(φ), innerRadius * Math.sin(φ), 0);
+            this.linijaDo(innerRadius * Math.cos(nextφ), innerRadius * Math.sin(nextφ), 0);
+            this.postaviNa(innerRadius * Math.cos(φ), innerRadius * Math.sin(φ), h);
+            this.linijaDo(innerRadius * Math.cos(nextφ), innerRadius * Math.sin(nextφ), h);
+            this.povuciLiniju();
+        }
+    }
+
+
     polukugla2(r, m, n) {
 
         const currentColor = this.renderer.strokeStyle;
@@ -69,7 +104,6 @@ class Persp {
         }
 
         const step = 0.01, Πo2 = Math.PI / 2;
-        this.postaviBoju("green");
         for (let i = /*0*/-Πo2; i < Πo2 + meridianStep; i += meridianStep) {
             this.postaviNa(_r(cos(i) * sin(-Πo2)), _r(sin(i) * sin(-Πo2)), _r(cos(-Πo2)));
             for (let j = /*meridianStep*/-Πo2; j <= Πo2; j += step) {
@@ -78,16 +112,12 @@ class Persp {
             this.povuciLiniju();
         }
 
-        this.postaviBoju("red")
         for (let i = /*parallelStep*/-Πo2; i < Πo2 + parallelStep; i += parallelStep) {
             this.postaviNa(_r(cos(-Πo2) * sin(i)), _r(sin(-Πo2) * sin(i)), _r(cos(i)));
             for (let j = /*step*/-Πo2; j <= Πo2; j += step)
                 this.linijaDo(_r(cos(j) * sin(i)), _r(sin(j) * sin(i)), _r(cos(i)));
-            if (i > Πo2 / 2) this.postaviBoju("blue");
             this.povuciLiniju();
         }
-
-        this.postaviBoju(currentColor);
 
     }
 
@@ -197,7 +227,6 @@ class Persp {
         }
 
         const step = 0.01;
-        this.postaviBoju("green");
         for (let i = 0; i < 2 * Math.PI; i += meridianStep) {
             this.postaviNa(0, 0, r);
             for (let j = meridianStep; j <= Math.PI; j += step)
@@ -205,16 +234,12 @@ class Persp {
             this.povuciLiniju();
         }
 
-        this.postaviBoju("red")
         for (let i = parallelStep; i < Math.PI; i += parallelStep) {
             this.postaviNa(_r(sin(i)), 0, _r(cos(i)));
             for (let j = step; j <= 2 * Math.PI; j += step)
                 this.linijaDo(_r(cos(j) * sin(i)), _r(sin(j) * sin(i)), _r(cos(i)));
-            if (i > Math.PI / 2) this.postaviBoju("blue");
             this.povuciLiniju();
         }
-
-        this.postaviBoju(currentColor);
 
     }
 

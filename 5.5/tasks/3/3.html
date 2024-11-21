@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="hr">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Zadaća</title>
+	<link rel="stylesheet" href="../../style.css">
+	<script src="../../persp.js"></script>
+	<script src="../../mt3d.js"></script>
+	<script src="logic.js"></script>
+</head>
+
+<body>
+	<h1>Rješenje</h1>
+	<nav>
+		<a href="../../index.html">Zadaća 5.5</a>
+		<a href="../../tasks/1/1.html">Zadatak 1</a>
+		<a href="../../tasks/2/2.html">Zadatak 2</a>
+		<a href="../../tasks/3/3.html" class="selected">Zadatak 3</a>
+	</nav>
+	<div class="container">
+		<input type="range" id="unit" min="1" max="10" value="1"
+			style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 840px;">
+
+		<input type="range" id="canvas-height" min="240" max="800" value="600"
+			style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 840px;">
+		<input type="range" id="canvas-width" min="240" max="800" value="800"
+			style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 840px;">
+
+		<input type="range" id="camera-rotation" min="-360" max="360" value="90"
+			style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-left: 840px;">
+
+		<input type="range" id="camera-pivot" min="-360" max="360" value="80"
+			style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-left: 840px;">
+
+		<div
+			style="position: absolute; margin-top: 15px; margin-left: 490px; background-color: rgba(0, 0, 0, 0.5); padding: 8px; border-radius: 5px;">
+			<input type="checkbox" name="wind" id="wind" checked>
+			<label for="wind"
+				style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;">Dodaj
+				vjetra</label>
+		</div>
+
+		<canvas id="renderer" width="800" height="600" style="background: #FFFFE0;">
+			Vaš preglednik ne podržava HTML5 canvas.
+		</canvas>
+	</div>
+</body>
+
+</html>

@@ -35,17 +35,60 @@ class Persp {
     }
 
     valjak2(r, h, n, divisions) {
-        // divisions represents amount of divisions in the height of the cylinder, where circles are drawn just like the base of the cylinder
         for (let i = 0; i < n; i++) {
             this.postaviNa(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
             this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), 0);
-            for (let j = 1; j <= divisions; j++) {
-                this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), h / divisions * j);
-                this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), h / divisions * j);
-                this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * (i + 1)), r * Math.sin(2 * Math.PI / n * (i + 1)), h);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), h);
+            this.linijaDo(r * Math.cos(2 * Math.PI / n * i), r * Math.sin(2 * Math.PI / n * i), 0);
+            this.povuciLiniju();
+        }
+        for (let i = 1; i < divisions; i++) {
+            for (let j = 0; j < n; j++) {
+                this.postaviNa(r * Math.cos(2 * Math.PI / n * j), r * Math.sin(2 * Math.PI / n * j), h / divisions * i);
+                this.linijaDo(r * Math.cos(2 * Math.PI / n * (j + 1)), r * Math.sin(2 * Math.PI / n * (j + 1)), h / divisions * i);
+                this.povuciLiniju();
+            }
+        }
+    }
+
+    polukugla2(r, m, n) {
+
+        const currentColor = this.renderer.strokeStyle;
+
+        const meridianStep = Math.PI / m;
+        const parallelStep = Math.PI / (n + 1);
+
+        function _r(val) { return val * r; }
+
+        function cos(φ) {
+            return Math.cos(φ);
+        }
+        function sin(φ) {
+            return Math.sin(φ);
+        }
+
+        const step = 0.01, Πo2 = Math.PI / 2;
+        this.postaviBoju("green");
+        for (let i = /*0*/-Πo2; i < Πo2 + meridianStep; i += meridianStep) {
+            this.postaviNa(_r(cos(i) * sin(-Πo2)), _r(sin(i) * sin(-Πo2)), _r(cos(-Πo2)));
+            for (let j = /*meridianStep*/-Πo2; j <= Πo2; j += step) {
+                this.linijaDo(_r(cos(i) * sin(j)), _r(sin(i) * sin(j)), _r(cos(j)));
             }
             this.povuciLiniju();
         }
+
+        this.postaviBoju("red")
+        for (let i = /*parallelStep*/-Πo2; i < Πo2 + parallelStep; i += parallelStep) {
+            this.postaviNa(_r(cos(-Πo2) * sin(i)), _r(sin(-Πo2) * sin(i)), _r(cos(i)));
+            for (let j = /*step*/-Πo2; j <= Πo2; j += step)
+                this.linijaDo(_r(cos(j) * sin(i)), _r(sin(j) * sin(i)), _r(cos(i)));
+            if (i > Πo2 / 2) this.postaviBoju("blue");
+            this.povuciLiniju();
+        }
+
+        this.postaviBoju(currentColor);
+
     }
 
     kapsula(r, h, n) {
@@ -262,11 +305,11 @@ class Persp {
     }
 
     postaviNa(x, y, z) {
-        
+
         this.last.x = this.#calcX(x, y, z);
         this.last.y = this.#calcY(x, y, z);
         this.last.z = this.#calcZ(x, y, z);
-        
+
         this.renderer.beginPath();
         this.renderer.moveTo(
             this.unitsX(-this.#distance / this.last.z * this.last.x),

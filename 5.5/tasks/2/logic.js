@@ -80,62 +80,6 @@ window.onload = function () {
 
         persp.postaviBoju("purple");
 
-        const coneHeight = 3;
-        const spokeLength = coneHeight * 0.567;
-        drawGrid(3, 0.5);
-        drawCone(coneHeight);
-
-        matrix.rotirajZ(rotation);
-        drawCollar(coneHeight);
-        persp.postaviBoju("green");
-        matrix.pomakni(0, 0, coneHeight / 8);
-        if (!cor) matrix.rotirajX(-90)
-        else matrix.rotirajX(90);
-        drawSpoke(coneHeight, spokeLength);
-        matrix.rotirajY(120);
-        persp.trans(matrix);
-        drawSpoke(coneHeight, spokeLength);
-        matrix.rotirajY(120);
-        persp.trans(matrix);
-        drawSpoke(coneHeight, spokeLength);
-
-    }
-
-    function drawCone(coneHeight) {
-        matrix.rotirajX(90);
-        persp.postaviBoju("red");
-        persp.trans(matrix);
-        persp.stozac(coneHeight / 2, coneHeight, 15);
-    }
-
-    function drawCollar(coneHeight) {
-        persp.postaviBoju("blue");
-        matrix.pomakni(0, 0, coneHeight - coneHeight / 4);
-        persp.trans(matrix);
-        persp.valjak2(coneHeight / 2 / 4, coneHeight / 4, 10, 6);
-    }
-
-    function drawSpoke(coneHeight, spokeLength) {
-        const spokeRadius = coneHeight * 0.04;
-        persp.trans(matrix);
-        persp.valjak(spokeRadius, spokeLength, 10);
-        drawHalfSphere(coneHeight, spokeRadius, spokeLength);
-    }
-
-    function drawHalfSphere(coneHeight, spokeRadius, spokeLength) {
-        const currentColor = persp.renderer.strokeStyle;
-        const r = 0.15 * coneHeight;
-        persp.postaviBoju("pink");
-        matrix.pomakni(-spokeRadius * 1.1, 0, spokeLength + r / 1.2);
-        matrix.rotirajX(90);
-        matrix.rotirajZ(-90);
-        persp.trans(matrix);
-        persp.polukugla2(r, 7, 12);
-        matrix.rotirajZ(90);
-        matrix.rotirajX(-90);
-        matrix.pomakni(spokeRadius * 1.1, 0, -spokeLength - r / 1.2);
-        persp.trans(matrix);
-        persp.postaviBoju(currentColor);
     }
 
     var φ = 45;

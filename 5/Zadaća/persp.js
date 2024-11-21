@@ -248,7 +248,6 @@ class Persp {
     }
 
     postaviNa(x, y, z) {
-
         
         this.last.x = this.#calcX(x, y, z);
         this.last.y = this.#calcY(x, y, z);

@@ -1,6 +1,6 @@
 const cor = false;
 const unit = 40;
-const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
+const xmin = -3, xmax = 3, ymin = -3, ymax = 3;
 
 window.onload = function () {
 
@@ -11,7 +11,6 @@ window.onload = function () {
     const unitSlider = document.getElementById("unit");
 
     const cameraSlider = document.getElementById("camera-rotation");
-    console.log(cameraSlider.value);
 
     if (!canvas) alert("Greška - nema platna!");
 
@@ -53,46 +52,43 @@ window.onload = function () {
         return Math.sin(φ * Math.PI / 180);
     }
 
-    var dist = (cor ? -1 : 1) * 0.5;
-
     function draw(rotation = 0) {
 
-        persp = new Persp(canvas, xmin, xmax, ymin, ymax, 0.5);
+        persp = new Persp(canvas, xmin, xmax, ymin, ymax, 4);
         persp.zoom = unitSlider.value;
-        // alert("dist: " + persp.zoom);
 
         function prepStage() {
             persp.initRenderer();
             matrix.identitet();
             if (cor) matrix.zrcaliNaX();
-            matrix.pomakni(0, 4, 0);
+            matrix.pomakni(0, 2, 0);
             persp.trans(matrix);
         }
 
         prepStage();
-        const r = 12;
+        const r = 6;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         var camPivot = cameraSlider.value;
         θ = camPivot;
         matrix.postaviKameru(
             r * cos(φ) * sin(θ), r * cos(θ), r * sin(φ) * sin(θ),
-            0, 0, 0,
+            0, y, 0,
             0, 1, 0
         );
 
         persp.postaviBoju("purple");
 
-        const coneHeight = 13;
-        const spokeLength = 6;
-        drawGrid(12, 2);
+        const coneHeight = 3;
+        const spokeLength = coneHeight * 0.567;
+        drawGrid(3, 0.5);
         drawCone(coneHeight);
 
         matrix.rotirajZ(rotation);
         drawCollar(coneHeight);
         persp.postaviBoju("green");
         matrix.pomakni(0, 0, coneHeight / 8);
-        if (cor) matrix.rotirajX(-90)
+        if (!cor) matrix.rotirajX(-90)
         else matrix.rotirajX(90);
         drawSpoke(coneHeight, spokeLength);
         matrix.rotirajY(120);
@@ -108,18 +104,18 @@ window.onload = function () {
         matrix.rotirajX(90);
         persp.postaviBoju("red");
         persp.trans(matrix);
-        persp.stozac(6, coneHeight, 15);
+        persp.stozac(coneHeight / 2, coneHeight, 15);
     }
 
     function drawCollar(coneHeight) {
         persp.postaviBoju("blue");
         matrix.pomakni(0, 0, coneHeight - coneHeight / 4);
         persp.trans(matrix);
-        persp.valjak(1.5, coneHeight / 4, 10);
+        persp.valjak(coneHeight / 2 / 4, coneHeight / 4, 10);
     }
 
     function drawSpoke(coneHeight, spokeLength) {
-        const spokeRadius = coneHeight / 4 / 5;
+        const spokeRadius = coneHeight * 0.04;
         persp.trans(matrix);
         persp.valjak(spokeRadius, spokeLength, 10);
         drawHalfSphere(coneHeight, spokeRadius, spokeLength);
@@ -127,13 +123,13 @@ window.onload = function () {
 
     function drawHalfSphere(coneHeight, spokeRadius, spokeLength) {
         const currentColor = persp.renderer.strokeStyle;
-        const r = coneHeight / 6;
+        const r = 0.15 * coneHeight;
         persp.postaviBoju("pink");
         matrix.pomakni(-spokeRadius * 1.1, 0, spokeLength + r / 1.2);
         matrix.rotirajX(90);
         matrix.rotirajZ(-90);
         persp.trans(matrix);
-        persp.polukugla(r, 8, 12);
+        persp.polukugla(r, 7, 12);
         matrix.rotirajZ(90);
         matrix.rotirajX(-90);
         matrix.pomakni(spokeRadius * 1.1, 0, -spokeLength - r / 1.2);
@@ -141,7 +137,7 @@ window.onload = function () {
         persp.postaviBoju(currentColor);
     }
 
-    var φ = 45 + (cor ? 0 : 90 * 2);
+    var φ = 45;
     var θ = 50;
     var y = 1;
 
@@ -149,7 +145,7 @@ window.onload = function () {
     function animationLoop() {
         requestAnimationFrame(animationLoop);
         if (!document.getElementById("wind").checked) return;
-        draw(cor ? rot-- : rot++);
+        draw(!cor ? rot -= 3 : rot += 3);
     }
 
     unitSlider.oninput = function () {

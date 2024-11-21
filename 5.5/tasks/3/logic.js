@@ -54,7 +54,7 @@ window.onload = function () {
 
     function draw(rotation = 0) {
 
-        persp = new Persp(canvas, xmin, xmax, ymin, ymax, 4);
+        persp = new Persp(canvas, xmin, xmax, ymin, ymax, 6);
         persp.zoom = unitSlider.value;
 
         function prepStage() {
@@ -64,34 +64,33 @@ window.onload = function () {
         }
 
         prepStage();
-        const r = 6;
+        const r = 12;
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         var camRot = camRotSlider.value, camPiv = camPivSlider.value;
         if (camRot == 0) camRot = 0.0001;
         if (camPiv == 0) camPiv = 0.0001;
         θ = camRot;
-        φ = camPiv;
+        φ = rotation;
 
         const baseHeight = 1, baseDivs = 24, baseRad = 3, standDivs = 10;
         const holsterHeight = baseHeight * 2.25;
 
         matrix.postaviKameru(
             r * cos(φ) * sin(θ), r * cos(θ), r * sin(φ) * sin(θ),
-            0, y, 0,
+            0, -y * 2, 0,
             0, 1, 0
         );
 
-        // making a 3d lamp
-        matrix.pomakni(-4, 8, 0);
+        // matrix.pomakni(0, 4, 0);
 
         /* base of lamp */
         matrix.rotirajX(90);
         persp.trans(matrix);
         persp.postaviBoju("red");
-        persp.valjak3(baseRad, baseHeight, baseDivs, baseRad / 1.85);
+        persp.valjak3(baseRad * 1.25, baseHeight * .75, baseDivs, baseRad / 1.85);
         matrix.rotirajX(-90);
-        matrix.pomakni(0, -baseHeight, 0);
+        matrix.pomakni(0, -baseHeight * .75, 0);
         matrix.rotirajX(90);
         persp.trans(matrix);
         persp.postaviBoju("blue");
@@ -106,6 +105,8 @@ window.onload = function () {
         persp.postaviBoju("#065535");
         persp.valjak(baseRad / 1.85 / 5, baseHeight * 5, standDivs)
         matrix.pomakni(0, 0, baseHeight * 5);
+
+        matrix.zrcaliNaXZ();
 
         /* holster of lamp */
         persp.postaviBoju("magenta");
@@ -150,8 +151,8 @@ window.onload = function () {
         persp.postaviBoju("black");
         persp.polukugla2(holderRad * 2, baseDivs, 13);
         /* bulb */
-        matrix.pomakni(0, 0, holderRad * 0.1);
-        matrix.skaliraj(0.75, 1, 1);
+        matrix.pomakni(0, 0, -holderRad * 0.2);
+        matrix.skaliraj(0.75, 1, 1.25);
         persp.trans(matrix);
         persp.postaviBoju("red");
         persp.kugla(holderRad * 1.75, baseDivs, standDivs);
@@ -159,13 +160,13 @@ window.onload = function () {
 
     var φ = 45;
     var θ = 50;
-    var y = 1;
+    var y = 2;
 
     var rot = 0;
     function animationLoop() {
         requestAnimationFrame(animationLoop);
         if (!document.getElementById("wind").checked) return;
-        draw(rot -= 3);
+        draw(rot += 1);
     }
 
     unitSlider.oninput = function () {

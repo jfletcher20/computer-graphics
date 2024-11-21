@@ -30,7 +30,7 @@ window.onload = function () {
     }
 
     var persp = new Persp(canvas, xmin, xmax, ymin, ymax, 1);
-    // persp.zoom = unitSlider.value;
+    persp.zoom = 43;
 
     const matrix = new MT3D();
 
@@ -58,7 +58,7 @@ window.onload = function () {
     function draw(rotation = 0) {
 
         persp = new Persp(canvas, xmin, xmax, ymin, ymax, 0.5);
-        persp.zoom = 10;
+        persp.zoom = unitSlider.value;
         // alert("dist: " + persp.zoom);
 
         function prepStage() {
@@ -152,9 +152,8 @@ window.onload = function () {
         draw(cor ? rot-- : rot++);
     }
 
-
     unitSlider.oninput = function () {
-        persp.zoom = this.value;
+        persp.zoom = unitSlider.value;
         draw();
     }
 

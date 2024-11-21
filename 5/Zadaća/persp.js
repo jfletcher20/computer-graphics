@@ -183,7 +183,7 @@ class Persp {
     #distance;
     m = new MT3D();
     last = { x: 0, y: 0, z: 0 };
-    zoom = 50;
+    zoom = 51;
 
     constructor(platno, xmin, xmax, ymin, ymax, distance) {
         this.platno = platno;
@@ -249,80 +249,28 @@ class Persp {
 
     postaviNa(x, y, z) {
 
-        this.renderer.beginPath();
-
+        
         this.last.x = this.#calcX(x, y, z);
         this.last.y = this.#calcY(x, y, z);
         this.last.z = this.#calcZ(x, y, z);
-
+        
+        this.renderer.beginPath();
         this.renderer.moveTo(
             this.unitsX(-this.#distance / this.last.z * this.last.x),
             this.unitsY(-this.#distance / this.last.z * this.last.y)
         );
 
     }
-
     linijaDo(x, y, z) {
 
-        if (this.last.z < 0 && z < 0) {
-            this.last.x = this.#calcX(x, y, z);
-            this.last.y = this.#calcY(x, y, z);
-            this.last.z = this.#calcZ(x, y, z);
-            this.renderer.lineTo(
-                this.unitsX(-this.#distance / this.last.z * this.last.x),
-                this.unitsY(-this.#distance / this.last.z * this.last.y)
-            );
-        }
+        this.last.x = this.#calcX(x, y, z);
+        this.last.y = this.#calcY(x, y, z);
+        this.last.z = this.#calcZ(x, y, z);
 
-        else if (this.last.z >= 0 && z >= 0) {
-            this.last.x = this.#calcX(x, y, z);
-            this.last.y = this.#calcY(x, y, z);
-            this.last.z = this.#calcZ(x, y, z);
-            this.renderer.moveTo(
-                this.unitsX(-this.#distance / this.last.z * this.last.x),
-                this.unitsY(-this.#distance / this.last.z * this.last.y)
-            );
-        }
-
-        else if (this.last.z >= 0) {
-            var temp = (this.last.z + 0.01) / (this.last.z - z);
-            this.last.x += (x - this.last.x) * temp;
-            this.last.y += (y - this.last.y) * temp;
-            this.last.z -= 0.01;
-
-            const x1 = this.unitsX(-this.#distance / this.last.z * this.last.x);
-            const y1 = this.unitsY(-this.#distance / this.last.z * this.last.y);
-
-            this.last.x = this.#calcX(x, y, z);
-            this.last.y = this.#calcY(x, y, z);
-            this.last.z = this.#calcZ(x, y, z);
-
-            const x2 = this.unitsX(-this.#distance / this.last.z * this.last.x);
-            const y2 = this.unitsY(-this.#distance / this.last.z * this.last.y);
-
-            this.renderer.moveTo(x1, y1);
-            this.renderer.lineTo(x2, y2);
-        }
-
-        else if (z >= 0) {
-            const x1 = this.unitsX(-this.#distance / this.last.z * this.last.x);
-            const y1 = this.unitsY(-this.#distance / this.last.z * this.last.y);
-
-            var temp= (this.last.z + 0.01) / (this.last.z - z);
-            this.last.x += (x - this.last.x) * temp;
-            this.last.y += (y - this.last.y) * temp;
-            this.last.z -= 0.01;
-
-            const x2 = this.unitsX(-this.#distance / this.last.z * this.last.x);
-            const y2 = this.unitsY(-this.#distance / this.last.z * this.last.y);
-
-            this.last.x = this.#calcX(x, y, z);
-            this.last.y = this.#calcY(x, y, z);
-            this.last.z = this.#calcZ(x, y, z);
-
-            this.renderer.moveTo(x1, y1);
-            this.renderer.lineTo(x2, y2);
-        }
+        this.renderer.lineTo(
+            this.unitsX(-this.#distance / this.last.z * this.last.x),
+            this.unitsY(-this.#distance / this.last.z * this.last.y)
+        );
 
     }
 

@@ -1,20 +1,8 @@
 window.onload = WebGLaplikacija;
 
-/*
-
-    Kombiniranjem odgovarajućih geometrijskih transformacija nacrtajte sljedeće elipse:
-    
-     - Poluosi a = 6, b = 3, velika os elipse je pod kutem od -30° prema osi x, a središte je u točki (4, 0) (nacrtajte crvenom bojom);
-    
-     - Isto kao i gore, ali promijenite poredak transformacija: prvo pomaknite, pa rotirajte (nacrtajte plavom bojom);
-    
-     - Poluosi a = 4, b = 1, elipsa je najprije zarotirana za 75°, potom pomaknuta za 3 u desno, te zrcaljena na osi y (zelena boja)
-
-*/
-
 const r = 1, a = 3, b = r;
 const petalCount = 8;
-const size = (r+a*2)*1.1;
+const size = (r + a * 2) * 1.1;
 
 function WebGLaplikacija() {
 
@@ -72,7 +60,6 @@ function WebGLaplikacija() {
         for (let i = 0; i < petalCount; i++) {
             matrix.identitet();
             matrix.projekcija2D(-size, size, -size, size);
-            // matrix.rotacija_oko_tocke(a + r, 0, 360 / petalCount * i);
             matrix.rotiraj(360 / petalCount * i);
             matrix.pomakni(a + r, 0);
             gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());

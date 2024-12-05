@@ -75,9 +75,7 @@ class MT2D {
         this.mult(m);
     }
 
-    identitet() {
-        this.#matrica = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
-    }
+    identitet() { this.#matrica = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]; }
 
     rotacija_oko_tocke(x0, y0, kut) {
         this.pomakni(x0, y0);

@@ -51,8 +51,14 @@ nav a:active {
     background-color: rgba(95, 158, 160, 0.6);
 }
 
+
 nav a.selected {
     background-color: orangered;
+    user-select: none;
+}
+
+a {
+    user-select: none !important;
 }
 
 .card {

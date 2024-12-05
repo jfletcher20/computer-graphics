@@ -56,4 +56,5 @@ function WebGLaplikacija() {
 
     initBuffers();
     render();
+    
 }

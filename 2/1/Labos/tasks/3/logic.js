@@ -1,115 +1,68 @@
+window.onload = WebGLaplikacija;
+
 /*
 
-    3.4. Animirajte rotaciju kocke i to tako da se kocka istovremeno okreće oko sve tri koordinatne osi.
+6.2. Modificirajte Primjer 6.2. tako da se umjesto para trokuta iscrta ispunjena (obojana) elipse s velikom poluosi a = 0.9 i malom poluosi b = 0.2 i također je iscrtajte tri puta: zelenu bez zakreta, žutu zarotiranu za 60 stupnjeva i crvenu zarotiranu za 120 stupnjeva.
 
 */
 
-const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
+function WebGLaplikacija() {
 
-window.onload = function() {
+    var platno1 = document.getElementById("slika1");
+    gl = platno1.getContext("webgl2");
+    if (!gl) alert("WebGL2 nije dostupan!");
 
-    const canvas = document.getElementById("renderer");
+    GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
+    gl.useProgram(GPUprogram1);
 
-    const canvasHeightSlider = document.getElementById("canvas-height");
-    const canvasWidthSlider = document.getElementById("canvas-width");
-    const unitSlider = document.getElementById("unit");
+    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
+    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
 
-    const animationCheckbox = document.getElementById("animation");
-
-    if (!canvas) alert("Greška - nema platna!");
-
-    canvasHeightSlider.oninput = function() {
-        canvas.height = this.value;
-        canvas.width = canvasWidthSlider.value;
-        ortho.initRenderer();
-        draw();
+    var matrix = new MT2D();
+    matrix.projekcija2D(-10, 10, -10, 10);
+    var vrhovi = [];
+    for (let i = 0; i < Math.PI * 2; i += Math.PI / 100) {
+        vrhovi.push(Math.cos(i) * 0.9, Math.sin(i) * 0.2);
+        vrhovi.push(Math.cos(i + Math.PI / 100) * 0.9, Math.sin(i + Math.PI / 100) * 0.2);
     }
 
-    canvasWidthSlider.oninput =  function() {
-        canvas.width = this.value;
-        canvas.height = canvasHeightSlider.value;
-        ortho.initRenderer();
-        draw();
+
+    function initBuffers() {
+        spremnikVrhova = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, spremnikVrhova);
+        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+        gl.enableVertexAttribArray(GPUprogram1.a_vrhXY);
+        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 0, 0);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vrhovi), gl.STATIC_DRAW);
     }
 
-    var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-    ortho.zoom = unitSlider.value;
+    function color(r, g, b) { return [r, g, b, 1.0]; }
+    function col(r, g, b) { return gl.uniform4fv(GPUprogram1.u_boja, color(r, g, b)); }
 
-    var i = 0;
-    
-    function draw() {
+    function render() {
 
-        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        ortho.m.identitet();
-        ortho.m.rotirajX(i);
-        ortho.m.rotirajY(i);
-        ortho.m.rotirajZ(i);
+        gl.clearColor(0.4, 0.4, 0.4, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.viewport(0, 0, platno1.width, platno1.height);
 
-        if (animationCheckbox.checked) {
-            i += 1;
-            if (i >= 360) i = 0;
-        }
-        drawCube();
+        matrix.identitet();
+        col(1.0, 0.0, 0.0);
+        gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, vrhovi.length / 2);
+
+        col(1.0, 1.0, 0.0);
+        matrix.rotiraj(60);
+        gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, vrhovi.length / 2);
+
+        col(0.0, 1.0, 0.0);
+        matrix.identitet();
+        matrix.rotiraj(120);
+        gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, vrhovi.length / 2);
 
     }
 
-    function drawCube(color) {
-            
-        if (color) ortho.postaviBoju(color);
-        function red() {
-            if (!color) ortho.postaviBoju("red");
-        }
-        function green() {
-            if (!color) ortho.postaviBoju("green");
-        }
-        function blue() {
-            if (!color) ortho.postaviBoju("blue");
-        }
-
-        // if color is not defined, draw colors for the different axis appropriately - rgb
-        red();
-        ortho.postaviNa(-1, -1, -1);
-        ortho.linijaDo(1, -1, -1);
-        ortho.linijaDo(1, 1, -1);
-        ortho.linijaDo(-1, 1, -1);
-        ortho.linijaDo(-1, -1, -1);
-        ortho.povuciLiniju();
-
-        blue();
-        ortho.postaviNa(-1, -1, 1);
-        ortho.linijaDo(1, -1, 1);
-        ortho.linijaDo(1, 1, 1);
-        ortho.linijaDo(-1, 1, 1);
-        ortho.linijaDo(-1, -1, 1);
-        ortho.povuciLiniju();
-
-        green();
-        ortho.postaviNa(-1, -1, -1);
-        ortho.linijaDo(-1, -1, 1);
-        ortho.povuciLiniju();
-
-        green();
-        ortho.postaviNa(1, -1, -1);
-        ortho.linijaDo(1, -1, 1);
-        ortho.povuciLiniju();
-
-        green();
-        ortho.postaviNa(1, 1, -1);
-        ortho.linijaDo(1, 1, 1);
-        ortho.povuciLiniju();
-
-        green();
-        ortho.postaviNa(-1, 1, -1);
-        ortho.linijaDo(-1, 1, 1);
-        ortho.povuciLiniju();
-    }
-
-    unitSlider.oninput = function() {
-        ortho.zoom = this.value;
-        // draw();
-    }
-
-    // draw();
-    setInterval(draw, 25);
-
+    initBuffers();
+    render();
 }

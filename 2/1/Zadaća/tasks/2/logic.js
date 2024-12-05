@@ -1,128 +1,95 @@
-const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
+window.onload = WebGLaplikacija;
 
-window.onload = function() {
+/*
 
-    const canvas = document.getElementById("renderer");
-
-    const canvasHeightSlider = document.getElementById("canvas-height");
-    const canvasWidthSlider = document.getElementById("canvas-width");
-    const unitSlider = document.getElementById("unit");
-
-    const rotationSlider = document.getElementById("rotation");
-
-    const animateCheckbox = document.getElementById("animate");
-
-    if (!canvas) alert("Greška - nema platna!");
-
-    canvasHeightSlider.oninput = function() {
-        canvas.height = this.value;
-        canvas.width = canvasWidthSlider.value;
-        ortho.initRenderer();
-        draw();
-    }
-
-    canvasWidthSlider.oninput =  function() {
-        canvas.width = this.value;
-        canvas.height = canvasHeightSlider.value;
-        ortho.initRenderer();
-        draw();
-    }
-
-    var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-    ortho.zoom = unitSlider.value;
-
-    function astroid(r = 4, progress = 1) {
-        var temp = ortho.renderer.strokeStyle;
-        ortho.m.rotirajZ(-90);
-        ortho.postaviBoju("red");
-        var x = r * Math.pow(Math.cos(t), 3);
-        var y = r * Math.pow(Math.sin(t), 3);
-        ortho.postaviNa(y, x, 0);
-        for (var t = 0; t <= 2 * Math.PI * (1-progress); t += 0.01) {
-            x = r * Math.pow(Math.cos(t), 3);
-            y = r * Math.pow(Math.sin(t), 3);
-            ortho.linijaDo(y, x, 0);
-        }
-        ortho.povuciLiniju();
-        t += Math.PI / 2;
-        const x2 = 3 * Math.cos(t);
-        const y2 = 3 * Math.sin(t);
-        ortho.postaviBoju(temp);
-        circle(1, -progress * 3 * 360, y2, x2, true);
-        temp = ortho.renderer.strokeStyle;
-        ortho.postaviBoju("blue");
-        circle(4, 0, 0, 0, false)
-        ortho.postaviBoju(temp);
-    }
-
-    function circle(r = 1, angle = 0, x = 0, y = 0, extraStuff = true) {
-        const m = new MT3D();
-        m.pomakni(x, y, 0);
-        m.rotirajZ(angle);
-        ortho.trans(m);
-        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-            const x = r * Math.cos(t);
-            const y = r * Math.sin(t);
-            var xNext = r * Math.cos(t + 0.01);
-            var yNext = r * Math.sin(t + 0.01);
-            ortho.postaviNa(x, y, 0);
-            ortho.linijaDo(xNext, yNext, 0);
-            ortho.povuciLiniju();
-        }
-        if (!extraStuff) return;
-        // circle at the end of the line
-        var temp = ortho.renderer.strokeStyle;
-        ortho.postaviBoju("red");
-        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-            const x = r + 0.04 * Math.cos(t);
-            const y = 0 + 0.04 * Math.sin(t);
-            var xNext = r + 0.04 * Math.cos(t + 0.01);
-            var yNext = 0 + 0.04 * Math.sin(t + 0.01);
-            ortho.postaviNa(x, y, 0);
-            ortho.linijaDo(xNext, yNext, 0);
-            ortho.povuciLiniju();
-        }
-        ortho.postaviBoju(temp);
-        ortho.postaviNa(r * Math.cos(0), r * Math.sin(0), 0);
-        ortho.linijaDo(0, 0, 0);
-        ortho.povuciLiniju();
-        for (var t = 0; t <= 2 * Math.PI; t += 0.01) {
-            const x = 0.05 * Math.cos(t);
-            const y = 0.05 * Math.sin(t);
-            var xNext = 0.05 * Math.cos(t + 0.01);
-            var yNext = 0.05 * Math.sin(t + 0.01);
-            ortho.postaviNa(x, y, 0);
-            ortho.linijaDo(xNext, yNext, 0);
-            ortho.povuciLiniju();
-        }
-    }
-
-    var iProgress = 0;
+    Kombiniranjem odgovarajućih geometrijskih transformacija nacrtajte sljedeće elipse:
     
-    function draw() {
-        
-        ortho.initRenderer();
+     - Poluosi a = 6, b = 3, velika os elipse je pod kutem od -30° prema osi x, a središte je u točki (4, 0) (nacrtajte crvenom bojom);
+    
+     - Isto kao i gore, ali promijenite poredak transformacija: prvo pomaknite, pa rotirajte (nacrtajte plavom bojom);
+    
+     - Poluosi a = 4, b = 1, elipsa je najprije zarotirana za 75°, potom pomaknuta za 3 u desno, te zrcaljena na osi y (zelena boja)
 
-        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        
-        const rot = animateCheckbox.checked ? iProgress : rotationSlider.value;
-        astroid(4, 1 - rot / 360);
+*/
+
+const r = 1, a = 3, b = r;
+const petalCount = 8;
+const size = (r+a*2)*1.1;
+
+function WebGLaplikacija() {
+
+    var platno1 = document.getElementById("slika1");
+    gl = platno1.getContext("webgl2");
+    if (!gl) alert("WebGL2 nije dostupan!");
+
+    GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
+    gl.useProgram(GPUprogram1);
+
+    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
+    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
+
+    var matrix = new MT2D();
+    matrix.projekcija2D(-size, size, -size, size);
+
+    function ellipse(a, b) {
+        var vertices = [];
+        for (let i = 0; i < Math.PI * 2; i += Math.PI / 100) {
+            vertices.push(Math.cos(i) * a, Math.sin(i) * b);
+            vertices.push(Math.cos(i + Math.PI / 100) * a, Math.sin(i + Math.PI / 100) * b);
+        }
+        return vertices;
+    }
+
+    function circle(r) { return ellipse(r, r); }
+
+    function initBuffers() {
+        spremnikVrhova = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, spremnikVrhova);
+        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+        gl.enableVertexAttribArray(GPUprogram1.a_vrhXY);
+        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 0, 0);
+    }
+
+    function fillBuffer(vertices) {
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    }
+
+    function color(r, g, b) { return [r, g, b, 1.0]; }
+    function col(r, g, b) { return gl.uniform4fv(GPUprogram1.u_boja, color(r, g, b)); }
+
+    function setPetalColor() { col(1, 1, 0); }
+    function setDiscColor() { col(255 / 255, 102 / 255, 178 / 255); }
+
+    function render() {
+
+        gl.clearColor(102 / 255, 178 / 255, 255 / 255, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.viewport(0, 0, platno1.width, platno1.height);
+
+        fillBuffer(ellipse(a, b));
+        setPetalColor();
+
+        for (let i = 0; i < petalCount; i++) {
+            matrix.identitet();
+            matrix.projekcija2D(-size, size, -size, size);
+            // matrix.rotacija_oko_tocke(a + r, 0, 360 / petalCount * i);
+            matrix.rotiraj(360 / petalCount * i);
+            matrix.pomakni(a + r, 0);
+            gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, ellipse(a, b).length / 2);
+        }
+
+        fillBuffer(circle(r));
+        setDiscColor();
+
+        matrix.identitet();
+        matrix.projekcija2D(-size, size, -size, size);
+        gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, circle(r).length / 2);
 
     }
 
-    unitSlider.oninput = function() {
-        ortho.zoom = this.value;
-        draw();
-    }
-
-    rotationSlider.oninput = draw;
-
-    setInterval(() => {
-        if (animateCheckbox.checked) iProgress++;
-        if (iProgress > 360) iProgress = 0;
-        draw();
-    }, 1000 / 60);
-
-    draw();
+    initBuffers();
+    render();
 
 }

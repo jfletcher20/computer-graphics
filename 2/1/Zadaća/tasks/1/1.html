@@ -1,50 +1,56 @@
 <!doctype html>
 <html lang="hr">
-	<head>
-		<meta charset="UTF-8">
-		<title>Zadaća</title>
-		<link rel="stylesheet" href="../../style.css">
-		<script src="../../ortho.js"></script>
-		<script src="../../mt3d.js"></script>
-		<script src="logic.js"></script>
-	</head>
 
-	<body>
-		<h1>Zadatak 1</h1>
-		<nav>
-			<a href="../../index.html">Zadaća 3</a>
-			<a href="../../tasks/1/1.html" class="selected">Zadatak 1</a>
-			<a href="../../tasks/2/2.html">Zadatak 2</a>
-		</nav>
-		<div class="container">
-			<input type="range" id="unit" min="1" max="100" value="3" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
+<head>
+	<meta charset="UTF-8">
+	<title>Zadaća</title>
+	<link rel="stylesheet" href="../../style.css">
+	<script src="../../RG-WebGL.js"></script>
+	<script src="../../mt2d.js"></script>
+	<script src="logic.js"></script>
+</head>
 
-			<input type="range" id="rotation" min="-180" max="180" value="0" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: -735px;">
+<body>
+	<h1>Zadatak 1</h1>
+	<nav>
+		<a href="../../index.html">Zadaća</a>
+		<a href="../../tasks/1/1.html" class="selected">Zadatak 1</a>
+		<a href="../../tasks/2/2.html">Zadatak 2</a>
+	</nav>
+	<div class="container">
+		<!-- <input type="range" id="unit" min="1" max="100" value="10"
+			style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
 
-			<input type="range" id="rotation-x" min="-180" max="180" value="30" style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: -700px;">
-			<input type="range" id="rotation-y" min="-180" max="180" value="30" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: -700px;">
-			<input type="range" id="rotation-z" min="-180" max="180" value="0" style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: -700px;">
+		<input type="range" id="canvas-height" min="240" max="760" value="640"
+			style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 700px;">
+		<input type="range" id="canvas-width" min="240" max="760" value="640"
+			style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 700px;"> -->
 
-			<input type="range" id="canvas-height" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 700px;">
-			<input type="range" id="canvas-width" min="240" max="760" value="640" style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 700px;">
+		<canvas id="slika1" width="640" height="640">
+			Vaš preglednik ne podržava HTML5 canvas.
+		</canvas>
+	</div>
+</body>
 
-			<div style="position: absolute; margin-top: 15px; margin-left: 450px; background-color: rgba(0, 0, 0, 0.5); padding: 8px; padding-left: 12px; padding-right: 12px; border-radius: 8px;">
+<script id="vertex-shader" type="x-shader/x-vertex">
+	#version 300 es
+	in vec2 a_vrhXY;
+	uniform mat3 u_mTrans;
 
-				<label for="ux" style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;">u</label>
-				<input type="text" readonly style="background-color: rgba(255, 255, 255, 0.5)" name="ux" id="ux">
-				<input type="text" readonly style="background-color: rgba(255, 255, 255, 0.5)" name="uy" id="uy">
-				<input type="text" readonly style="background-color: rgba(255, 255, 255, 0.5)" name="uz" id="uz"><br>
-				
-				<input type="checkbox" name="animate-view" id="animate-view">
-				<label for="animate-view" style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;">Animiraj pogled</label><br>
+	void main() {
+	  gl_Position = vec4(u_mTrans * vec3(a_vrhXY, 1.0), 1.0);
+	}
+</script>
 
-				<input type="checkbox" name="animate-cube" id="animate-cube" checked>
-				<label for="animate-cube" style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;">Animiraj kocku</label>
-		   	</div>
-			
-			<canvas id="renderer" width="640" height="640">
-				Vaš preglednik ne podržava HTML5 canvas.
-			</canvas>
-		</div>
-	</body>
+<script id="fragment-shader" type="x-shader/x-fragment">
+	#version 300 es
+	precision mediump float;
+	uniform vec4 u_boja;
+	out vec4 bojaPiksela;
+
+	void main() {
+	  bojaPiksela = u_boja;
+	}
+</script>
+
 </html>

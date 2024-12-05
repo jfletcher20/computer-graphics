@@ -1,154 +1,103 @@
+window.onload = WebGLaplikacija;
+
 /*
 
-    Zadaća 3.1. Klasi MT3D matričnih reprezentacija geometrijskih transformacija u 3D (zadatak 3.2) dodajte rotaciju oko proizvoljne osi koja se zadaje dvjema točkama: rotiraj(x1, y1, z1, x2, y2, z2, kut).
+    Kombiniranjem odgovarajućih geometrijskih transformacija nacrtajte sljedeće elipse:
     
-    Animirajte rotaciju kocke oko osi zadane točkama P1 = (2, -5, 2) i P2 = (-3, 5, -3).
-    U početnom položaju, lijevi donji vrh kocke je u ishodištu, a stranice duljine a = 2 su na koordinatnim osima.
+     - Poluosi a = 6, b = 3, velika os elipse je pod kutem od -30° prema osi x, a središte je u točki (4, 0) (nacrtajte crvenom bojom);
+    
+     - Isto kao i gore, ali promijenite poredak transformacija: prvo pomaknite, pa rotirajte (nacrtajte plavom bojom);
+    
+     - Poluosi a = 4, b = 1, elipsa je najprije zarotirana za 75°, potom pomaknuta za 3 u desno, te zrcaljena na osi y (zelena boja)
 
 */
 
-const unit = 40;
-const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
+const a1 = 6, b1 = 3;
+const a2 = 4, b2 = 1;
 
-window.onload = function () {
+const size = 10;
 
-    const canvas = document.getElementById("renderer");
+function WebGLaplikacija() {
 
-    const canvasHeightSlider = document.getElementById("canvas-height");
-    const canvasWidthSlider = document.getElementById("canvas-width");
-    const unitSlider = document.getElementById("unit");
+    var platno1 = document.getElementById("slika1");
+    gl = platno1.getContext("webgl2");
+    if (!gl) alert("WebGL2 nije dostupan!");
 
-    const rotSlider = document.getElementById("rotation");
-    const rotSliderX = document.getElementById("rotation-x");
-    const rotSliderY = document.getElementById("rotation-y");
-    const rotSliderZ = document.getElementById("rotation-z");
+    GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
+    gl.useProgram(GPUprogram1);
 
-    const animateView = document.getElementById("animate-view");
-    const animateCube = document.getElementById("animate-cube");
+    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
+    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
 
-    const uX = document.getElementById("ux");
-    const uY = document.getElementById("uy");
-    const uZ = document.getElementById("uz");
+    var matrix = new MT2D();
+    matrix.projekcija2D(-size, size, -size, size);
 
-    if (!canvas) alert("Greška - nema platna!");
-
-    canvasHeightSlider.oninput = function () {
-        canvas.height = this.value;
-        canvas.width = canvasWidthSlider.value;
-        ortho.initRenderer();
-        draw();
-    }
-
-    canvasWidthSlider.oninput = function () {
-        canvas.width = this.value;
-        canvas.height = canvasHeightSlider.value;
-        ortho.initRenderer();
-        draw();
-    }
-
-    var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-    ortho.zoom = unitSlider.value;
-
-    function drawCube(baseX = 0, baseY = 0, baseZ = 0) {
-
-        const side = 2;
-
-        ortho.postaviBoju("red");
-        ortho.postaviNa(baseX, baseY, baseZ);
-        ortho.linijaDo(baseX + side, baseY, baseZ);
-        ortho.linijaDo(baseX + side, baseY + side, baseZ);
-        ortho.linijaDo(baseX, baseY + side, baseZ);
-        ortho.linijaDo(baseX, baseY, baseZ);
-        ortho.povuciLiniju();
-
-        ortho.postaviBoju("blue");
-        ortho.postaviNa(baseX, baseY, baseZ + side);
-        ortho.linijaDo(baseX + side, baseY, baseZ + side);
-        ortho.linijaDo(baseX + side, baseY + side, baseZ + side);
-        ortho.linijaDo(baseX, baseY + side, baseZ + side);
-        ortho.linijaDo(baseX, baseY, baseZ + side);
-        ortho.povuciLiniju();
-
-        ortho.postaviBoju("green");
-        ortho.postaviNa(baseX, baseY, baseZ);
-        ortho.linijaDo(baseX, baseY, baseZ + side);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(baseX + side, baseY, baseZ);
-        ortho.linijaDo(baseX + side, baseY, baseZ + side);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(baseX + side, baseY + side, baseZ);
-        ortho.linijaDo(baseX + side, baseY + side, baseZ + side);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(baseX, baseY + side, baseZ);
-        ortho.linijaDo(baseX, baseY + side, baseZ + side);
-        ortho.povuciLiniju();
-
-    }
-
-    const p1 = [2, -5, 2], p2 = [-3, 5, -3];
-    uX.value = p2[0] - p1[0];
-    uY.value = p2[1] - p1[1];
-    uZ.value = p2[2] - p1[2];
-
-    function draw() {
-
-        ortho.initRenderer();
-
-        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-
-        ortho.m.identitet();
-
-        const rotX = rotSliderX.value;
-        const rotY = animateView.checked ? iView : rotSliderY.value;
-        const rotZ = rotSliderZ.value;
-        ortho.m.rotirajX(rotX);
-        ortho.m.rotirajY(rotY);
-        ortho.m.rotirajZ(rotZ);
-        
-        ortho.postaviBoju("black");
-        ortho.postaviNa(p1[0], p1[1], p1[2]);
-        ortho.linijaDo(p2[0], p2[1], p2[2]);
-        ortho.povuciLiniju();
-
-        var u = [uX.value, uY.value, uZ.value];
-        u = [
-            u[0] / Math.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2),
-            u[1] / Math.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2),
-            u[2] / Math.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2)
-        ]
-
-        const rotCube = animateCube.checked ? iCube : rotSlider.value;
-        ortho.m.rotiraj_oko_osi(p1[0], p1[1], p1[2], u[0], u[1], u[2], rotCube);
-
-        ortho.postaviBoju("red");
-        drawCube();
-
-    }
-
-    unitSlider.oninput = function () {
-        ortho.zoom = this.value;
-        draw();
-    }
-
-    rotSlider.oninput = rotSliderX.oninput = rotSliderY.oninput = rotSliderZ.oninput = draw;
-    uX.oninput = uY.oninput = uZ.oninput = draw;
-
-    var iView = 0, iCube = 0;
-    setInterval(() => {
-        if (animateView.checked) {
-            iView += 1;
-            if (iView > 360) iView = 0;
+    function ellipse(a, b) {
+        var vrhovi = [];
+        for (let i = 0; i < Math.PI * 2; i += Math.PI / 100) {
+            vrhovi.push(Math.cos(i) * a, Math.sin(i) * b);
+            vrhovi.push(Math.cos(i + Math.PI / 100) * a, Math.sin(i + Math.PI / 100) * b);
         }
-        if (animateCube.checked) {
-            iCube += 1;
-            if (iCube > 360) iCube = 0;
-        }
-        if (animateCube.checked || animateView.checked) draw();
-    }, 1000 / 60);
+        return vrhovi;
+    }
 
-    draw();
 
+    function initBuffers() {
+        spremnikVrhova = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, spremnikVrhova);
+        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+        gl.enableVertexAttribArray(GPUprogram1.a_vrhXY);
+        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 0, 0);
+    }
+
+    function fillBuffer(a, b) {
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ellipse(a, b)), gl.STATIC_DRAW);
+    }
+
+    function color(r, g, b) { return [r, g, b, 1.0]; }
+    function col(r, g, b) { return gl.uniform4fv(GPUprogram1.u_boja, color(r, g, b)); }
+
+    function render() {
+
+        gl.clearColor(0.4, 0.4, 0.4, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.viewport(0, 0, platno1.width, platno1.height);
+
+        fillBuffer(a1, b1);
+
+        resetMatrix();
+        matrix.pomakni(4, 0);
+        matrix.rotiraj(-30);
+        col(1.0, 0.0, 0.0);
+        gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, ellipse(a1, b1).length / 2);
+
+        fillBuffer(a1, b1);
+
+        resetMatrix();
+        matrix.rotiraj(-30);
+        matrix.pomakni(4, 0);
+        col(0.0, 0.0, 1.0);
+        gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, ellipse(a1, b1).length / 2);
+
+        fillBuffer(a2, b2);
+
+        resetMatrix();
+        matrix.zrcaliNaY();
+        matrix.pomakni(3, 0);
+        matrix.rotiraj(75);
+        col(0.0, 1.0, 0.0);
+        gl.uniformMatrix3fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, ellipse(a2, b2).length / 2);
+
+    }
+
+    function resetMatrix() {
+        matrix.identitet();
+        matrix.projekcija2D(-size, size, -size, size);
+    }
+
+    initBuffers();
+    render();
 }

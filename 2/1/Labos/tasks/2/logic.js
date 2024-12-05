@@ -1,111 +1,59 @@
-/*
+window.onload = WebGLaplikacija;
 
-    Zadatak 2
-    Koristeći klase ortho i MT2D nacrtajte leptire i cvjetove kako je prikazano na slici.
+function WebGLaplikacija() {
 
-        Za leptire i cvjetove koristite formule iz prve zadaće.
-        Primijenite odgovarajuće transformacije na leptire i cvjetove da ih dovedete u odgovarajući položaj i dobijete odgovarajući oblik (uočite da postoje veći i manji leptiri).
+    var platno1 = document.getElementById("slika1");
+    gl = platno1.getContext("webgl2");
+    if (!gl) alert("WebGL2 nije dostupan!");
 
+    GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
+    gl.useProgram(GPUprogram1);
 
-*/
+    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
+    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
 
-const xmin = -10, xmax = 10, ymin = -10, ymax = 10;
+    var vrhovi = [0.0, 0.0, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.0, 0.0];
 
-window.onload = function() {
-
-    const canvas = document.getElementById("renderer");
-
-    const canvasHeightSlider = document.getElementById("canvas-height");
-    const canvasWidthSlider = document.getElementById("canvas-width");
-    const unitSlider = document.getElementById("unit");
-
-    const rotationSliderX = document.getElementById("rotation-x");
-    const rotationSliderY = document.getElementById("rotation-y");
-    const rotationSliderZ = document.getElementById("rotation-z");
-
-    if (!canvas) alert("Greška - nema platna!");
-
-    canvasHeightSlider.oninput = function() {
-        canvas.height = this.value;
-        canvas.width = canvasWidthSlider.value;
-        ortho.initRenderer();
-        draw();
+    function initBuffers() {
+        spremnikVrhova = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, spremnikVrhova);
+        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+        gl.enableVertexAttribArray(GPUprogram1.a_vrhXY);
+        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 0, 0);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vrhovi), gl.STATIC_DRAW);
     }
 
-    canvasWidthSlider.oninput =  function() {
-        canvas.width = this.value;
-        canvas.height = canvasHeightSlider.value;
-        ortho.initRenderer();
-        draw();
-    }
+    function color(r, g, b) { return [r, g, b, 1.0]; }
+    function col(r, g, b) { return gl.uniform4fv(GPUprogram1.u_boja, color(r, g, b)); }
+    function cos(φ) { return Math.cos(φ) }
+    function sin(φ) { return Math.sin(φ) }
+    function rot(φ) { return Math.PI * φ / 180; }
 
-    var ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-    ortho.zoom = unitSlider.value;
-    
-    function draw() {
+    function rotMatrix(φ) { return [cos(rot(φ)), sin(rot(φ)), -sin(rot(φ)), cos(rot(φ))]; }
 
-        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        ortho = new Ortho(canvas, xmin, xmax, ymin, ymax);
-        ortho.zoom = unitSlider.value;
+    function render() {
+
+        gl.clearColor(0.4, 0.4, 0.4, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.viewport(0, 0, platno1.width, platno1.height);
+
         
-        ortho.m.identitet();
-        ortho.m.rotirajX(rotationSliderX.value);
-        drawCube("red");
-        ortho.m.identitet();
-        ortho.m.rotirajY(rotationSliderY.value);
-        drawCube("green");
-        ortho.m.identitet();
-        ortho.m.rotirajZ(rotationSliderZ.value);
-        drawCube("blue");
-        ortho.m.identitet();
-        ortho.m.rotirajX(rotationSliderX.value);
-        ortho.m.rotirajY(rotationSliderY.value);
-        ortho.m.rotirajZ(rotationSliderZ.value);
-        drawCube("black");
+        col(1.0, 0.0, 0.0);
+        gl.uniformMatrix2fv(GPUprogram1.u_mTrans, false, [1.0, 0.0, 0.0, 1.0]);
+        gl.drawArrays(gl.TRIANGLES, 0, vrhovi.length / 2);
+        
+        φ = 30;
+        col(1.0, 1.0, 0.0);
+        gl.uniformMatrix2fv(GPUprogram1.u_mTrans, false, rotMatrix(φ));
+        gl.drawArrays(gl.TRIANGLES, 0, vrhovi.length / 2);
+
+        φ *= 2;
+        col(0.0, 1.0, 0.0);
+        gl.uniformMatrix2fv(GPUprogram1.u_mTrans, false, rotMatrix(φ));
+        gl.drawArrays(gl.TRIANGLES, 0, vrhovi.length / 2);
 
     }
 
-    function drawCube(color) {
-            
-        if (color) ortho.postaviBoju(color);
-        ortho.postaviNa(-1, -1, -1);
-        ortho.linijaDo(1, -1, -1);
-        ortho.linijaDo(1, 1, -1);
-        ortho.linijaDo(-1, 1, -1);
-        ortho.linijaDo(-1, -1, -1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(-1, -1, 1);
-        ortho.linijaDo(1, -1, 1);
-        ortho.linijaDo(1, 1, 1);
-        ortho.linijaDo(-1, 1, 1);
-        ortho.linijaDo(-1, -1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(-1, -1, -1);
-        ortho.linijaDo(-1, -1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(1, -1, -1);
-        ortho.linijaDo(1, -1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(1, 1, -1);
-        ortho.linijaDo(1, 1, 1);
-        ortho.povuciLiniju();
-
-        ortho.postaviNa(-1, 1, -1);
-        ortho.linijaDo(-1, 1, 1);
-        ortho.povuciLiniju();
-    }
-
-    unitSlider.oninput = function() {
-        ortho.zoom = this.value;
-        draw();
-    }
-
-    rotationSliderX.oninput = rotationSliderY.oninput = rotationSliderZ.oninput = draw;
-
-    draw();
-
+    initBuffers();
+    render();
 }

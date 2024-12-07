@@ -10,12 +10,12 @@ function WebGLaplikacija() {
 
     let a = 0.5;
     vrhovi = [
-        [ -a, -a,   0.0, 0.0, 1.0], // blue
-        [  a, -a,   0.5, 0.0, 0.5], // purple
-        [  0,  0,   0.0, 1.0, 0.5], // cyan
-        [  0,  0,   0.0, 1.0, 0.3], // green
-        [  a,  a,   1.0, 1.0, 0.0], // yellow
-        [ -a,  a,   1.0, 0.0, 0.0], // red
+        [  a, -a,   0.5, 0.0, 0.5 ], // purple
+        [ -a, -a,   0.0, 0.0, 1.0 ], // blue
+        [  0,  0,   0.0, 1.0, 0.5 ], // cyan
+        [  0,  0,   0.0, 1.0, 0.3 ], // green
+        [  a,  a,   1.0, 1.0, 0.0 ], // yellow
+        [ -a,  a,   1.0, 0.0, 0.0 ], // red
     ];
 
     function loadBuffers() {

@@ -1,11 +1,5 @@
 window.onload = WebGLaplikacija;
 
-/*
-
-6.2. Modificirajte Primjer 6.2. tako da se umjesto para trokuta iscrta ispunjena (obojana) elipse s velikom poluosi a = 0.9 i malom poluosi b = 0.2 i također je iscrtajte tri puta: zelenu bez zakreta, žutu zarotiranu za 60 stupnjeva i crvenu zarotiranu za 120 stupnjeva.
-
-*/
-
 function WebGLaplikacija() {
 
     var platno1 = document.getElementById("slika1");
@@ -25,7 +19,6 @@ function WebGLaplikacija() {
         vrhovi.push(Math.cos(i) * 0.9, Math.sin(i) * 0.2);
         vrhovi.push(Math.cos(i + Math.PI / 100) * 0.9, Math.sin(i + Math.PI / 100) * 0.2);
     }
-
 
     function initBuffers() {
         spremnikVrhova = gl.createBuffer();
@@ -70,4 +63,5 @@ function WebGLaplikacija() {
 
     initBuffers();
     render();
+    
 }

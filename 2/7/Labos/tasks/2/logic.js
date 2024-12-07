@@ -1,60 +1,67 @@
 window.onload = WebGLaplikacija;
 
 function WebGLaplikacija() {
-
     var platno1 = document.getElementById("slika1");
     gl = platno1.getContext("webgl2");
-    if (!gl) alert("WebGL2 nije dostupan!");
+    if (!gl) {
+        alert("WebGL2 nije dostupan!");
+        return;
+    }
 
     GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(GPUprogram1);
 
-    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
-    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
+    let a = 0.5;
+    vrhovi = [
+        [  a, -a,   0.5, 0.0, 0.5 ], // purple
+        [ -a, -a,   0.0, 0.0, 1.0 ], // blue
+        [  0,  0,   0.0, 1.0, 0.5 ], // cyan
+        [  0,  0,   0.0, 1.0, 0.3 ], // green
+        [  a,  a,   1.0, 1.0, 0.0 ], // yellow
+        [ -a,  a,   1.0, 0.0, 0.0 ], // red
+    ];
 
-    var vrhovi = [0.0, 0.0, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.0, 0.0];
+    function loadBuffers() {
+        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+        GPUprogram1.a_boja = gl.getAttribLocation(GPUprogram1, "a_boja");
+        GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
 
-    function initBuffers() {
+        // Flatten vertex data
+        const flatVrhovi = new Float32Array(vrhovi.flat());
+        
         spremnikVrhova = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, spremnikVrhova);
-        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+        gl.bufferData(gl.ARRAY_BUFFER, flatVrhovi, gl.STATIC_DRAW);
+
         gl.enableVertexAttribArray(GPUprogram1.a_vrhXY);
-        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 0, 0);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vrhovi), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 20, 0);
+
+        gl.enableVertexAttribArray(GPUprogram1.a_boja);
+        gl.vertexAttribPointer(GPUprogram1.a_boja, 3, gl.FLOAT, false, 20, 8);
     }
 
-    function color(r, g, b) { return [r, g, b, 1.0]; }
-    function col(r, g, b) { return gl.uniform4fv(GPUprogram1.u_boja, color(r, g, b)); }
-    function cos(φ) { return Math.cos(φ) }
-    function sin(φ) { return Math.sin(φ) }
-    function rot(φ) { return Math.PI * φ / 180; }
+    const matrix = new MT3D();
 
-    function rotMatrix(φ) { return [cos(rot(φ)), sin(rot(φ)), -sin(rot(φ)), cos(rot(φ))]; }
+    function render(φ) {
+        matrix.identitet();
+        matrix.rotirajX(φ);
+        matrix.rotirajY(φ * 2);
+        matrix.rotirajZ(φ * 3);
 
-    function render() {
-
-        gl.clearColor(0.4, 0.4, 0.4, 1);
+        gl.clearColor(0.5, 0.5, 0.5, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
+
         gl.viewport(0, 0, platno1.width, platno1.height);
-
-        
-        col(1.0, 0.0, 0.0);
-        gl.uniformMatrix2fv(GPUprogram1.u_mTrans, false, [1.0, 0.0, 0.0, 1.0]);
-        gl.drawArrays(gl.TRIANGLES, 0, vrhovi.length / 2);
-        
-        φ = 30;
-        col(1.0, 1.0, 0.0);
-        gl.uniformMatrix2fv(GPUprogram1.u_mTrans, false, rotMatrix(φ));
-        gl.drawArrays(gl.TRIANGLES, 0, vrhovi.length / 2);
-
-        φ *= 2;
-        col(0.0, 1.0, 0.0);
-        gl.uniformMatrix2fv(GPUprogram1.u_mTrans, false, rotMatrix(φ));
-        gl.drawArrays(gl.TRIANGLES, 0, vrhovi.length / 2);
-
+        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vrhovi.length);
     }
 
-    initBuffers();
-    render();
-    
+    loadBuffers();
+
+    function animiraj(vrijeme) {
+        render(vrijeme / 100);
+        requestAnimationFrame(animiraj);
+    }
+
+    requestAnimationFrame(animiraj);
 }

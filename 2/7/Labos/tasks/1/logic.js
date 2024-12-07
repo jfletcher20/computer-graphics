@@ -8,28 +8,36 @@ function WebGLaplikacija() {
     GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(GPUprogram1);
 
-    var vrhovi = [
-        0.0, 0.0, -0.5, -0.5,
-        0.5, -0.5, 0.5, 0.5,
-        -0.5, 0.5, 0.0, 0.0
+    let a = 0.5;
+    vrhovi = [
+        [ -a, -a,   0.0, 0.0, 1.0], // blue
+        [  a, -a,   0.5, 0.0, 0.5], // purple
+        [  0,  0,   0.0, 1.0, 0.5], // cyan
+        [  0,  0,   0.0, 1.0, 0.3], // green
+        [  a,  a,   1.0, 1.0, 0.0], // yellow
+        [ -a,  a,   1.0, 0.0, 0.0], // red
     ];
 
-    function napuniSpremnike() {
+    function loadBuffers() {
+        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+        GPUprogram1.a_boja = gl.getAttribLocation(GPUprogram1, "a_boja");
         spremnikVrhova = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, spremnikVrhova);
-        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
         gl.enableVertexAttribArray(GPUprogram1.a_vrhXY);
-        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 0, 0);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vrhovi), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(GPUprogram1.a_boja);
+        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 20, 0);
+        gl.vertexAttribPointer(GPUprogram1.a_boja, 3, gl.FLOAT, false, 20, 8);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vrhovi.flat()), gl.STATIC_DRAW);
     }
 
-    function iscrtaj() {
-        gl.clearColor(0.4, 0.4, 0.4, 1);
+    function render() {
+        gl.clearColor(0.5, 0.5, 0.5, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.viewport(0, 0, platno1.width, platno1.height);
-        gl.drawArrays(gl.TRIANGLES, 0, vrhovi.length / 2);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vrhovi.length);
     }
 
-    napuniSpremnike();
-    iscrtaj();
+    loadBuffers();
+    render();
+
 }

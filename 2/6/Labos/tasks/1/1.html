@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="hr">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Labos 6</title>
+	<link rel="stylesheet" href="../../style.css">
+	<script src="../../RG-WebGL.js"></script>
+	<script src="logic.js"></script>
+</head>
+
+<body>
+	<h1>Zadatak 1</h1>
+	<nav>
+		<a href="../../labos.html">Labos 6</a>
+		<a href="../../tasks/1/1.html" class="selected">Zadatak 1</a>
+		<a href="../../tasks/2/2.html">Zadatak 2</a>
+		<a href="../../tasks/3/3.html">Zadatak 3</a>
+		<a href="../../tasks/4/4.html">Zadatak 4</a>
+	</nav>
+	<div class="container">
+		<input type="range" id="unit" min="1" max="100" value="30"
+			style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
+
+		<input type="range" id="rotation" min="-180" max="180" value="0"
+			style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: -700px;">
+
+		<input type="range" id="canvas-height" min="240" max="760" value="640"
+			style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 700px;">
+		<input type="range" id="canvas-width" min="240" max="760" value="640"
+			style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 700px;">
+
+		<canvas id="slika1" width="640" height="640">
+			Vaš preglednik ne podržava HTML5 canvas.
+		</canvas>
+	</div>
+</body>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+	#version 300 es
+	in vec2 a_vrhXY;
+
+	void main() {
+	  gl_Position = vec4(a_vrhXY, 0, 1);
+	}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+	#version 300 es
+	precision mediump float;
+	out vec4 bojaPiksela;
+
+	void main() {
+	  bojaPiksela = vec4(0, 1, 0, 1);
+	}
+</script>
+
+</html>

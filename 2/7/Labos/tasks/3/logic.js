@@ -66,9 +66,10 @@ function WebGLaplikacija() {
 
     const matrix = new MT3D();
 
+    gl.enable(gl.DEPTH_TEST);
     function render(φ) {
         gl.clearColor(0.5, 0.5, 0.5, 1);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, platno1.width, platno1.height);
 
         matrix.identitet();

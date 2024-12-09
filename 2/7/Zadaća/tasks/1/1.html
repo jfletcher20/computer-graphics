@@ -6,26 +6,17 @@
 	<title>Zadaća 7</title>
 	<link rel="stylesheet" href="../../style.css">
 	<script src="../../RG-WebGL.js"></script>
-	<script src="../../mt2d.js"></script>
+	<script src="../../mt3d.js"></script>
 	<script src="logic.js"></script>
 </head>
 
 <body>
 	<h1>Zadatak 1</h1>
 	<nav>
-		<a href="../../index.html">Zadaća 7</a>
+		<a href="../../labos.html">Labos 7</a>
 		<a href="../../tasks/1/1.html" class="selected">Zadatak 1</a>
-		<a href="../../tasks/2/2.html">Zadatak 2</a>
 	</nav>
 	<div class="container">
-		<!-- <input type="range" id="unit" min="1" max="100" value="10"
-			style="transform: rotate(90deg); position: absolute; margin-top: 125px; margin-right: 700px;">
-
-		<input type="range" id="canvas-height" min="240" max="760" value="640"
-			style="transform: rotate(90deg); position: absolute; margin-top: 315px; margin-right: 700px;">
-		<input type="range" id="canvas-width" min="240" max="760" value="640"
-			style="transform: rotate(90deg); position: absolute; margin-top: 505px; margin-right: 700px;"> -->
-
 		<canvas id="slika1" width="640" height="640">
 			Vaš preglednik ne podržava HTML5 canvas.
 		</canvas>
@@ -34,22 +25,27 @@
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 	#version 300 es
+	precision highp float; // Ensure precision for WebGL2 shaders
+
 	in vec2 a_vrhXY;
-	uniform mat3 u_mTrans;
+	in vec3 a_boja;
+	out vec3 v_boja;
+	uniform mat4 u_mTrans;
 
 	void main() {
-	  gl_Position = vec4(u_mTrans * vec3(a_vrhXY, 1.0), 1.0);
+	  gl_Position = u_mTrans * vec4(a_vrhXY, 0.0, 1.0);
+	  v_boja = a_boja;
 	}
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
 	#version 300 es
-	precision mediump float;
-	uniform vec4 u_boja;
+	precision highp float;
+	in vec3 v_boja;
 	out vec4 bojaPiksela;
 
 	void main() {
-	  bojaPiksela = u_boja;
+	  bojaPiksela = vec4(v_boja, 1);
 	}
 </script>
 

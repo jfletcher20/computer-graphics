@@ -1,3 +1,10 @@
+/*
+
+    Zadaća 7
+    Napravite animaciju kocke kojoj je središte u ishodištu, a svaka stranica je različite boje. Duljinu brida odaberite tako da kod rotacije vrhovi kocke budu automatski odrezani kad izlaze izvan normiranih koordinata te se na taj način dobije uvid u unutrašnjost kocke. Realizirajte realističan prikaz samo preko selektivnog odbacivanja, tj. bez spremnika dubine.
+
+*/
+
 window.onload = WebGLaplikacija;
 
 function WebGLaplikacija() {
@@ -13,47 +20,18 @@ function WebGLaplikacija() {
 
     const a = 0.5;
 
-    const frontFace = [
-        [  a,   a,    1.0, 0.0, 0.0],
-        [ -a,   a,    1.0, 0.0, 0.0],
-        [  a,  -a,    1.0, 0.0, 0.0],
-        [ -a,  -a,    1.0, 0.0, 0.0],
-    ];
+    const frontFace = [ [a, a, 0, 1, 0], [-a, a, 0, 1, 0], [a, -a, 0, 1, 0], [-a, -a, 0, 1, 0] ];
 
-    const backFace = [
-        [  a,   a,    0.0, 0.0, 1.0],
-        [ -a,   a,    0.0, 0.0, 1.0],
-        [  a,  -a,    0.0, 0.0, 1.0],
-        [ -a,  -a,    0.0, 0.0, 1.0],
-    ];
+    const backFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 1, 0]);
 
-    const leftFace = [
-        [ -a,   a,    a,    0.0, 1.0],
-        [ -a,   a,   -a,    0.0, 1.0],
-        [ -a,  -a,    a,    0.0, 1.0],
-        [ -a,  -a,   -a,    0.0, 1.0],
-    ];
+    const leftFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 0, 0]);
 
-    const rightFace = [
-        [  a,   a,    a,    1.0, 1.0],
-        [  a,   a,   -a,    1.0, 1.0],
-        [  a,  -a,    a,    1.0, 1.0],
-        [  a,  -a,   -a,    1.0, 1.0],
-    ];
+    const rightFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 1, 1]);
 
-    const topFace = [
-        [  a,   a,   -a,    0.0, 1.0],
-        [ -a,   a,   -a,    0.0, 1.0],
-        [  a,   a,    a,    0.0, 1.0],
-        [ -a,   a,    a,    0.0, 1.0],
-    ];
+    const topFace = frontFace.map(([x, y, r, g, b]) => [x, y, 0, 0, 1]);
 
-    const bottomFace = [
-        [  a,  -a,   -a,    1.0, 0.0],
-        [ -a,  -a,   -a,    1.0, 0.0],
-        [  a,  -a,    a,    1.0, 0.0],
-        [ -a,  -a,    a,    1.0, 0.0],
-    ];
+    const bottomFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 0.5, 0]);
+
 
     var buffers = [];
 
@@ -66,7 +44,11 @@ function WebGLaplikacija() {
     }
 
     function loadBuffers() {
-        buffers = [frontFace, backFace, leftFace, rightFace, topFace, bottomFace].map(createBuffer);
+        buffers = [
+            frontFace, backFace,
+            leftFace, rightFace,
+            topFace, bottomFace
+        ].map(createBuffer);
 
         GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
         GPUprogram1.a_boja = gl.getAttribLocation(GPUprogram1, "a_boja");
@@ -82,58 +64,52 @@ function WebGLaplikacija() {
         gl.vertexAttribPointer(GPUprogram1.a_boja, 3, gl.FLOAT, false, 20, 8);
     }
 
-    gl.enable(gl.DEPTH_TEST);
-    // gl.enable(gl.CULL_FACE);
+    // gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.FRONT);
 
     const matrix = new MT3D();
     matrix.rotirajZ(30);
 
     function render(φ) {
         gl.clearColor(0.5, 0.5, 0.5, 1);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        matrix.identitet();
-        matrix.rotirajX(φ);
-        matrix.rotirajZ(φ);
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
         gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
 
         buffers.forEach((buffer, i) => {
             bindBuffer(buffer);
-            
+
             const tempMatrix = new MT3D();
             tempMatrix._matrica = matrix._matrica.slice();
-        
+
+            matrix.rotirajX(φ);
+            matrix.rotirajY(φ + 30);
+            matrix.rotirajZ(φ / 2 + 90);
+
+
             switch (i) {
-                case 0:
-                    matrix.pomakni(0, 0, a);
-                    break;
                 case 1:
-                    matrix.rotirajY(180);
-                    matrix.pomakni(0, 0, a);
+                    matrix.rotirajY(90);
                     break;
                 case 2:
-                    matrix.rotirajX(-90);
-                    matrix.pomakni(0, 0, a);
+                    matrix.rotirajY(-90);
                     break;
                 case 3:
-                    matrix.rotirajX(90);
-                    matrix.pomakni(0, 0, a);
+                    matrix.rotirajY(180);
                     break;
+
                 case 4:
-                    matrix.rotirajY(90);
-                    matrix.pomakni(0, 0, a);
+                    matrix.rotirajX(90);
                     break;
                 case 5:
-                    matrix.rotirajY(-90);
-                    matrix.pomakni(0, 0, a);
-                    break;
+                    matrix.rotirajX(-90);
             }
-        
+
+            matrix.pomakni(0, 0, a);
             gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
-        
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        
+
             matrix._matrica = tempMatrix._matrica.slice();
         });
     }

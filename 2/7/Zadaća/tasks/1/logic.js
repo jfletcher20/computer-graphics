@@ -68,7 +68,6 @@ function WebGLaplikacija() {
     gl.cullFace(gl.FRONT);
 
     const matrix = new MT3D();
-    matrix.rotirajZ(30);
 
     function render(φ) {
         gl.clearColor(0.5, 0.5, 0.5, 1);
@@ -87,7 +86,6 @@ function WebGLaplikacija() {
             matrix.rotirajY(2 + φ);
             matrix.rotirajX(φ);
 
-
             switch (i) {
                 case 1:
                     matrix.rotirajY(90);
@@ -98,7 +96,6 @@ function WebGLaplikacija() {
                 case 3:
                     matrix.rotirajY(180);
                     break;
-
                 case 4:
                     matrix.rotirajX(90);
                     break;

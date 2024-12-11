@@ -299,10 +299,10 @@ class MT3D {
     }
 
     OrtogonalnaProjekcija(xmin, xmax, ymin, ymax, zmin, zmax) {
-        this._projekcija = [[2 / (xmax - xmin), 0, 0, (xmin + xmax) / (xmin - xmax)],
+        this.mult([[2 / (xmax - xmin), 0, 0, (xmin + xmax) / (xmin - xmax)],
         [0, 2 / (ymax - ymin), 0, (ymin + ymax) / (ymin - ymax)],
         [0, 0, 2 / (zmin - zmax), (zmin + zmax) / (zmin - zmax)],
-        [0, 0, 0, 1]];
+        [0, 0, 0, 1]]);
     }
 
     OrtogonalnaProjekcijaX(xmin, xmax, ymin, ymax, zmin, zmax, w, h) {

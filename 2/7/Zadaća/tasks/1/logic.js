@@ -18,7 +18,7 @@ function WebGLaplikacija() {
     GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(GPUprogram1);
 
-    const a = 0.5;
+    const a = 0.75;
 
     const frontFace = [ [a, a, 0, 1, 0], [-a, a, 0, 1, 0], [a, -a, 0, 1, 0], [-a, -a, 0, 1, 0] ];
 
@@ -64,7 +64,6 @@ function WebGLaplikacija() {
         gl.vertexAttribPointer(GPUprogram1.a_boja, 3, gl.FLOAT, false, 20, 8);
     }
 
-    // gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.FRONT);
 
@@ -82,10 +81,11 @@ function WebGLaplikacija() {
 
             const tempMatrix = new MT3D();
             tempMatrix._matrica = matrix._matrica.slice();
-
+            
+            matrix.OrtogonalnaProjekcija(-a*2, a*2, -a*2, a*2, -1, 1);
+            matrix.rotirajZ(3 + φ);
+            matrix.rotirajY(2 + φ);
             matrix.rotirajX(φ);
-            matrix.rotirajY(φ + 30);
-            matrix.rotirajZ(φ / 2 + 90);
 
 
             switch (i) {

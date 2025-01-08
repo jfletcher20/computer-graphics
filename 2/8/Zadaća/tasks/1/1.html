@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="hr">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Zadaća 8</title>
+	<link rel="stylesheet" href="../../style.css">
+	<script src="../../RG-WebGL.js"></script>
+	<script src="../../mt3d.js"></script>
+	<script src="logic.js"></script>
+</head>
+
+<body>
+	<h1>Zadatak 1</h1>
+	<nav>
+		<a href="../../index.html">Labos 8</a>
+		<a href="../../tasks/1/1.html" class="selected">Zadatak 1</a>
+	</nav>
+	<div class="container">
+		<canvas id="slika1" width="640" height="640">
+			Vaš preglednik ne podržava HTML5 canvas.
+		</canvas>
+	</div>
+</body>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+	#version 300 es
+	precision highp float; // Ensure precision for WebGL2 shaders
+
+	in vec2 a_vrhXY;
+	in vec3 a_boja;
+	out vec3 v_boja;
+	uniform mat4 u_mTrans;
+
+	void main() {
+	  gl_Position = u_mTrans * vec4(a_vrhXY, 0.0, 1.0);
+	  v_boja = a_boja;
+	}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+	#version 300 es
+	precision highp float;
+	in vec3 v_boja;
+	out vec4 bojaPiksela;
+
+	void main() {
+	  bojaPiksela = vec4(v_boja, 1);
+	}
+</script>
+
+</html>

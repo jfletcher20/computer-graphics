@@ -1,7 +1,8 @@
 /*
 
-    Zadaća 8
-    Napravite animaciju kocke kojoj je središte u ishodištu, a svaka stranica je različite boje. Duljinu brida odaberite tako da kod rotacije vrhovi kocke budu automatski odrezani kad izlaze izvan normiranih koordinata te se na taj način dobije uvid u unutrašnjost kocke. Realizirajte realističan prikaz samo preko selektivnog odbacivanja, tj. bez spremnika dubine.
+    Zadaća 8.
+    
+    Mrežom ravnih linija vizualizirajte xy-ravninu i na nju postavite stilizirano slovo F sačinjeno od osam kocaka s raznobojnim stranicama. Uz pomoć već ranije implementirane metode postaviKameru() iz klase MT3D kamerom kružite oko slova F mijenjajući više puta visinu na kojoj se nalazi kamera. Primijenite perspektivnu projekciju
 
 */
 
@@ -20,7 +21,7 @@ function WebGLaplikacija() {
 
     const a = 0.75;
 
-    const frontFace = [ [a, a, 0, 1, 0], [-a, a, 0, 1, 0], [a, -a, 0, 1, 0], [-a, -a, 0, 1, 0] ];
+    const frontFace = [[a, a, 0, 1, 0], [-a, a, 0, 1, 0], [a, -a, 0, 1, 0], [-a, -a, 0, 1, 0]];
 
     const backFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 1, 0]);
 
@@ -68,23 +69,51 @@ function WebGLaplikacija() {
     gl.cullFace(gl.FRONT);
 
     const matrix = new MT3D();
+    matrix.rotirajX(30);
 
     function render(φ) {
         gl.clearColor(0.5, 0.5, 0.5, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        const xmin = -2, xmax = 2, ymin = -2, ymax = 2, zpr = 1, zst = 10;
+        matrix.PerspektivnaProjekcija(xmin, xmax, ymin, ymax, zpr, zst);
+        matrix.postaviKameru(
+            1000 * Math.cos(Math.sqrt(φ) * Math.PI / 180), 1000 * Math.sin(Math.sqrt(φ) * Math.PI / 180), 100,
+            0, 16, 16,
+            0, 16, 16
+        );
+
+        function drawGridXY(xmin, xmax, ymin, ymax, step = 1) {
+
+            const lines = [];
+            for (let x = xmin; x <= xmax; x += step) lines.push(x, ymin, 0, x, ymax, 0);
+            for (let y = ymin; y <= ymax; y += step) lines.push(xmin, y, 0, xmax, y, 0);
+
+            const gridBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lines), gl.STATIC_DRAW);
+
+            const a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
+            gl.enableVertexAttribArray(a_vrhXY);
+            gl.vertexAttribPointer(a_vrhXY, 3, gl.FLOAT, false, 0, 0);
+
+            const u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
+            gl.uniform4fv(u_boja, [0.7, 0.7, 0.7, 1.0]);
+
+            gl.drawArrays(gl.LINES, 0, lines.length / 3);
+        }
+
+        drawGridXY(-10, 10, -10, 10);
+        matrix.postaviKameru(φ, 5, 2, 0, 0, 0, 0, 1, 0);
 
         buffers.forEach((buffer, i) => {
             bindBuffer(buffer);
 
             const tempMatrix = new MT3D();
             tempMatrix._matrica = matrix._matrica.slice();
-            
-            matrix.OrtogonalnaProjekcija(-a*2, a*2, -a*2, a*2, -1, 1);
-            matrix.rotirajZ(3 + φ);
-            matrix.rotirajY(2 + φ);
-            matrix.rotirajX(φ);
+
+            // matrix.PerspektivnaProjekcija(-a * 2, a * 2, -a * 2, a * 2, -1, 1);
+            // matrix.postaviKameru(10, 0, φ, 0, 0, -φ / 4, 0, 0, 1);
 
             switch (i) {
                 case 1:
@@ -109,6 +138,9 @@ function WebGLaplikacija() {
 
             matrix._matrica = tempMatrix._matrica.slice();
         });
+
+        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
+        gl.drawArrays(gl.TRIANGLES, 0, 6 * 4);
     }
 
     loadBuffers();

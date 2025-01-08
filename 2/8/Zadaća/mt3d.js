@@ -1,10 +1,48 @@
 /*
 
-7.2. U klasu MT3D koju ste implementirali na Vježbama 3 dodajte metodu lista koja elemente matrice ispisuje kao listu, stupac po stupac, u jednodimenzionalno JavaScript polje prikladno da posluži kao parametar metode uniformMatrix4fv. U primjer 7.2. dodajte uniform varijablu u_mTrans koja će služiti za transformaciju koordinata vrhova i animirajte rotaciju postojeća dva trokuta koji leže u xy ravnini oko sve tri osi istovremeno. Polako rotirajte oko osi y, dvostruko brže oko osi x i tri puta brže oko osi z.
+    7.2. U klasu MT3D koju ste implementirali na Vježbama 3 dodajte metodu lista koja elemente matrice ispisuje kao listu, stupac po stupac, u jednodimenzionalno JavaScript polje prikladno da posluži kao parametar metode uniformMatrix4fv. U primjer 7.2. dodajte uniform varijablu u_mTrans koja će služiti za transformaciju koordinata vrhova i animirajte rotaciju postojeća dva trokuta koji leže u xy ravnini oko sve tri osi istovremeno. Polako rotirajte oko osi y, dvostruko brže oko osi x i tri puta brže oko osi z.
+
+    8.1. U klasu MT3D dodajte metodu orto(xmin, xmax, ymin, ymax, zpr, zst) koja preslikava koordinate iz zadanog raspona u normirane koordinate između -1 i 1, pri čemu je zpr udaljenost do prednje, a zst udaljenost do stražnje odrezujuće plohe.  Savjet: Dopunite metodu projekcija2D(xmin, xmax, ymin, ymax) iz Zadaće 6.
+
+    8.3. U klasu MT3D dodajte metodu persp(xmin, xmax, ymin, ymax, zpr, zst) koja preslikava koordinate iz zadanog raspona u normirane koordinate uz primjenu perspektivne projekcije, pri čemu je zpr udaljenost do prednje, a zst udaljenost do stražnje odrezujuće plohe. Primijenite metodu postaviKameru iz klase MT3D i riješite zadatak 8.2. primjenom perspektivne projekcije.
 
 */
 
 class MT3D {
+
+    orto(xmin, xmax, ymin, ymax, zpr, zst) {
+        const A = 2 / (xmax - xmin);
+        const B = 2 / (ymax - ymin);
+        const C = -2 / (zst - zpr);
+
+        const TX = - (xmax + xmin) / (xmax - xmin);
+        const TY = - (ymax + ymin) / (ymax - ymin);
+        const TZ = - (zst + zpr) / (zst - zpr);
+
+        this._projekcija = [
+            [A, 0, 0, TX],
+            [0, B, 0, TY],
+            [0, 0, C, TZ],
+            [0, 0, 0, 1]
+        ];
+    }
+
+    persp(xmin, xmax, ymin, ymax, zpr, zst) {
+        const A = (2 * zpr) / (xmax - xmin);
+        const B = (2 * zpr) / (ymax - ymin);
+        const C = (xmax + xmin) / (xmax - xmin);
+        const D = (ymax + ymin) / (ymax - ymin);
+        const E = -(zst + zpr) / (zst - zpr);
+        const F = -(2 * zst * zpr) / (zst - zpr);
+
+        this._projekcija = [
+            [A, 0, 0, 0],
+            [0, B, 0, 0],
+            [C, D, E, F],
+            [0, 0, -1, 0]
+        ];
+    }
+
     constructor() {
         this._matrica = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
         this._kamera = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
@@ -327,10 +365,12 @@ class MT3D {
         let normaU = Math.sqrt(U[0] * U[0] + U[1] * U[1] + U[2] * U[2]);
         let u = [U[0] / normaU, U[1] / normaU, U[2] / normaU];
         let v = this.VP(n, u);
-        let mtr = [[u[0], u[1], u[2], -u[0] * x0 - u[1] * y0 - u[2] * z0],
-        [v[0], v[1], v[2], -v[0] * x0 - v[1] * y0 - v[2] * z0],
-        [n[0], n[1], n[2], -n[0] * x0 - n[1] * y0 - n[2] * z0],
-        [0, 0, 0, 1]];
+        let mtr = [
+            [u[0], u[1], u[2], -u[0] * x0 - u[1] * y0 - u[2] * z0],
+            [v[0], v[1], v[2], -v[0] * x0 - v[1] * y0 - v[2] * z0],
+            [n[0], n[1], n[2], -n[0] * x0 - n[1] * y0 - n[2] * z0],
+            [0, 0, 0, 1]
+        ];
         this._kamera = mtr;
     }
 

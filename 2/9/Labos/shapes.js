@@ -1,16 +1,16 @@
 class Shapes {
     static valjak(r, h, n) {
-        var vrhovi = [];
-        vrhovi.push(0, 0, -h / 2, 0, 0, -1);
+        var vertices = [];
+        vertices.push(0, 0, -h / 2, 0, 0, -1);
         let phi = 2 * Math.PI / n;
         for (let i = 0; i <= n; i++) {
-            vrhovi.push(r * Math.cos(phi), r * Math.sin(phi), -h / 2, 0, 0, -1);
+            vertices.push(r * Math.cos(phi), r * Math.sin(phi), -h / 2, 0, 0, -1);
             phi += 2 * Math.PI / n;
         }
-        vrhovi.push(0, 0, h / 2, 0, 0, 1);
+        vertices.push(0, 0, h / 2, 0, 0, 1);
         phi = 2 * Math.PI;
         for (let i = 0; i <= n; i++) {
-            vrhovi.push(r * Math.cos(phi), r * Math.sin(phi), h / 2, 0, 0, 1);
+            vertices.push(r * Math.cos(phi), r * Math.sin(phi), h / 2, 0, 0, 1);
             phi -= 2 * Math.PI / n;
         }
         phi = 0;
@@ -19,15 +19,15 @@ class Shapes {
             let s = Math.sin(phi);
             let x = r * c;
             let y = r * s;
-            vrhovi.push(x, y, -h / 2, c, s, 0);
-            vrhovi.push(x, y, h / 2, c, s, 0);
+            vertices.push(x, y, -h / 2, c, s, 0);
+            vertices.push(x, y, h / 2, c, s, 0);
             phi += 2 * Math.PI / n;
         }
-        return vrhovi;
+        return vertices;
     }
 
     static kugla(r, n) {
-        var vrhovi = [];
+        var vertices = [];
         for (let i = 0; i <= n; i++) {
             let theta = i * Math.PI / n;
             let sinTheta = Math.sin(theta);
@@ -45,7 +45,7 @@ class Shapes {
                 let ny = sinPhi * sinTheta;
                 let nz = cosTheta;
 
-                vrhovi.push(x, y, z, nx, ny, nz);
+                vertices.push(x, y, z, nx, ny, nz);
             }
         }
 
@@ -59,12 +59,12 @@ class Shapes {
             }
         }
 
-        return { vrhovi: vrhovi, indices: indices };
+        return { vertices: vertices, indices: indices };
     }
 
     /// halphsphere
     static polukugla(r, n) {
-        var vrhovi = [];
+        var vertices = [];
         for (let i = 0; i <= n; i++) {
             let theta = i * Math.PI / n;
             let sinTheta = Math.sin(theta);
@@ -82,7 +82,7 @@ class Shapes {
                 let ny = sinPhi * sinTheta;
                 let nz = cosTheta;
 
-                vrhovi.push(x, y, z, nx, ny, nz);
+                vertices.push(x, y, z, nx, ny, nz);
             }
         }
 
@@ -96,7 +96,7 @@ class Shapes {
             }
         }
 
-        return { vrhovi: vrhovi, indices: indices };
+        return { vertices: vertices, indices: indices };
     }
 
 }

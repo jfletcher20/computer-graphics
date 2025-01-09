@@ -17,18 +17,6 @@ function WebGLaplikacija() {
     GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
     gl.useProgram(GPUprogram1);
 
-    const a = 0.75;
-
-    var buffers = [];
-
-    function createBuffer(data) {
-        const flatData = new Float32Array(data.flat());
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatData, gl.STATIC_DRAW);
-        return buffer;
-    }
-
     function loadBuffers() {
         GPUprogram1.a_vrhXYZ = gl.getAttribLocation(GPUprogram1, "a_vrhXYZ");
         GPUprogram1.a_normala = gl.getAttribLocation(GPUprogram1, "a_normala");
@@ -40,20 +28,11 @@ function WebGLaplikacija() {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Shapes.valjak(0.5, 1, n)), gl.STATIC_DRAW);
     }
 
-    function bindBuffer(buffer) {
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.vertexAttribPointer(GPUprogram1.a_vrhXY, 2, gl.FLOAT, false, 20, 0);
-        gl.vertexAttribPointer(GPUprogram1.a_boja, 3, gl.FLOAT, false, 20, 8);
-    }
-
     const matrix = new MT3D();
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 
-    let φ = 0;
-    let θ = 30; // Vertical angle
-    let θDirection = 1; // Direction of vertical movement (1 for up, -1 for down)
-
+    let φ = 0, θ = 30, θDirection = 1;
     function orbit() {
         matrix.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
         θ += θDirection / (360 - 60 - 5) * 4;
@@ -100,8 +79,7 @@ function WebGLaplikacija() {
             // plašt valjka
             gl.drawArrays(gl.TRIANGLE_STRIP, 2 * (n + 2), 2 * n + 2);
 
-            alpha += 0.025 * Math.PI / 180;
-            requestAnimationFrame(iscrtaj);
+            alpha = φ * Math.PI / 180;
         } // iscrtaj
 
         // vektori položaja izvora svjetlosti i kamere

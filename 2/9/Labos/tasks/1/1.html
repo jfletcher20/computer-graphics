@@ -79,7 +79,7 @@
 	  v_svjetlina = v_svjetlina * 0.5 + refleksija * 0.5;
 	  gl_Position = vrh;
 	}
-  </script>
+</script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
 	#version 300 es
@@ -91,6 +91,6 @@
 	void main() {
 	  bojaFragmenta = vec4(v_svjetlina * u_boja, 1.0); // postavlja se boja fragmenta
 	}
-  </script>
+</script>
 
 </html>

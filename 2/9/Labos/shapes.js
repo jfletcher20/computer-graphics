@@ -59,7 +59,7 @@ class Shapes {
             let s = Math.sin(phi);
             let x = r * c;
             let y = r * s;
-            vertices.push(y, x, h / 2, c, s, 0);
+            vertices.push(y, x, h / 2, s, c, 0);
             phi += 2 * Math.PI / n;
         }
         vertices.push(0, 0, h / 2, Math.cos(0), Math.sin(0), 0);

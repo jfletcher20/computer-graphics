@@ -17,8 +17,8 @@ function WebGLaplikacija() {
         return;
     }
 
-    const n = 128, r = 0.5;
-    const { vertices, indices, drawFunction } = drawShape(shapes.SOLID_HEMISPHERE);
+    const n = 128, r = 1, h = 2;
+    const { vertices, indices, drawFunction } = drawShape(shapes.CONE);
 
     function drawShape(shape) {
 
@@ -30,9 +30,9 @@ function WebGLaplikacija() {
             case shapes.SOLID_HEMISPHERE:
                 return Shapes.solid_hemisphere(r, n);
             case shapes.CYLINDER:
-                return Shapes.cylinder(r, 1, n, true);
+                return Shapes.cylinder(r, h, n, true);
             case shapes.CONE:
-                return Shapes.cone(r, 1, n, true);
+                return Shapes.cone(r, h, n, true);
             case shapes.SPHERE:
                 return Shapes.sphere(r, n);
         }
@@ -73,18 +73,20 @@ function WebGLaplikacija() {
         θ += θDirection / (360 - 60 - 5) * 4;
         if (θ >= 60) θDirection = -1;
         if (θ <= 5) θDirection = 1;
-        const x = Math.cos(φ * Math.PI / 180) * 2;
-        const y = Math.sin(φ * Math.PI / 180) * 2;
-        const z = 2 * Math.sin(θ * Math.PI / 180);
+        const x = Math.cos(φ * Math.PI / 180) * 3;
+        const y = Math.sin(φ * Math.PI / 180) * 3;
+        const z = 1 * Math.sin(θ * Math.PI / 180);
         if (z < 0) z = 0;
-        matrix.postaviKameru(x, y, z, 0, 0, 0, 0, 0, 1);
+        const vert = document.getElementById("animate-vertical").checked;
+        matrix.postaviKameru(x, vert ? z : y, vert ? y : z, 0, 0, 0, 0, 0, 1);
     }
 
-
     function render(timestamp) {
-        φ += 1;
-        if (φ >= 360) φ = 0;
-        orbit();
+        if (document.getElementById("animate-view").checked) {
+            φ += 1;
+            if (φ >= 360) φ = 0;
+            orbit();
+        }
 
         gl.clearColor(0.5, 0.5, 0.5, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -122,5 +124,7 @@ function WebGLaplikacija() {
         requestAnimationFrame(animiraj);
     }
 
+    orbit();
     requestAnimationFrame(animiraj);
+    
 }

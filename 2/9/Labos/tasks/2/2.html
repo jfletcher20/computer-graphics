@@ -22,6 +22,15 @@
 		<canvas id="slika1" width="640" height="640">
 			Vaš preglednik ne podržava HTML5 canvas.
 		</canvas>
+		
+		<div style="position: absolute; margin-top: 15px; margin-left: 450px; background-color: rgba(0, 0, 0, 0.5); padding: 8px; padding-left: 12px; padding-right: 12px; border-radius: 8px;">
+
+			<input type="checkbox" name="animate-view" id="animate-view" checked>
+			<label for="animate-view" style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;">Animiraj pogled</label><br>
+
+			<input type="checkbox" name="animate-vertical" id="animate-vertical">
+			<label for="animate-vertical" style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;">Animiraj vertikalno</label>
+		   </div>
 	</div>
 </body>
 
@@ -53,7 +62,7 @@
 	  }
 
 	  v_svjetlina = v_svjetlina * 0.5 + refleksija * 0.5;
-	  v_normala = a_normala;  // <-- Pass normal to the fragment shader
+	  v_normala = a_normala;
 	  gl_Position = vrh;
 	}
 </script>

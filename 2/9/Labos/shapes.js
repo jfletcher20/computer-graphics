@@ -51,17 +51,24 @@ class Shapes {
         vertices.push(0, 0, -h / 2, 0, 0, -1);
         let phi = 2 * Math.PI / n;
         for (let i = 0; i <= n; i++) {
-            vertices.push(r * Math.cos(phi), r * Math.sin(phi), -h / 2, 0, 0, -1);
+            vertices.push(r * Math.cos(phi), r * Math.sin(phi), h / 2, Math.cos(phi), Math.sin(phi), 0);
             phi += 2 * Math.PI / n;
         }
-        vertices.push(0, 0, h / 2, 0, 0, 1);
-        return vertices;
+        for (let i = 0; i <= n; i++) {
+            let c = Math.cos(phi);
+            let s = Math.sin(phi);
+            let x = r * c;
+            let y = r * s;
+            vertices.push(y, x, h / 2, c, s, 0);
+            phi += 2 * Math.PI / n;
+        }
+        vertices.push(0, 0, h / 2, Math.cos(0), Math.sin(0), 0);
+        return { vertices: vertices, indices: undefined, drawFunction: this.drawCone };
     }
 
     static drawCone(gl, n) {
         gl.drawArrays(gl.TRIANGLE_FAN, 0, n + 2);
-        gl.drawArrays(gl.TRIANGLE_FAN, n + 2, 2);
-        gl.drawArrays(gl.TRIANGLE_STRIP, n + 4, 2 * n);
+        gl.drawArrays(gl.TRIANGLE_FAN, n + 2, n + 2);
     }
 
     static sphere(r, n) {
@@ -141,6 +148,54 @@ class Shapes {
 
         return { vertices: vertices, indices: indices, drawFunction: this.drawSphere };
 
+    }
+
+    static hollow_hemisphere(r, n, startAngle = 0, endAngle = Math.PI * 1.5) {
+        // You can tweak endAngle to get more or less than a "quarter" cutout.
+        // For a full hemisphere, you might typically use 0..π for θ and 0..2π for φ
+        
+        let vertices = [];
+        let indices = [];
+    
+        // Generate vertices (skipping the pole vertex)
+        for (let i = 0; i <= n; i++) {
+            const theta = i * Math.PI / n;  // polar angle (0..π)
+            const sinTheta = Math.sin(theta);
+            const cosTheta = Math.cos(theta);
+    
+            for (let j = 0; j <= n; j++) {
+                const phi = startAngle + j * (endAngle - startAngle) / n; // partial azimuth
+                const sinPhi = Math.sin(phi);
+                const cosPhi = Math.cos(phi);
+    
+                const x = r * cosPhi * sinTheta;
+                const y = r * sinPhi * sinTheta;
+                const z = r * cosTheta;
+                const nx = cosPhi * sinTheta;
+                const ny = sinPhi * sinTheta;
+                const nz = cosTheta;
+    
+                vertices.push(x, y, z, nx, ny, nz);
+            }
+        }
+    
+        // Generate indices (simple “strip” style)
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+                const idx = i * (n + 1) + j;
+                const nextRow = idx + (n + 1);
+                indices.push(idx, nextRow, idx + 1);
+                indices.push(idx + 1, nextRow, nextRow + 1);
+            }
+        }
+    
+        return { vertices: vertices, indices: indices, drawFunction: this.drawHollowHemisphere };
+    }
+    
+    static drawHollowHemisphere(gl, n) {
+        // calculate indexCount based on n
+        const indexCount = n * n * 6;
+        gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
     }
 
 }

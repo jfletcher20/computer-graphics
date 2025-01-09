@@ -1,5 +1,14 @@
 window.onload = WebGLaplikacija;
 
+const shapes = {
+    CUBE: "cube",
+    SPHERE: "sphere",
+    CYLINDER: "cylinder",
+    CONE: "cone",
+    HEMISPHERE: "hemisphere",
+    SOLID_HEMISPHERE: "solid_hemisphere"
+};
+
 function WebGLaplikacija() {
     var platno1 = document.getElementById("slika1");
     gl = platno1.getContext("webgl2");
@@ -8,8 +17,26 @@ function WebGLaplikacija() {
         return;
     }
 
-    const n = 128;
-    const { vertices, indices, drawFunction } = Shapes.solid_hemisphere(1, n);
+    const n = 128, r = 0.5;
+    const { vertices, indices, drawFunction } = drawShape(shapes.SOLID_HEMISPHERE);
+
+    function drawShape(shape) {
+
+        switch (shape) {
+            case shapes.CUBE:
+                return Shapes.cube(1);
+            case shapes.HEMISPHERE:
+                return Shapes.hollow_hemisphere(r, n, 0, Math.PI);
+            case shapes.SOLID_HEMISPHERE:
+                return Shapes.solid_hemisphere(r, n);
+            case shapes.CYLINDER:
+                return Shapes.cylinder(r, 1, n, true);
+            case shapes.CONE:
+                return Shapes.cone(r, 1, n, true);
+            case shapes.SPHERE:
+                return Shapes.sphere(r, n);
+        }
+    }
 
     GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
     GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
@@ -38,8 +65,6 @@ function WebGLaplikacija() {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
     const matrix = new MT3D();
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.FRONT);
     gl.enable(gl.DEPTH_TEST);
 
     let φ = 0, θ = 30, θDirection = 1;
@@ -81,6 +106,7 @@ function WebGLaplikacija() {
         // gl.drawElements(gl.TRIANGLE_STRIP, (2 * n + 2) * (n - 1), gl.UNSIGNED_SHORT, 4 * n + 8);
 
         drawFunction(gl, n);
+        // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 
         gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
         gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);

@@ -73,13 +73,11 @@ function WebGLaplikacija() {
         θ += θDirection / (360 - 60 - 5) * 4;
         if (θ >= 60) θDirection = -1;
         if (θ <= 5) θDirection = 1;
-        const x = Math.cos(φ * Math.PI / 180) * 24;
-        const y = Math.sin(φ * Math.PI / 180) * 24;
-        const z = 30 * Math.sin(θ * Math.PI / 180);
-
+        const x = Math.cos(φ * Math.PI / 180) * 2;
+        const y = Math.sin(φ * Math.PI / 180) * 2;
+        const z = 2 * Math.sin(θ * Math.PI / 180);
         if (z < 0) z = 0;
-
-        matrix.postaviKameru(x, y, z, 0, 0, 8, 0, 0, 1);
+        matrix.postaviKameru(x, y, z, 0, 0, 0, 0, 0, 1);
     }
 
 
@@ -92,12 +90,14 @@ function WebGLaplikacija() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, platno1.width, platno1.height);
 
-        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, [
-            1, 0, 0, 0,
-            0, Math.cos(φ * Math.PI / 180), Math.sin(φ * Math.PI / 180), 0,
-            0, -Math.sin(φ * Math.PI / 180), Math.cos(φ * Math.PI / 180), 0,
-            0, 0, 0, 1
-        ]);
+        // gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, [
+        //     1, 0, 0, 0,
+        //     0, Math.cos(φ * Math.PI / 180), Math.sin(φ * Math.PI / 180), 0,
+        //     0, -Math.sin(φ * Math.PI / 180), Math.cos(φ * Math.PI / 180), 0,
+        //     0, 0, 0, 1
+        // ]);
+        // use the camera as the matrix
+        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
 
         // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 

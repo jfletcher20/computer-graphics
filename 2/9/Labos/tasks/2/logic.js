@@ -8,8 +8,8 @@ function WebGLaplikacija() {
         return;
     }
 
-    const n = 48;
-    const { vertices, indices } = Shapes.solid_halphsphere(1, n);
+    const n = 128;
+    const { vertices, indices, drawFunction } = Shapes.solid_hemisphere(1, n);
 
     GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
     GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
@@ -26,7 +26,7 @@ function WebGLaplikacija() {
         gl.enableVertexAttribArray(GPUprogram1.a_normala);
         gl.vertexAttribPointer(GPUprogram1.a_vrhXYZ, 3, gl.FLOAT, false, 24, 0);
         gl.vertexAttribPointer(GPUprogram1.a_normala, 3, gl.FLOAT, false, 24, 12);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Shapes.solid_halphsphere(0.5, n).vertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     }
 
     const vertexBuffer = gl.createBuffer();
@@ -76,9 +76,11 @@ function WebGLaplikacija() {
 
         // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 
-        gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, 0);
-        gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, (n + 2) * 2);
-        gl.drawElements(gl.TRIANGLE_STRIP, (2 * n + 2) * (n - 1), gl.UNSIGNED_SHORT, 4 * n + 8);
+        // gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, 0);
+        // gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, (n + 2) * 2);
+        // gl.drawElements(gl.TRIANGLE_STRIP, (2 * n + 2) * (n - 1), gl.UNSIGNED_SHORT, 4 * n + 8);
+
+        drawFunction(gl, n);
 
         gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
         gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);

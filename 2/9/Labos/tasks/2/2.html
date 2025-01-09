@@ -29,6 +29,7 @@
 	#version 300 es
 	in vec4 a_vrhXYZ;
 	in vec3 a_normala;
+	out vec3 v_normala;
 	uniform mat4 u_mTrans;
 	uniform vec3 u_izvorXYZ;
 	uniform vec3 u_kameraXYZ;
@@ -52,6 +53,7 @@
 	  }
 
 	  v_svjetlina = v_svjetlina * 0.5 + refleksija * 0.5;
+	  v_normala = a_normala;  // <-- Pass normal to the fragment shader
 	  gl_Position = vrh;
 	}
 </script>

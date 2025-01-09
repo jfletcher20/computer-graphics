@@ -1,5 +1,5 @@
 class Shapes {
-    static valjak(r, h, n) {
+    static cylinder(r, h, n) {
         var vertices = [];
         vertices.push(0, 0, -h / 2, 0, 0, -1);
         let phi = 2 * Math.PI / n;
@@ -26,8 +26,8 @@ class Shapes {
         return vertices;
     }
 
-    static kugla(r, n) {
-        var vertices = [];
+    static sphere(r, n) {
+        var vertices = [], indices = [n * n];
         for (let i = 0; i <= n; i++) {
             let theta = i * Math.PI / n;
             let sinTheta = Math.sin(theta);
@@ -48,30 +48,35 @@ class Shapes {
                 vertices.push(x, y, z, nx, ny, nz);
             }
         }
+        vertices.push(0, 0, r, 0, 0, 1);
+        
+        let m = n, p = n;
+        for (var i = 0; i < m; i++) indices.push(i);
+        indices.push(0);
 
-        var indices = [];
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < n; j++) {
-                let first = (i * (n + 1)) + j;
-                let second = first + n + 1;
-                indices.push(first, second, first + 1);
-                indices.push(second, second + 1, first + 1);
+        indices.push(p * m + 1);
+        for (var i = 1; i <= m; i++) indices.push(p * m - i);
+        indices.push(p * m - 1);
+
+        for (var i = 1; i < p; i++) {
+            for (var j = 0; j < m; j++) {
+                indices.push((i - 1) * m + j, i * m + j);
             }
+            indices.push((i - 1) * m, i * m);
         }
 
         return { vertices: vertices, indices: indices };
     }
 
-    /// halphsphere
-    static polukugla(r, n) {
-        var vertices = [];
+    static solid_halphsphere(r, n) {
+        var vertices = [], indices = [n * n];
         for (let i = 0; i <= n; i++) {
             let theta = i * Math.PI / n;
             let sinTheta = Math.sin(theta);
             let cosTheta = Math.cos(theta);
 
             for (let j = 0; j <= n; j++) {
-                let phi = j * 2 * Math.PI / n;
+                let phi = j * 1 * Math.PI / n;
                 let sinPhi = Math.sin(phi);
                 let cosPhi = Math.cos(phi);
 
@@ -85,18 +90,25 @@ class Shapes {
                 vertices.push(x, y, z, nx, ny, nz);
             }
         }
+        vertices.push(0, 0, r, 0, 0, 1);
 
-        var indices = [];
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < n; j++) {
-                let first = (i * (n + 1)) + j;
-                let second = first + n + 1;
-                indices.push(first, second, first + 1);
-                indices.push(second, second + 1, first + 1);
+        let m = n, p = n;
+        for (var i = 0; i < m; i++) indices.push(i);
+        indices.push(0);
+
+        indices.push(p * m + 1);
+        for (var i = 1; i <= m; i++) indices.push(p * m - i);
+        indices.push(p * m - 1);
+
+        for (var i = 1; i < p; i++) {
+            for (var j = 0; j < m; j++) {
+                indices.push((i - 1) * m + j, i * m + j);
             }
+            indices.push((i - 1) * m, i * m);
         }
 
         return { vertices: vertices, indices: indices };
+
     }
 
 }

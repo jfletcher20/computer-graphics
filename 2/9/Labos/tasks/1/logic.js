@@ -25,7 +25,7 @@ function WebGLaplikacija() {
         gl.enableVertexAttribArray(GPUprogram1.a_normala);
         gl.vertexAttribPointer(GPUprogram1.a_vrhXYZ, 3, gl.FLOAT, false, 24, 0);
         gl.vertexAttribPointer(GPUprogram1.a_normala, 3, gl.FLOAT, false, 24, 12);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Shapes.valjak(0.5, 1, n)), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Shapes.cylinder(0.5, 1, n)), gl.STATIC_DRAW);
     }
 
     const matrix = new MT3D();

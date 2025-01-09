@@ -8,33 +8,15 @@ function WebGLaplikacija() {
         return;
     }
 
+    const n = 48;
+    const { vertices, indices } = Shapes.solid_halphsphere(1, n);
+
     GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
     GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
-    GPUprogram1.u_mProj = gl.getUniformLocation(GPUprogram1, "u_mProj");
-    GPUprogram1.u_mView = gl.getUniformLocation(GPUprogram1, "u_mView");
     GPUprogram1.u_izvorXYZ = gl.getUniformLocation(GPUprogram1, "u_izvorXYZ");
-    GPUprogram1.u_izvorBoja = gl.getUniformLocation(GPUprogram1, "u_izvorBoja");
-
+    GPUprogram1.u_kameraXYZ = gl.getUniformLocation(GPUprogram1, "u_kameraXYZ");
+    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
     gl.useProgram(GPUprogram1);
-
-    const n = 32;
-    const { vertices, indices } = Shapes.kugla(1, n);
-
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-    const indexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
-    // GPUprogram1.a_vrhXYZ = gl.getAttribLocation(GPUprogram1, "a_vrhXYZ");
-    // GPUprogram1.a_normala = gl.getAttribLocation(GPUprogram1, "a_normala");
-
-    // gl.enableVertexAttribArray(GPUprogram1.a_vrhXYZ);
-    // gl.vertexAttribPointer(GPUprogram1.a_vrhXYZ, 3, gl.FLOAT, false, 24, 0);
-    // gl.enableVertexAttribArray(GPUprogram1.a_normala);
-    // gl.vertexAttribPointer(GPUprogram1.a_normala, 3, gl.FLOAT, false, 24, 12);
 
     function loadBuffers() {
         GPUprogram1.a_vrhXYZ = gl.getAttribLocation(GPUprogram1, "a_vrhXYZ");
@@ -44,13 +26,21 @@ function WebGLaplikacija() {
         gl.enableVertexAttribArray(GPUprogram1.a_normala);
         gl.vertexAttribPointer(GPUprogram1.a_vrhXYZ, 3, gl.FLOAT, false, 24, 0);
         gl.vertexAttribPointer(GPUprogram1.a_normala, 3, gl.FLOAT, false, 24, 12);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Shapes.kugla(0.5, n).vertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Shapes.solid_halphsphere(0.5, n).vertices), gl.STATIC_DRAW);
     }
 
+    const vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    const indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
     const matrix = new MT3D();
     gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
+    gl.cullFace(gl.FRONT);
+    gl.enable(gl.DEPTH_TEST);
 
     let φ = 0, θ = 30, θDirection = 1;
     function orbit() {
@@ -67,7 +57,6 @@ function WebGLaplikacija() {
         matrix.postaviKameru(x, y, z, 0, 0, 8, 0, 0, 1);
     }
 
-    gl.enable(gl.DEPTH_TEST);
 
     function render(timestamp) {
         φ += 1;
@@ -85,7 +74,11 @@ function WebGLaplikacija() {
             0, 0, 0, 1
         ]);
 
-        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+        // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+        gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, (n + 2) * 2);
+        gl.drawElements(gl.TRIANGLE_STRIP, (2 * n + 2) * (n - 1), gl.UNSIGNED_SHORT, 4 * n + 8);
 
         gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
         gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);

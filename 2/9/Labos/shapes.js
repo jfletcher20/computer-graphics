@@ -131,19 +131,16 @@ class Shapes {
         }
         vertices.push(0, 0, r, 0, 0, 1);
 
-        let m = n, p = n;
-        for (var i = 0; i < m; i++) indices.push(i);
+        for (var i = 0; i < n; i++) indices.push(i);
         indices.push(0);
 
-        indices.push(p * m + 1);
-        for (var i = 1; i <= m; i++) indices.push(p * m - i);
-        indices.push(p * m - 1);
+        indices.push(n * n + 1);
+        for (var i = 1; i <= n; i++) indices.push(n * n - i);
+        indices.push(n * n - 1);
 
-        for (var i = 1; i < p; i++) {
-            for (var j = 0; j < m; j++) {
-                indices.push((i - 1) * m + j, i * m + j);
-            }
-            indices.push((i - 1) * m, i * m);
+        for (var i = 1; i < n; i++) {
+            for (var j = 0; j < n; j++) indices.push((i - 1) * n + j, i * n + j);
+            indices.push((i - 1) * n, i * n);
         }
 
         return { vertices: vertices, indices: indices, drawFunction: this.drawSphere };
@@ -151,20 +148,15 @@ class Shapes {
     }
 
     static hollow_hemisphere(r, n, startAngle = 0, endAngle = Math.PI * 1.5) {
-        // You can tweak endAngle to get more or less than a "quarter" cutout.
-        // For a full hemisphere, you might typically use 0..π for θ and 0..2π for φ
-        
         let vertices = [];
         let indices = [];
-    
-        // Generate vertices (skipping the pole vertex)
         for (let i = 0; i <= n; i++) {
-            const theta = i * Math.PI / n;  // polar angle (0..π)
+            const theta = i * Math.PI / n;
             const sinTheta = Math.sin(theta);
             const cosTheta = Math.cos(theta);
     
             for (let j = 0; j <= n; j++) {
-                const phi = startAngle + j * (endAngle - startAngle) / n; // partial azimuth
+                const phi = startAngle + j * (endAngle - startAngle) / n;
                 const sinPhi = Math.sin(phi);
                 const cosPhi = Math.cos(phi);
     
@@ -179,7 +171,6 @@ class Shapes {
             }
         }
     
-        // Generate indices (simple “strip” style)
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < n; j++) {
                 const idx = i * (n + 1) + j;
@@ -193,7 +184,6 @@ class Shapes {
     }
     
     static drawHollowHemisphere(gl, n) {
-        // calculate indexCount based on n
         const indexCount = n * n * 6;
         gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
     }

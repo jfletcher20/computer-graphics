@@ -12,7 +12,7 @@
 </head>
 
 <body>
-	<h1>Zadatak 1</h1>
+	<h1>Zadatak 2</h1>
 	<nav>
 		<a href="../../labos.html">Labos 9</a>
 		<a href="../../tasks/1/1.html">Zadatak 1</a>
@@ -25,31 +25,6 @@
 	</div>
 </body>
 
-<!-- <script id="vertex-shader" type="x-shader/x-vertex">
-	#version 300 es
-	precision highp float; // Ensure precision for WebGL2 shaders
-
-	in vec2 a_vrhXY;
-	in vec3 a_boja;
-	out vec3 v_boja;
-	uniform mat4 u_mTrans;
-
-	void main() {
-	  gl_Position = u_mTrans * vec4(a_vrhXY, 0.0, 1.0);
-	  v_boja = a_boja;
-	}
-</script>
-
-<script id="fragment-shader" type="x-shader/x-fragment">
-	#version 300 es
-	precision highp float;
-	in vec3 v_boja;
-	out vec4 bojaPiksela;
-
-	void main() {
-	  bojaPiksela = vec4(v_boja, 1);
-	}
-</script> -->
 <script id="vertex-shader" type="x-shader/x-vertex">
 	#version 300 es
 	in vec4 a_vrhXYZ;
@@ -79,7 +54,7 @@
 	  v_svjetlina = v_svjetlina * 0.5 + refleksija * 0.5;
 	  gl_Position = vrh;
 	}
-  </script>
+</script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
 	#version 300 es
@@ -91,6 +66,6 @@
 	void main() {
 	  bojaFragmenta = vec4(v_svjetlina * u_boja, 1.0); // postavlja se boja fragmenta
 	}
-  </script>
+</script>
 
 </html>

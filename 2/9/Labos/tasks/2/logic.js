@@ -17,18 +17,6 @@ function WebGLaplikacija() {
     GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
     gl.useProgram(GPUprogram1);
 
-    const a = 0.75;
-
-    var buffers = [];
-
-    function createBuffer(data) {
-        const flatData = new Float32Array(data.flat());
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatData, gl.STATIC_DRAW);
-        return buffer;
-    }
-
     function loadBuffers() {
         GPUprogram1.a_vrhXYZ = gl.getAttribLocation(GPUprogram1, "a_vrhXYZ");
         GPUprogram1.a_normala = gl.getAttribLocation(GPUprogram1, "a_normala");
@@ -86,39 +74,27 @@ function WebGLaplikacija() {
             // matrica transformacije - rotacija oko x osi za kut alpha
             gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, [
                 1, 0, 0, 0,
-                0, Math.cos(alpha), Math.sin(alpha), 0,
-                0, -Math.sin(alpha), Math.cos(alpha), 0,
+                0, Math.cos(φ * Math.PI / 180), Math.sin(φ * Math.PI / 180), 0,
+                0, -Math.sin(φ * Math.PI / 180), Math.cos(φ * Math.PI / 180), 0,
                 0, 0, 0, 1
             ]);
 
             // donja baza valjka
             gl.drawArrays(gl.TRIANGLE_FAN, 0, n + 2);
-
             // gornja baza valjka
             gl.drawArrays(gl.TRIANGLE_FAN, n + 2, n + 2);
-
             // plašt valjka
             gl.drawArrays(gl.TRIANGLE_STRIP, 2 * (n + 2), 2 * n + 2);
-
-            alpha += 0.025 * Math.PI / 180;
-            requestAnimationFrame(iscrtaj);
-        } // iscrtaj
-
-        // vektori položaja izvora svjetlosti i kamere
-        gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
-        gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);
-
-        // boja izvora u RGB formatu
-        gl.uniform3fv(GPUprogram1.u_boja, [1.0, 1.0, 0.0]);
-
-        // omogući selektivno odbacivanje
-        gl.enable(gl.CULL_FACE);
+        }
 
         iscrtaj();
     }
-    var alpha = 0; // kut rotacije koji se koristi kod animacije
-    var n = 32; // broj stranica koje čine plašt valjka
 
+    gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
+    gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);
+    gl.uniform3fv(GPUprogram1.u_boja, [1.0, 1.0, 0.0]);
+    var alpha = 0;
+    var n = 20;
     loadBuffers();
 
     function animiraj(vrijeme) {

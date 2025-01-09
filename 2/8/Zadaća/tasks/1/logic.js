@@ -1,11 +1,3 @@
-/*
-
-    Zadaća 8.
-    
-    Mrežom ravnih linija vizualizirajte xy-ravninu i na nju postavite stilizirano slovo F sačinjeno od osam kocaka s raznobojnim stranicama. Uz pomoć već ranije implementirane metode postaviKameru() iz klase MT3D kamerom kružite oko slova F mijenjajući više puta visinu na kojoj se nalazi kamera. Primijenite perspektivnu projekciju
-
-*/
-
 window.onload = WebGLaplikacija;
 
 function WebGLaplikacija() {
@@ -64,9 +56,8 @@ function WebGLaplikacija() {
     gl.cullFace(gl.BACK);
 
     let φ = 0;
-    let θ = 30; // Vertical angle
-    let θDirection = 1; // Direction of vertical movement (1 for up, -1 for down)
-
+    let θ = 30;
+    let θDirection = 1;
     function orbit() {
         matrix.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
         θ += θDirection / (360 - 60 - 5) * 4;
@@ -161,7 +152,6 @@ function WebGLaplikacija() {
         [1, 0, 0],
         [1, 0, 0],
     ], cubeSize = a * 2) {
-        // reverse the array
         coordinateArray = coordinateArray.reverse();
         coordinateArray.forEach((row, y) => {
             row.forEach((value, x) => {

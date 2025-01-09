@@ -1,32 +1,23 @@
-/*
-
-    Zadaća 9.
-    
-    Mrežom ravnih linija vizualizirajte xy-ravninu i na nju postavite stilizirano slovo F sačinjeno od osam kocaka s raznobojnim stranicama. Uz pomoć već ranije implementirane metode postaviKameru() iz klase MT3D kamerom kružite oko slova F mijenjajući više puta visinu na kojoj se nalazi kamera. Primijenite perspektivnu projekciju
-
-*/
-
 window.onload = WebGLaplikacija;
 
 function WebGLaplikacija() {
+
     var platno1 = document.getElementById("slika1");
     gl = platno1.getContext("webgl2");
+
     if (!gl) {
         alert("WebGL2 nije dostupan!");
         return;
     }
 
     GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
+    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
+    GPUprogram1.u_izvorXYZ = gl.getUniformLocation(GPUprogram1, "u_izvorXYZ");
+    GPUprogram1.u_kameraXYZ = gl.getUniformLocation(GPUprogram1, "u_kameraXYZ");
+    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
     gl.useProgram(GPUprogram1);
 
     const a = 0.75;
-
-    const frontFace = [[a, a, 0, 1, 0], [-a, a, 0, 1, 0], [a, -a, 0, 1, 0], [-a, -a, 0, 1, 0]];
-    const backFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 1, 0]);
-    const leftFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 0, 0]);
-    const rightFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 1, 1]);
-    const topFace = frontFace.map(([x, y, r, g, b]) => [x, y, 0, 0, 1]);
-    const bottomFace = frontFace.map(([x, y, r, g, b]) => [x, y, 1, 0.5, 0]);
 
     var buffers = [];
 
@@ -39,18 +30,14 @@ function WebGLaplikacija() {
     }
 
     function loadBuffers() {
-        buffers = [
-            frontFace, backFace,
-            leftFace, rightFace,
-            topFace, bottomFace
-        ].map(createBuffer);
-
-        GPUprogram1.a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
-        GPUprogram1.a_boja = gl.getAttribLocation(GPUprogram1, "a_boja");
-        GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
-
-        gl.enableVertexAttribArray(GPUprogram1.a_vrhXY);
-        gl.enableVertexAttribArray(GPUprogram1.a_boja);
+        GPUprogram1.a_vrhXYZ = gl.getAttribLocation(GPUprogram1, "a_vrhXYZ");
+        GPUprogram1.a_normala = gl.getAttribLocation(GPUprogram1, "a_normala");
+        gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+        gl.enableVertexAttribArray(GPUprogram1.a_vrhXYZ);
+        gl.enableVertexAttribArray(GPUprogram1.a_normala);
+        gl.vertexAttribPointer(GPUprogram1.a_vrhXYZ, 3, gl.FLOAT, false, 24, 0);
+        gl.vertexAttribPointer(GPUprogram1.a_normala, 3, gl.FLOAT, false, 24, 12);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Shapes.valjak(0.5, 1, n)), gl.STATIC_DRAW);
     }
 
     function bindBuffer(buffer) {
@@ -81,39 +68,6 @@ function WebGLaplikacija() {
         matrix.postaviKameru(x, y, z, 0, 0, 8, 0, 0, 1);
     }
 
-    function constructCube() {
-        buffers.forEach((buffer, i) => {
-            bindBuffer(buffer);
-
-            const tempMatrix = new MT3D();
-            tempMatrix._matrica = matrix._matrica.slice();
-
-            switch (i) {
-                case 1:
-                    matrix.rotirajY(90);
-                    break;
-                case 2:
-                    matrix.rotirajY(-90);
-                    break;
-                case 3:
-                    matrix.rotirajY(180);
-                    break;
-                case 4:
-                    matrix.rotirajX(90);
-                    break;
-                case 5:
-                    matrix.rotirajX(-90);
-            }
-
-            matrix.pomakni(0, 0, a);
-            gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-            matrix._matrica = tempMatrix._matrica.slice();
-        });
-
-    }
-
     gl.enable(gl.DEPTH_TEST);
 
     function render(timestamp) {
@@ -124,51 +78,46 @@ function WebGLaplikacija() {
         gl.clearColor(0.5, 0.5, 0.5, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        function drawGridXY(xmin, xmax, ymin, ymax, step = 1) {
-            const lines = [];
-            for (let x = xmin-2; x <= xmax; x += step) {
-                if (x < xmin) lines.push(0, 0, 0, 0, 0, 0);
-                else lines.push(x, ymin, 0, x, ymax, 0);
-            }
-            for (let y = ymin; y <= ymax; y += step) lines.push(xmin, y, 0, xmax, y, 0);
-            const gridBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lines), gl.STATIC_DRAW);
-            const a_vrhXY = gl.getAttribLocation(GPUprogram1, "a_vrhXY");
-            gl.enableVertexAttribArray(a_vrhXY);
-            gl.vertexAttribPointer(a_vrhXY, 3, gl.FLOAT, false, 0, 0);
-            const u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
-            gl.uniform4fv(u_boja, [0.7, 0.7, 0.7, 1.0]);
-            gl.drawArrays(gl.LINES, 0, lines.length / 3);
-        }
+        function iscrtaj() {
+            gl.clearColor(0.5, 0.5, 0.5, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.viewport(0, 0, platno1.width, platno1.height);
 
-        drawGridXY(-10, 10, -10, 10);
-        matrix.pomakni(0, 0, a);
-        drawCubesFromArray();
-        matrix.pomakni(0, 0, -a);
+            // matrica transformacije - rotacija oko x osi za kut alpha
+            gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, [
+                1, 0, 0, 0,
+                0, Math.cos(alpha), Math.sin(alpha), 0,
+                0, -Math.sin(alpha), Math.cos(alpha), 0,
+                0, 0, 0, 1
+            ]);
 
-        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
+            // donja baza valjka
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, n + 2);
+
+            // gornja baza valjka
+            gl.drawArrays(gl.TRIANGLE_FAN, n + 2, n + 2);
+
+            // plašt valjka
+            gl.drawArrays(gl.TRIANGLE_STRIP, 2 * (n + 2), 2 * n + 2);
+
+            alpha += 0.025 * Math.PI / 180;
+            requestAnimationFrame(iscrtaj);
+        } // iscrtaj
+
+        // vektori položaja izvora svjetlosti i kamere
+        gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
+        gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);
+
+        // boja izvora u RGB formatu
+        gl.uniform3fv(GPUprogram1.u_boja, [1.0, 1.0, 0.0]);
+
+        // omogući selektivno odbacivanje
+        gl.enable(gl.CULL_FACE);
+
+        iscrtaj();
     }
-
-    function drawCubesFromArray(coordinateArray = [
-        [1, 1, 1],
-        [1, 0, 0],
-        [1, 1, 0],
-        [1, 0, 0],
-        [1, 0, 0],
-    ], cubeSize = a * 2) {
-        // reverse the array
-        coordinateArray = coordinateArray.reverse();
-        coordinateArray.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value !== 0) {
-                    matrix.pomakni(x * cubeSize, 0, y * cubeSize);
-                    constructCube();
-                    matrix.pomakni(-x * cubeSize, 0, -y * cubeSize);
-                }
-            });
-        });
-    }
+    var alpha = 0; // kut rotacije koji se koristi kod animacije
+    var n = 32; // broj stranica koje čine plašt valjka
 
     loadBuffers();
 

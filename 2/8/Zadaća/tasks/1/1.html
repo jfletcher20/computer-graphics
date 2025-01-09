@@ -13,10 +13,13 @@
 <body>
 	<h1>Zadatak 1</h1>
 	<nav>
-		<a href="../../index.html">Labos 8</a>
+		<a href="../../index.html">Zadaća 8</a>
 		<a href="../../tasks/1/1.html" class="selected">Zadatak 1</a>
 	</nav>
 	<div class="container">
+		<!-- textarea that's off to the right and only accepts 01 and newlines as input -->
+		<textarea id="input" style="position: relative; right: 0; border: none; resize: none; overflow: hidden;">
+		</textarea>
 		<canvas id="slika1" width="640" height="640">
 			Vaš preglednik ne podržava HTML5 canvas.
 		</canvas>
@@ -47,6 +50,14 @@
 	void main() {
 	  bojaPiksela = vec4(v_boja, 1);
 	}
+</script>
+<script>
+	document.getElementById('input').addEventListener('input', function (e) {
+		const value = e.target.value;
+		e.target.value = value.replace(/[^01\n]/g, '');
+	});
+	document.getElementById('input').textContent
+		= `111\n100\n110\n100\n100`;
 </script>
 
 </html>

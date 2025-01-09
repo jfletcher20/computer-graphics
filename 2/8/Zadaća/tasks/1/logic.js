@@ -126,7 +126,7 @@ function WebGLaplikacija() {
 
         function drawGridXY(xmin, xmax, ymin, ymax, step = 1) {
             const lines = [];
-            for (let x = xmin-2; x <= xmax; x += step) {
+            for (let x = xmin - 2; x <= xmax; x += step) {
                 if (x < xmin) lines.push(0, 0, 0, 0, 0, 0);
                 else lines.push(x, ymin, 0, x, ymax, 0);
             }
@@ -144,7 +144,11 @@ function WebGLaplikacija() {
 
         drawGridXY(-10, 10, -10, 10);
         matrix.pomakni(0, 0, a);
-        drawCubesFromArray();
+        var getCubesArrayFromInput = () => {
+            const input = document.getElementById('input').value;
+            return input.split('\n').map(row => row.split('').map(Number));
+        }
+        drawCubesFromArray(getCubesArrayFromInput());
         matrix.pomakni(0, 0, -a);
 
         gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());

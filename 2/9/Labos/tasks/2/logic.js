@@ -4,9 +4,11 @@ const shapes = {
     CUBE: "cube",
     SPHERE: "sphere",
     CYLINDER: "cylinder",
+    HOLLOW_CYLINDER: "hollow_cylinder",
     CONE: "cone",
     HEMISPHERE: "hemisphere",
-    SOLID_HEMISPHERE: "solid_hemisphere"
+    SOLID_HEMISPHERE: "solid_hemisphere",
+    TORUS: "torus"
 };
 
 function WebGLaplikacija() {
@@ -18,23 +20,26 @@ function WebGLaplikacija() {
     }
 
     const n = 128, r = 1, h = 2;
-    const { vertices, indices, drawFunction } = drawShape(shapes.CONE);
+    const { vertices, indices, drawFunction } = drawShape(shapes.HOLLOW_CYLINDER);
 
     function drawShape(shape) {
-
         switch (shape) {
             case shapes.CUBE:
-                return Shapes.cube(1);
+                return Shapes.cube(h);
             case shapes.HEMISPHERE:
                 return Shapes.hollow_hemisphere(r, n, 0, Math.PI);
             case shapes.SOLID_HEMISPHERE:
                 return Shapes.solid_hemisphere(r, n);
             case shapes.CYLINDER:
                 return Shapes.cylinder(r, h, n, true);
+            case shapes.HOLLOW_CYLINDER:
+                return Shapes.hollow_cylinder(r*1.5, r, h, n);
             case shapes.CONE:
                 return Shapes.cone(r, h, n, true);
             case shapes.SPHERE:
                 return Shapes.sphere(r, n);
+            case shapes.TORUS:
+                return Shapes.torus(h, r, n, n);
         }
     }
 

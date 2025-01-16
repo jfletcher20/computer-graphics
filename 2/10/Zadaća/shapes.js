@@ -597,7 +597,7 @@ class Shapes {
     */
     // returns a series of cubes where every place where there is a 1 a cube is drawn, otherwise nothing is drawn and the iterator moves to the next position
 
-    static ambiguous(matrix = [[]], a = 1) {
+    static ambiguous(matrix, a, depth, center) {
         matrix = matrix.reverse();
         a /= 2;
         // a is the size of each cube side
@@ -652,13 +652,22 @@ class Shapes {
             );
         }
 
+        let centerX = 0, centerY = 0;
+        if (center == true) {
+            centerY = matrix.length / 2;
+            centerX = matrix[0].length / 2;
+        }
+
         const n = matrix.length;
         for (let i = 0; i < n; i++) {
             const row = matrix[i];
             const m = row.length;
             for (let j = 0; j <= m; j++) {
                 if (row[j] === 1) {
-                    cubeVerts(j * a * 2, 0, i * a * 2);
+                    let z = depth;
+                    for (z; z > 0; z--) {
+                        cubeVerts((j - centerX) * a * 2, a * z, (i - centerY) * a * 2);
+                    }
                 }
             }
         }

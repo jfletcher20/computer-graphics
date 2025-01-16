@@ -12,6 +12,7 @@ const shapes = {
     TORUS: "torus",
     PYRAMID: "pyramid",
     CAPSULE: "capsule",
+    AMBIGUOUS: "ambiguous",
 };
 
 function WebGLaplikacija() {
@@ -22,8 +23,15 @@ function WebGLaplikacija() {
         return;
     }
 
+    GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
+    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
+    GPUprogram1.u_izvorXYZ = gl.getUniformLocation(GPUprogram1, "u_izvorXYZ");
+    GPUprogram1.u_kameraXYZ = gl.getUniformLocation(GPUprogram1, "u_kameraXYZ");
+    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
+    gl.useProgram(GPUprogram1);
+
     const n = 128, r = 1, h = 2;
-    const { vertices, indices, drawFunction } = drawShape(shapes.CAPSULE);
+    const { vertices, indices, drawFunction } = drawShape(shapes.AMBIGUOUS);
 
     function drawShape(shape) {
         switch (shape) {
@@ -49,15 +57,18 @@ function WebGLaplikacija() {
                 return Shapes.pyramid(r, h);
             case shapes.CAPSULE:
                 return Shapes.capsule(r, h, 128);
+            case shapes.AMBIGUOUS:
+                return Shapes.ambiguous([
+                    [1, 1, 1],
+                    [1, 0, 0],
+                    [1, 1, 0],
+                    [0, 1, 0],
+                    [0, 0, 0]
+                    [0, 1, 0],
+                    [0, 1, 0],
+                ], 1);
         }
     }
-
-    GPUprogram1 = pripremiGPUprogram(gl, "vertex-shader", "fragment-shader");
-    GPUprogram1.u_mTrans = gl.getUniformLocation(GPUprogram1, "u_mTrans");
-    GPUprogram1.u_izvorXYZ = gl.getUniformLocation(GPUprogram1, "u_izvorXYZ");
-    GPUprogram1.u_kameraXYZ = gl.getUniformLocation(GPUprogram1, "u_kameraXYZ");
-    GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
-    gl.useProgram(GPUprogram1);
 
     function loadBuffers() {
         GPUprogram1.a_vrhXYZ = gl.getAttribLocation(GPUprogram1, "a_vrhXYZ");

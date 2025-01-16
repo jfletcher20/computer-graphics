@@ -586,4 +586,95 @@ class Shapes {
         offset += topCount;
     }
 
+    /// draw ambigouous shape
+    // takes in a 2d matrix, for example:
+    /*
+    [
+        [0, 1, 0],
+        [1, 1, 1],
+        [0, 1, 0]
+    ]
+    */
+    // returns a series of cubes where every place where there is a 1 a cube is drawn, otherwise nothing is drawn and the iterator moves to the next position
+
+    static ambiguous(matrix = [[]], a = 1) {
+        matrix = matrix.reverse();
+        a /= 2;
+        // a is the size of each cube side
+        const vertices = [];
+        function cubeVerts(offsetX, offsetY, offsetZ) {
+            const x0 = offsetX - a, x1 = offsetX + a;
+            const y0 = offsetY - a, y1 = offsetY + a;
+            const z0 = offsetZ - a, z1 = offsetZ + a;
+            vertices.push(
+                // front
+                x0, y0, z1, 0, 0, 1,
+                x1, y0, z1, 0, 0, 1,
+                x1, y1, z1, 0, 0, 1,
+                x1, y1, z1, 0, 0, 1,
+                x0, y1, z1, 0, 0, 1,
+                x0, y0, z1, 0, 0, 1,
+                // right
+                x1, y0, z1, 1, 0, 0,
+                x1, y0, z0, 1, 0, 0,
+                x1, y1, z0, 1, 0, 0,
+                x1, y1, z0, 1, 0, 0,
+                x1, y1, z1, 1, 0, 0,
+                x1, y0, z1, 1, 0, 0,
+                // back
+                x0, y0, z0, 0, 0, -1,
+                x0, y1, z0, 0, 0, -1,
+                x1, y1, z0, 0, 0, -1,
+                x1, y1, z0, 0, 0, -1,
+                x1, y0, z0, 0, 0, -1,
+                x0, y0, z0, 0, 0, -1,
+                // left
+                x0, y0, z1, -1, 0, 0,
+                x0, y1, z1, -1, 0, 0,
+                x0, y1, z0, -1, 0, 0,
+                x0, y1, z0, -1, 0, 0,
+                x0, y0, z0, -1, 0, 0,
+                x0, y0, z1, -1, 0, 0,
+                // top
+                x0, y1, z1, 0, 1, 0,
+                x1, y1, z1, 0, 1, 0,
+                x1, y1, z0, 0, 1, 0,
+                x1, y1, z0, 0, 1, 0,
+                x0, y1, z0, 0, 1, 0,
+                x0, y1, z1, 0, 1, 0,
+                // bottom
+                x0, y0, z1, 0, -1, 0,
+                x0, y0, z0, 0, -1, 0,
+                x1, y0, z0, 0, -1, 0,
+                x1, y0, z0, 0, -1, 0,
+                x1, y0, z1, 0, -1, 0,
+                x0, y0, z1, 0, -1, 0
+            );
+        }
+
+        const n = matrix.length;
+        for (let i = -0; i < n; i++) {
+            const row = matrix[i];
+            const m = row.length;
+            for (let j = 0; j <= m; j++) {
+                if (row[j] === 1) {
+                    cubeVerts(j * a * 2, 0, i * a * 2);
+                }
+            }
+        }
+
+
+
+        return {
+            vertices: vertices,
+            indices: undefined,
+            drawFunction: this.drawAmbiguousShape.bind(null, vertices.length / 6)
+        };
+    }
+
+    // The draw function simply draws all vertices as triangles
+    static drawAmbiguousShape(indexCount, gl, n) {
+        gl.drawArrays(gl.TRIANGLES, 0, indexCount);
+    }
+
 }

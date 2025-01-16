@@ -25,15 +25,6 @@ class Shapes {
         }
         if (withIndices) {
             var indices = [];
-            // for (var i = 0; i <= n; i++) indices.push(i);
-            // indices.push(0);
-            // indices.push(n + 1);
-            // for (var i = 1; i <= n; i++) indices.push(n + 1 - i);
-            // indices.push(n);
-            // for (var i = 0; i < n; i++) {
-            //     indices.push(i, i + n + 2);
-            // }
-            // indices.push(0, n + 2);
             return { vertices: vertices, indices: indices, drawFunction: this.drawCylinder };
         }
         return vertices;
@@ -45,20 +36,14 @@ class Shapes {
         gl.drawArrays(gl.TRIANGLE_STRIP, 2 * (n + 2), 2 * n + 2);
     }
 
-    /// Draw hollow cylinder, such that the cylinder is given 2 radii, the outer radius and the inner raidus
-    // where the inner radius is the radius of the hole in the cylinder
-    // and the outer radius is the radius of the cylinder itself
-    // both radii should be surrounded by the same number of vertices (mantle)
     static hollow_cylinder(outerR, innerR, h, n) {
         var vertices = [];
         let phi = 2 * Math.PI / n;
-        // construcct the base of the cylinder as a circle with radius outerR and inner radius innerR
         for (let i = 0; i <= n; i++) {
             vertices.push(outerR * Math.cos(phi), outerR * Math.sin(phi), -h / 2, 0, 0, -1);
             vertices.push(innerR * Math.cos(phi), innerR * Math.sin(phi), -h / 2, 0, 0, -1);
             phi += 2 * Math.PI / n;
         }
-        // construct the top of the cylinder
         phi = 2 * Math.PI;
         for (let i = 0; i <= n; i++) {
             vertices.push(outerR * Math.cos(phi), outerR * Math.sin(phi), h / 2, 0, 0, 1);
@@ -66,7 +51,6 @@ class Shapes {
             phi -= 2 * Math.PI / n;
         }
 
-        // construct the outer mantle of the cylinder
         phi = 0;
         for (let i = 0; i <= n; i++) {
             let c = Math.cos(phi);
@@ -77,8 +61,6 @@ class Shapes {
             vertices.push(x, y, h / 2, c, s, 0);
             phi += 2 * Math.PI / n;
         }
-
-        // construct the inner mantle of the cylinder
 
         phi = 0;
         for (let i = 0; i <= n; i++) {
@@ -95,17 +77,12 @@ class Shapes {
     }
 
     static drawHollowCylinder(gl, n) {
-        // draw the bottom of the cylinder
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 2 * (n + 1));
-        // draw the top of the cylinder
         gl.drawArrays(gl.TRIANGLE_STRIP, 2 * (n + 1), 2 * (n + 1));
-        // draw the outer mantle of the cylinder
         gl.drawArrays(gl.TRIANGLE_STRIP, 4 * (n + 1), 2 * n + 2);
-        // draw the inner mantle of the cylinder
         gl.drawArrays(gl.TRIANGLE_STRIP, 4 * (n + 1) + 2 * (n + 1), 2 * n + 2);
     }
 
-    /// Draw cone
     static cone(r, h, n, withIndices = true) {
         var vertices = [];
         vertices.push(0, 0, -h / 2, 0, 0, -1);
@@ -345,8 +322,6 @@ class Shapes {
         gl.drawElements(gl.TRIANGLES, n * m * 6, gl.UNSIGNED_SHORT, 0);
     }
 
-
-    /// rect-cube (cube with different dimensions: a, b, c)
     static cuboid(a, b, c) {
         a /= 2;
         b /= 2;
@@ -477,14 +452,11 @@ class Shapes {
         gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
     }
 
-    static capsule(radius, height, n) { // We will store all vertices (pos + normal) in one big array. // Then we record how many vertices each section contributes, so // drawCapsule can draw them in one go.
+    static capsule(radius, height, n) {
 
         const vertices = [];
         let bottomCount = 0, cylinderCount = 0, topCount = 0;
 
-        // ---------------------------------------
-        // 2) Cylinder mantle: from z=-height/2 to z=+height/2, no top or bottom
-        // ---------------------------------------
         {
             for (let j = 0; j <= n; j++) {
                 const phi = 2 * Math.PI * (j / n);
@@ -498,29 +470,19 @@ class Shapes {
                 }
             }
         }
-        // ---------------------------------------
-        // 1) Bottom hemisphere: center at z = -height/2
-        //    param θ from 0..π/2, φ from 0..2π
-        // ---------------------------------------
         {
-            const latCount = n;         // "vertical" divisions
-            const lonCount = n;         // "horizontal" divisions
+            const latCount = n;
+            const lonCount = n;
             for (let i = 0; i < latCount; i++) {
-                const theta0 = (Math.PI / 2) * (i / latCount);       // goes 0..π/2
+                const theta0 = (Math.PI / 2) * (i / latCount);
                 const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
                 for (let j = 0; j <= lonCount; j++) {
                     const phi = 2 * Math.PI * (j / lonCount);
-
-                    // For each row (theta0, theta1) we make a "triangle strip"
                     for (let t of [theta0, theta1]) {
                         const sinT = Math.sin(t), cosT = Math.cos(t);
                         const x = radius * cosT * Math.cos(phi);
                         const y = radius * cosT * Math.sin(phi);
-                        const z = -height / 2 - radius * sinT; // shift center down
-
-                        // Normal is (x_c, y_c, z_c - center), but center is at z = -height/2,
-                        // so effectively normal = (x, y, z - ( -height/2 ))
-                        // which is (x, y, z + height/2). We normalize below:
+                        const z = -height / 2 - radius * sinT;
                         const nx = x;
                         const ny = y;
                         const nz = z + height / 2;
@@ -533,33 +495,22 @@ class Shapes {
             }
         }
 
-        // ---------------------------------------
-        // 3) Top hemisphere: center at z = +height/2
-        //    param θ from π/2..π, φ from 0..2π
-        // ---------------------------------------
         {
-            const latCount = n;         // "vertical" divisions
-            const lonCount = n;         // "horizontal" divisions
+            const latCount = n;
+            const lonCount = n;
             for (let i = latCount; i > 0; i--) {
-                const theta0 = (Math.PI / 2) * (i / latCount);       // goes 0..π/2
+                const theta0 = (Math.PI / 2) * (i / latCount);
                 const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
                 for (let j = 0; j <= lonCount; j++) {
                     const phi = 2 * Math.PI * (j / lonCount);
-
-                    // For each row (theta0, theta1) we make a "triangle strip"
                     for (let t of [theta0, theta1]) {
                         const sinT = Math.sin(t), cosT = Math.cos(t);
                         const y = radius * cosT * Math.sin(phi);
                         const x = radius * cosT * Math.cos(phi);
-                        const z = -height / 2 + radius * sinT; // shift center down
-
-                        // Normal is (x_c, y_c, z_c - center), but center is at z = -height/2,
-                        // so effectively normal = (x, y, z - ( -height/2 ))
-                        // which is (x, y, z + height/2). We normalize below:
+                        const z = -height / 2 + radius * sinT;
                         const nx = x;
                         const ny = y;
                         const nz = z + height / 2;
-
                         const mag = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
                         vertices.push(x, y, height - 0.02 + z, nx / mag, ny / mag, nz / mag);
                         bottomCount++;
@@ -585,18 +536,6 @@ class Shapes {
         gl.drawArrays(gl.TRIANGLE_STRIP, offset, topCount);
         offset += topCount;
     }
-
-    /// draw ambigouous shape
-    // takes in a 2d matrix, for example:
-    /*
-    [
-        [0, 1, 0],
-        [1, 1, 1],
-        [0, 1, 0]
-    ]
-    */
-    // returns a series of cubes where every place where there is a 1 a cube is drawn, otherwise nothing is drawn and the iterator moves to the next position
-
     static ambiguous(matrix, a, depth, center) {
         matrix = matrix.reverse();
         a /= 2;
@@ -679,7 +618,6 @@ class Shapes {
         };
     }
 
-    // The draw function simply draws all vertices as triangles
     static drawAmbiguousShape(indexCount, gl, n) {
         gl.drawArrays(gl.TRIANGLES, 0, indexCount);
     }

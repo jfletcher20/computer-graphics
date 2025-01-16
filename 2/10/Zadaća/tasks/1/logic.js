@@ -4,7 +4,7 @@ window.onload = function () {
 
 const shapes = {
     CUBE: "cube",
-    CUBOID: "cuboid", // actual name for this shape in math is cuboid
+    CUBOID: "cuboid",
     SPHERE: "sphere",
     CYLINDER: "cylinder",
     HOLLOW_CYLINDER: "hollow_cylinder",

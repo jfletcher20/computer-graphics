@@ -2,6 +2,7 @@ window.onload = WebGLaplikacija;
 
 const shapes = {
     CUBE: "cube",
+    CUBOID: "cuboid", // actual name for this shape in math is cuboid
     SPHERE: "sphere",
     CYLINDER: "cylinder",
     HOLLOW_CYLINDER: "hollow_cylinder",
@@ -20,12 +21,14 @@ function WebGLaplikacija() {
     }
 
     const n = 128, r = 1, h = 2;
-    const { vertices, indices, drawFunction } = drawShape(shapes.HOLLOW_CYLINDER);
+    const { vertices, indices, drawFunction } = drawShape(shapes.CUBE);
 
     function drawShape(shape) {
         switch (shape) {
             case shapes.CUBE:
                 return Shapes.cube(h);
+            case shapes.CUBOID:
+                return Shapes.cuboid(h, h, h);
             case shapes.HEMISPHERE:
                 return Shapes.hollow_hemisphere(r, n, 0, Math.PI);
             case shapes.SOLID_HEMISPHERE:

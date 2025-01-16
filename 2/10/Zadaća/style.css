@@ -92,11 +92,11 @@ nav a.selected {
     line-height: 1.5;
 }
 
-.keyword { color: #569CD6; }
+.keyword { color: #569CD6 !important; }
 .number { color: #B5CEA8; }
 .string { color: #CE9178; }
 .comment { color: #6A9955; font-style: italic; }
-.function-name { color: #DCDCAA; }
+.function-name { color: #DCDCAA !important; }
 .variable { color: #9CDCFE; }
 
 pre {

@@ -283,7 +283,7 @@ class Shapes {
             -a, a, a, 0, 1, 0,
             a, a, a, 0, 1, 0,
             a, a, -a, 0, 1, 0,
-            a, a, -a,   0, 1, 0,
+            a, a, -a, 0, 1, 0,
             -a, a, -a, 0, 1, 0,
             -a, a, a, 0, 1, 0,
             // bottom
@@ -343,6 +343,247 @@ class Shapes {
     static drawTorus(gl, n) {
         let m = n;
         gl.drawElements(gl.TRIANGLES, n * m * 6, gl.UNSIGNED_SHORT, 0);
+    }
+
+
+    /// rect-cube (cube with different dimensions: a, b, c)
+    static cuboid(a, b, c) {
+        a /= 2;
+        b /= 2;
+        c /= 2;
+        const vertices = [
+            // front
+            -a, -b, c, 0, 0, 1,
+            a, -b, c, 0, 0, 1,
+            a, b, c, 0, 0, 1,
+            a, b, c, 0, 0, 1,
+            -a, b, c, 0, 0, 1,
+            -a, -b, c, 0, 0, 1,
+            // right
+            a, -b, c, 1, 0, 0,
+            a, -b, -c, 1, 0, 0,
+            a, b, -c, 1, 0, 0,
+            a, b, -c, 1, 0, 0,
+            a, b, c, 1, 0, 0,
+            a, -b, c, 1, 0, 0,
+            // back
+            -a, -b, -c, 0, 0, -1,
+            -a, b, -c, 0, 0, -1,
+            a, b, -c, 0, 0, -1,
+            a, b, -c, 0, 0, -1,
+            a, -b, -c, 0, 0, -1,
+            -a, -b, -c, 0, 0, -1,
+            // left
+            -a, -b, c, -1, 0, 0,
+            -a, b, c, -1, 0, 0,
+            -a, b, -c, -1, 0, 0,
+            -a, b, -c, -1, 0, 0,
+            -a, -b, -c, -1, 0, 0,
+            -a, -b, c, -1, 0, 0,
+            // top
+            -a, b, c, 0, 1, 0,
+            a, b, c, 0, 1, 0,
+            a, b, -c, 0, 1, 0,
+            a, b, -c, 0, 1, 0,
+            -a, b, -c, 0, 1, 0,
+            -a, b, c, 0, 1, 0,
+            // bottom
+            -a, -b, c, 0, -1, 0,
+            -a, -b, -c, 0, -1, 0,
+            a, -b, -c, 0, -1, 0,
+            a, -b, -c, 0, -1, 0,
+            a, -b, c, 0, -1, 0,
+            -a, -b, c, 0, -1, 0
+        ];
+        const indices = [
+            0, 1, 2, 3, 4, 5,
+            6, 7, 8, 9, 10, 11,
+            12, 13, 14, 15, 16, 17,
+            18, 19, 20, 21, 22, 23,
+            24, 25, 26, 27, 28, 29,
+            30, 31, 32, 33, 34, 35
+        ];
+        return { vertices: vertices.flat(), indices: indices, drawFunction: this.drawCube };
+    }
+
+    static pyramid(a, h, n = 3, heightIsPyramidEdge = false) {
+        if (heightIsPyramidEdge) {
+            const nbasehalf = a / 2;
+            h = Math.sqrt(a * a - nbasehalf * nbasehalf);
+        }
+
+        const cross = (ax, ay, az, bx, by, bz) => [
+            ay * bz - az * by,
+            az * bx - ax * bz,
+            ax * by - ay * bx
+        ];
+        const normalize = (vx, vy, vz) => {
+            const len = Math.sqrt(vx * vx + vy * vy + vz * vz);
+            return len > 1e-9 ? [vx / len, vy / len, vz / len] : [0, 0, 0];
+        };
+
+        const r = a / 2;
+        const baseCorners = [];
+        const dt = (2 * Math.PI) / n;
+        for (let i = 0; i < n; i++) {
+            const angle = i * dt;
+            const x = r * Math.cos(angle);
+            const y = r * Math.sin(angle);
+            baseCorners.push([x, y, 0,
+                cross(0, 0, -1, x, y, 0)[0], cross(0, 0, -1, x, y, 0)[1], cross(0, 0, -1, x, y, 0)[2]]);
+        }
+        const apex = [0, 0, h];
+        const verts = [];
+        if (n >= 3) {
+            for (let i = 0; i < n - 2; i++) {
+                const p0 = baseCorners[0];
+                const p1 = baseCorners[i + 1];
+                const p2 = baseCorners[i + 2];
+                const ux = p1[0] - p0[0], uy = p1[1] - p0[1], uz = p1[2] - p0[2];
+                const vx = p2[0] - p0[0], vy = p2[1] - p0[1], vz = p2[2] - p0[2];
+                let [nx, ny, nz] = cross(ux, uy, uz, vx, vy, vz);
+                [nx, ny, nz] = normalize(nx, ny, nz);
+
+                verts.push(p0[0], p0[1], p0[2], nx, ny, nz);
+                verts.push(p1[0], p1[1], p1[2], nx, ny, nz);
+                verts.push(p2[0], p2[1], p2[2], nx, ny, nz);
+            }
+        }
+
+        for (let i = 0; i < n; i++) {
+            const p0 = apex;
+            const p1 = baseCorners[i];
+            const p2 = baseCorners[(i + 1) % n];
+            const ux = p1[0] - p0[0], uy = p1[1] - p0[1], uz = p1[2] - p0[2];
+            const vx = p2[0] - p0[0], vy = p2[1] - p0[1], vz = p2[2] - p0[2];
+            let [nx, ny, nz] = cross(ux, uy, uz, vx, vy, vz);
+            [nx, ny, nz] = normalize(nx, ny, nz);
+
+            verts.push(p0[0], p0[1], p0[2], nx, ny, nz);
+            verts.push(p1[0], p1[1], p1[2], nx, ny, nz);
+            verts.push(p2[0], p2[1], p2[2], nx, ny, nz);
+        }
+
+        return {
+            vertices: verts,
+            indices: undefined,
+            drawFunction: this.drawPyramid
+        };
+    }
+
+    static drawPyramid(gl, n) {
+        const triangleCount = (n >= 3) ? (2 * n - 2) : 0;
+        const vertexCount = triangleCount * 3;
+        gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
+    }
+
+    static capsule(radius, height, n) { // We will store all vertices (pos + normal) in one big array. // Then we record how many vertices each section contributes, so // drawCapsule can draw them in one go.
+
+        const vertices = [];
+        let bottomCount = 0, cylinderCount = 0, topCount = 0;
+
+        // ---------------------------------------
+        // 2) Cylinder mantle: from z=-height/2 to z=+height/2, no top or bottom
+        // ---------------------------------------
+        {
+            for (let j = 0; j <= n; j++) {
+                const phi = 2 * Math.PI * (j / n);
+                const cosP = Math.cos(phi), sinP = Math.sin(phi);
+                for (let side of [-1, +1]) {
+                    const z = (side < 0) ? -height / 2 : +height / 2;
+                    const x = radius * cosP;
+                    const y = radius * sinP;
+                    vertices.push(x, y, z, cosP, sinP, 0);
+                    cylinderCount++;
+                }
+            }
+        }
+        // ---------------------------------------
+        // 1) Bottom hemisphere: center at z = -height/2
+        //    param θ from 0..π/2, φ from 0..2π
+        // ---------------------------------------
+        {
+            const latCount = n;         // "vertical" divisions
+            const lonCount = n;         // "horizontal" divisions
+            for (let i = 0; i < latCount; i++) {
+                const theta0 = (Math.PI / 2) * (i / latCount);       // goes 0..π/2
+                const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
+                for (let j = 0; j <= lonCount; j++) {
+                    const phi = 2 * Math.PI * (j / lonCount);
+
+                    // For each row (theta0, theta1) we make a "triangle strip"
+                    for (let t of [theta0, theta1]) {
+                        const sinT = Math.sin(t), cosT = Math.cos(t);
+                        const x = radius * cosT * Math.cos(phi);
+                        const y = radius * cosT * Math.sin(phi);
+                        const z = -height / 2 - radius * sinT; // shift center down
+
+                        // Normal is (x_c, y_c, z_c - center), but center is at z = -height/2,
+                        // so effectively normal = (x, y, z - ( -height/2 ))
+                        // which is (x, y, z + height/2). We normalize below:
+                        const nx = x;
+                        const ny = y;
+                        const nz = z + height / 2;
+
+                        const mag = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                        vertices.push(x, y, z, nx / mag, ny / mag, nz / mag);
+                        bottomCount++;
+                    }
+                }
+            }
+        }
+
+        // ---------------------------------------
+        // 3) Top hemisphere: center at z = +height/2
+        //    param θ from π/2..π, φ from 0..2π
+        // ---------------------------------------
+        {
+            const latCount = n;         // "vertical" divisions
+            const lonCount = n;         // "horizontal" divisions
+            for (let i = latCount; i > 0; i--) {
+                const theta0 = (Math.PI / 2) * (i / latCount);       // goes 0..π/2
+                const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
+                for (let j = 0; j <= lonCount; j++) {
+                    const phi = 2 * Math.PI * (j / lonCount);
+
+                    // For each row (theta0, theta1) we make a "triangle strip"
+                    for (let t of [theta0, theta1]) {
+                        const sinT = Math.sin(t), cosT = Math.cos(t);
+                        const y = radius * cosT * Math.sin(phi);
+                        const x = radius * cosT * Math.cos(phi);
+                        const z = -height / 2 + radius * sinT; // shift center down
+
+                        // Normal is (x_c, y_c, z_c - center), but center is at z = -height/2,
+                        // so effectively normal = (x, y, z - ( -height/2 ))
+                        // which is (x, y, z + height/2). We normalize below:
+                        const nx = x;
+                        const ny = y;
+                        const nz = z + height / 2;
+
+                        const mag = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                        vertices.push(x, y, height - 0.02 + z, nx / mag, ny / mag, nz / mag);
+                        bottomCount++;
+                    }
+                }
+            }
+        }
+
+        return {
+            vertices: vertices,
+            indices: undefined,
+            drawFunction: this.drawCapsule.bind(null, bottomCount, cylinderCount, topCount)
+        };
+
+    }
+
+    static drawCapsule(bottomCount, cylinderCount, topCount, gl, n) {
+        let offset = 0;
+        gl.drawArrays(gl.TRIANGLE_STRIP, offset, bottomCount);
+        offset += bottomCount;
+        gl.drawArrays(gl.TRIANGLE_STRIP, offset, cylinderCount);
+        offset += cylinderCount;
+        gl.drawArrays(gl.TRIANGLE_STRIP, offset, topCount);
+        offset += topCount;
     }
 
 }

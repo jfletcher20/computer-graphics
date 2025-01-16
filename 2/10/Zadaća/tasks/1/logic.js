@@ -10,7 +10,8 @@ const shapes = {
     HEMISPHERE: "hemisphere",
     SOLID_HEMISPHERE: "solid_hemisphere",
     TORUS: "torus",
-    PYRAMID: "pyramid"
+    PYRAMID: "pyramid",
+    CAPSULE: "capsule",
 };
 
 function WebGLaplikacija() {
@@ -22,7 +23,7 @@ function WebGLaplikacija() {
     }
 
     const n = 128, r = 1, h = 2;
-    const { vertices, indices, drawFunction } = drawShape(shapes.PYRAMID);
+    const { vertices, indices, drawFunction } = drawShape(shapes.CAPSULE);
 
     function drawShape(shape) {
         switch (shape) {
@@ -46,6 +47,8 @@ function WebGLaplikacija() {
                 return Shapes.torus(h, r, n, n);
             case shapes.PYRAMID:
                 return Shapes.pyramid(r, h);
+            case shapes.CAPSULE:
+                return Shapes.capsule(r, h, 128);
         }
     }
 
@@ -102,24 +105,9 @@ function WebGLaplikacija() {
         gl.clearColor(0.5, 0.5, 0.5, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, platno1.width, platno1.height);
-
-        // gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, [
-        //     1, 0, 0, 0,
-        //     0, Math.cos(φ * Math.PI / 180), Math.sin(φ * Math.PI / 180), 0,
-        //     0, -Math.sin(φ * Math.PI / 180), Math.cos(φ * Math.PI / 180), 0,
-        //     0, 0, 0, 1
-        // ]);
-        // use the camera as the matrix
         gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
 
-        // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-
-        // gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, 0);
-        // gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, (n + 2) * 2);
-        // gl.drawElements(gl.TRIANGLE_STRIP, (2 * n + 2) * (n - 1), gl.UNSIGNED_SHORT, 4 * n + 8);
-
         drawFunction(gl, n);
-        // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 
         gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
         gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);

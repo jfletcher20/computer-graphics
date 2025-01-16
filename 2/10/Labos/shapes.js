@@ -283,7 +283,7 @@ class Shapes {
             -a, a, a, 0, 1, 0,
             a, a, a, 0, 1, 0,
             a, a, -a, 0, 1, 0,
-            a, a, -a, 0, 1, 0,
+            a, a, -a,   0, 1, 0,
             -a, a, -a, 0, 1, 0,
             -a, a, a, 0, 1, 0,
             // bottom
@@ -404,77 +404,6 @@ class Shapes {
             30, 31, 32, 33, 34, 35
         ];
         return { vertices: vertices.flat(), indices: indices, drawFunction: this.drawCube };
-    }
-
-    static pyramid(a, h, n = 3, heightIsPyramidEdge = false) {
-        if (heightIsPyramidEdge) {
-            const nbasehalf = a / 2;
-            h = Math.sqrt(a * a - nbasehalf * nbasehalf);
-        }
-
-        const cross = (ax, ay, az, bx, by, bz) => [
-            ay * bz - az * by,
-            az * bx - ax * bz,
-            ax * by - ay * bx
-        ];
-        const normalize = (vx, vy, vz) => {
-            const len = Math.sqrt(vx * vx + vy * vy + vz * vz);
-            return len > 1e-9 ? [vx / len, vy / len, vz / len] : [0, 0, 0];
-        };
-
-        const r = a / 2;
-        const baseCorners = [];
-        const dt = (2 * Math.PI) / n;
-        for (let i = 0; i < n; i++) {
-            const angle = i * dt;
-            const x = r * Math.cos(angle);
-            const y = r * Math.sin(angle);
-            baseCorners.push([x, y, 0,
-                cross(0, 0, -1, x, y, 0)[0], cross(0, 0, -1, x, y, 0)[1], cross(0, 0, -1, x, y, 0)[2]]);
-        }
-        const apex = [0, 0, h];
-        const verts = [];
-        if (n >= 3) {
-            for (let i = 0; i < n - 2; i++) {
-                const p0 = baseCorners[0];
-                const p1 = baseCorners[i + 1];
-                const p2 = baseCorners[i + 2];
-                const ux = p1[0] - p0[0], uy = p1[1] - p0[1], uz = p1[2] - p0[2];
-                const vx = p2[0] - p0[0], vy = p2[1] - p0[1], vz = p2[2] - p0[2];
-                let [nx, ny, nz] = cross(ux, uy, uz, vx, vy, vz);
-                [nx, ny, nz] = normalize(nx, ny, nz);
-
-                verts.push(p0[0], p0[1], p0[2], nx, ny, nz);
-                verts.push(p1[0], p1[1], p1[2], nx, ny, nz);
-                verts.push(p2[0], p2[1], p2[2], nx, ny, nz);
-            }
-        }
-
-        for (let i = 0; i < n; i++) {
-            const p0 = apex;
-            const p1 = baseCorners[i];
-            const p2 = baseCorners[(i + 1) % n];
-            const ux = p1[0] - p0[0], uy = p1[1] - p0[1], uz = p1[2] - p0[2];
-            const vx = p2[0] - p0[0], vy = p2[1] - p0[1], vz = p2[2] - p0[2];
-            let [nx, ny, nz] = cross(ux, uy, uz, vx, vy, vz);
-            [nx, ny, nz] = normalize(nx, ny, nz);
-
-            verts.push(p0[0], p0[1], p0[2], nx, ny, nz);
-            verts.push(p1[0], p1[1], p1[2], nx, ny, nz);
-            verts.push(p2[0], p2[1], p2[2], nx, ny, nz);
-        }
-
-        return {
-            vertices: verts,
-            indices: undefined,
-            drawFunction: this.drawPyramid
-        };
-    }
-
-    static drawPyramid(gl, n) {
-        const triangleCount = (n >= 3) ? (2 * n - 2) : 0;
-        const vertexCount = triangleCount * 3;
-        gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
     }
 
 }

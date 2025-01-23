@@ -24,7 +24,6 @@ function WebGLaplikacija() {
 
     const n = 128, r = 1, h = 2;
     const grid = { gridsizeX: 10, gridsizeY: 10, divisions: 10 };
-    const { vertices, indices, drawFunction } = drawShape(shapes.GRID);
 
     function drawShape(shape) {
         switch (shape) {
@@ -59,50 +58,37 @@ function WebGLaplikacija() {
     GPUprogram1.u_kameraXYZ = gl.getUniformLocation(GPUprogram1, "u_kameraXYZ");
     GPUprogram1.u_boja = gl.getUniformLocation(GPUprogram1, "u_boja");
     gl.useProgram(GPUprogram1);
-
+    
+    const obj = new Draw3DObject(gl, drawShape(shapes.CONE));
+    const obj2 = new Draw3DObject(gl, drawShape(shapes.HEMISPHERE));
     function loadBuffers() {
         GPUprogram1.a_vrhXYZ = gl.getAttribLocation(GPUprogram1, "a_vrhXYZ");
         GPUprogram1.a_normala = gl.getAttribLocation(GPUprogram1, "a_normala");
-        gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
         gl.enableVertexAttribArray(GPUprogram1.a_vrhXYZ);
         gl.enableVertexAttribArray(GPUprogram1.a_normala);
         gl.vertexAttribPointer(GPUprogram1.a_vrhXYZ, 3, gl.FLOAT, false, 24, 0);
         gl.vertexAttribPointer(GPUprogram1.a_normala, 3, gl.FLOAT, false, 24, 12);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     }
 
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-    const indexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    loadBuffers();
 
     const matrix = new MT3D();
     gl.enable(gl.DEPTH_TEST);
 
-    const cameraLimits = { limitDownward: 5, limitUpward: 60 };
-    let φ = 0, θ = 60, θDirection = 1;
+    const cameraLimits = { limitDownward: -120, limitUpward: 60 };
+    let φ = 0, θ = 0, θDirection = 1;
     function orbit() {
         matrix.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
-        θ += θDirection / (360 - cameraLimits.limitUpward);
-        if (θ >= 60) θDirection = -1;
-        if (θ <= 5) θDirection = 1;
-        // calculate x, y and z such that it will orbit horizontally around the object, alternating the camera angle based on the direction (such that hte camera always faces the center, but from different angles with the limit of cameraLimits.limitDownward and cameraLimits.limitUpward)
-
-        // let x = 10 * Math.sin(φ * Math.PI / 180) * Math.cos(θ * Math.PI / 180);
-        // let y = 10 * Math.sin(φ * Math.PI / 180) * Math.sin(θ * Math.PI / 180);
-        // let z = 10 * Math.cos(1 * Math.PI / 180);
-
+        θ += θDirection * cameraLimits.limitUpward / 180;
+        if (θ >= cameraLimits.limitUpward) θDirection = -1;
+        if (θ <= cameraLimits.limitDownward) θDirection = 1;
         
-        const x = Math.cos(φ * Math.PI / 180) * 4;
-        const y = Math.sin(φ * Math.PI / 180) * 4;
-        let z = Math.sin(θ * Math.PI / 180) * 3;
+        let x = 4 * Math.sin(φ * Math.PI / 180);
+        let y = 4 * Math.cos(φ * Math.PI / 180);
+        let z = 6 + Math.sin(θ * Math.PI / 180);
 
-        if (z < 0) z = 0;
-        const vert = document.getElementById("animate-vertical").checked;
-        matrix.postaviKameru(x, y, z, 0, 0, 0, 0, 0, 2);
+        // const vert = document.getElementById("animate-vertical").checked;
+        matrix.postaviKameru(x, y, z, 0, 0, 1, 0, 0, 1);
     }
 
     function render(timestamp) {
@@ -115,24 +101,17 @@ function WebGLaplikacija() {
         gl.clearColor(0.5, 0.5, 0.5, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, platno1.width, platno1.height);
-
-        // gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, [
-        //     1, 0, 0, 0,
-        //     0, Math.cos(φ * Math.PI / 180), Math.sin(φ * Math.PI / 180), 0,
-        //     0, -Math.sin(φ * Math.PI / 180), Math.cos(φ * Math.PI / 180), 0,
-        //     0, 0, 0, 1
-        // ]);
-        // use the camera as the matrix
-        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista());
-
-        // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-
-        // gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, 0);
-        // gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, (n + 2) * 2);
-        // gl.drawElements(gl.TRIANGLE_STRIP, (2 * n + 2) * (n - 1), gl.UNSIGNED_SHORT, 4 * n + 8);
-
-        drawFunction(gl, n);
-        // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+       
+        matrix.identitet()
+        matrix.skaliraj(2, 0.5, 0.5)
+        obj.draw(matrix);
+        matrix.identitet();
+        obj.draw(matrix);
+        matrix.pomakni(0, 0, 2).zrcaliNaZ().skaliraj(0.5, 0.5, 0.5);
+        obj.draw(matrix);
+        matrix.zrcaliNaX();
+        obj.draw(matrix);
+        obj2.draw(matrix);
 
         gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
         gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);
@@ -141,7 +120,6 @@ function WebGLaplikacija() {
 
     }
 
-    loadBuffers();
 
     function animiraj(vrijeme) {
         render(vrijeme / 20);

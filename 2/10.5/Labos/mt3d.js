@@ -86,6 +86,7 @@ class MT3D {
     		this._transformacije.push(this._matrica);
     		this._pamtiSkaliranje.push(this._skaliranje);
     	}
+        return this;
     }
 
     //vrati zadnje spremljenu transformaciju sa stoga
@@ -96,6 +97,7 @@ class MT3D {
     		this._matrica = this._transformacije.pop();
     		this._skaliranje = this._pamtiSkaliranje.pop();
     	}
+        return this;
     }
 
     //mnozenje matrica
@@ -159,6 +161,7 @@ class MT3D {
     pomakni(px, py, pz) {
         let m = [[1,0,0,px],[0,1,0,py],[0,0,1,pz],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
 
     //skaliranje
@@ -166,34 +169,41 @@ class MT3D {
         let m = [[sx,0,0,0],[0,sy,0,0],[0,0,sz,0],[0,0,0,1]];
         if (!this._skaliranje) this._skaliranje = true;
         this.mult(m);
+        return this;
     }
 
     //zrcaljenja na koordinatnim osima
     zrcaliNaX() {
         let m = [[1,0,0,0],[0,-1,0,0],[0,0,-1,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
     zrcaliNaY() {
         let m = [[-1,0,0,0],[0,1,0,0],[0,0,-1,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
     zrcaliNaZ() {
         let m = [[-1,0,0,0],[0,-1,0,0],[0,0,1,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
 
     //zrcaljenja na koordinatnim ravninama
     zrcaliNaXY() {
         let m = [[1,0,0,0],[0,1,0,0],[0,0,-1,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
     zrcaliNaXZ() {
         let m = [[1,0,0,0],[0,-1,0,0],[0,0,1,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
     zrcaliNaYZ() {
         let m = [[-1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
 
     //rotacije oko koordinatnih osi u stupnjevima
@@ -203,6 +213,7 @@ class MT3D {
         let sinfi = Math.sin(fi);
         let m = [[1,0,0,0],[0,cosfi,-sinfi,0],[0,sinfi,cosfi,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
     rotirajY(kut) {
         let fi = kut * Math.PI / 180;
@@ -210,6 +221,7 @@ class MT3D {
         let sinfi = Math.sin(fi);
         let m = [[cosfi,0,sinfi,0],[0,1,0,0],[-sinfi,0,cosfi,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
     rotirajZ(kut) {
         let fi = kut * Math.PI / 180;
@@ -217,12 +229,14 @@ class MT3D {
         let sinfi = Math.sin(fi);
         let m = [[cosfi,-sinfi,0,0],[sinfi,cosfi,0,0],[0,0,1,0],[0,0,0,1]];
         this.mult(m);
+        return this;
     }
 
     //identiteta
     identitet() {
         this._matrica = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]];
         this._skaliranje = false;
+        return this;
     }
 
     //smicanje
@@ -233,6 +247,7 @@ class MT3D {
         let m = [[1,tanB,tanC,0],[tanA,1,tanC,0],[tanA,tanB,1,0],[0,0,0,1]];
         if (!this._skaliranje) this._skaliranje = true;
         this.mult(m);
+        return this;
     }
 
     //opcenitije transformacije
@@ -254,6 +269,7 @@ class MT3D {
         this.mult(Ry1);
         this.mult(Rx1);
         this.pomakni(-x0,-y0,-z0);
+        return this;
     }
     zrcali_os(x0, y0, z0, u1, u2, u3) {
         // os je zadana tockom (x0,y0,z0) i vektorom smjera (u1,u2,u3)
@@ -273,6 +289,7 @@ class MT3D {
         this.mult(Ry1);
         this.mult(Rx1);
         this.pomakni(-x0,-y0,-z0);
+        return this;
     }
     zrcali_ravnina(x0, y0, z0, u1, u2, u3) {
         // ravnina je zadana tockom (x0,y0,z0) i normalom (u1,u2,u3)
@@ -292,6 +309,7 @@ class MT3D {
         this.mult(Ry1);
         this.mult(Rx1);
         this.pomakni(-x0,-y0,-z0);
+        return this;
     }
     zrcali_ravnina2(A, B, C, D) {
         // ravnina je zadana u opcem obliku Ax+By+Cz+D=0
@@ -325,6 +343,7 @@ class MT3D {
         this.mult(Ry1);
         this.mult(Rx1);
         this.pomakni(-x0,-y0,-z0);
+        return this;
     }
 
     //preslikava [xmin,xmax] x [ymin,ymax] x [zmin,zmax] u [-1,1] x [-1,1] x [-1,1]
@@ -334,6 +353,7 @@ class MT3D {
                       [0,2/(ymax-ymin),0,(ymin+ymax)/(ymin-ymax)],
                       [0,0,2/(zmin-zmax),(zmin+zmax)/(zmin-zmax)],
                       [0,0,0,1]];
+        return this;
     }
 
     //preslikava [xmin,xmax] x [ymin,ymax] x [zmin,zmax] u [-1,1] x [-1,1] x [-1,1]
@@ -344,6 +364,7 @@ class MT3D {
         let y1 = ymin - k;
         let y2 = ymax + k;
         this.OrtogonalnaProjekcija(xmin, xmax, y1, y2, zmin, zmax);
+        return this;
     }
 
     //preslikava [xmin,xmax] x [ymin,ymax] x [zmin,zmax] u [-1,1] x [-1,1] x [-1,1]
@@ -354,6 +375,7 @@ class MT3D {
         let x1 = xmin - k;
         let x2 = xmax + k;
         this.OrtogonalnaProjekcija(x1, x2, ymin, ymax, zmin, zmax);
+        return this;
     }
 
     //koordinatni sustav kamere
@@ -370,6 +392,7 @@ class MT3D {
                    [n[0], n[1], n[2], -n[0]*x0-n[1]*y0-n[2]*z0],
                    [0, 0, 0, 1] ];
         this._kamera = mtr;
+        return this;
     }
 
     //preslikava [xmin,xmax] x [ymin,ymax] x [zmin,zmax] u [-1,1] x [-1,1] x [-1,1]
@@ -380,6 +403,7 @@ class MT3D {
                             [0,2*zmin/(ymax-ymin),(ymax+ymin)/(ymax-ymin),0],
                             [0,0,(zmin+zmax)/(zmin-zmax),2*zmin*zmax/(zmin-zmax)],
                             [0,0,-1,0]];
+        return this;
     }
 
     //preslikava [xmin,xmax] x [ymin,ymax] x [zmin,zmax] u [-1,1] x [-1,1] x [-1,1]
@@ -390,7 +414,7 @@ class MT3D {
     	let k = (h / w * (xmax - xmin) - (ymax - ymin)) / 2;
         let y1 = ymin - k;
         let y2 = ymax + k;
-        this.PerspektivnaProjekcija(xmin, xmax, y1, y2, zmin, zmax);
+        return this.PerspektivnaProjekcija(xmin, xmax, y1, y2, zmin, zmax);
     }
 
     //preslikava [xmin,xmax] x [ymin,ymax] x [zmin,zmax] u [-1,1] x [-1,1] x [-1,1]
@@ -401,7 +425,7 @@ class MT3D {
     	let k = (w / h * (ymax - ymin) - (xmax - xmin)) / 2;
         let x1 = xmin - k;
         let x2 = xmax + k;
-        this.PerspektivnaProjekcija(x1, x2, ymin, ymax, zmin, zmax);
+        return this.PerspektivnaProjekcija(x1, x2, ymin, ymax, zmin, zmax);
     }
 
     //perspektivnu projekciju zadajemo s vertikalnim kutom pogleda,
@@ -409,7 +433,7 @@ class MT3D {
     Perspektiva(theta, omjer, near, far) {
       let top = near * Math.tan(theta * Math.PI / 360 );
       let right = omjer * top;
-      this.PerspektivnaProjekcija(-right, right, -top, top, near, far);
+      return this.PerspektivnaProjekcija(-right, right, -top, top, near, far);
     }
 
     lista() {

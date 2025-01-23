@@ -3,7 +3,7 @@
 
 class Draw3DObject {
     n = 128;
-    constructor(gl, object = { vertices: [], indices: null, drawFunction: null }) {
+    constructor(gl, object = { vertices: [], indices: undefined, drawFunction: null }) {
         this.gl = gl;
         this.vertices = object.vertices;
         this.indices = object.indices;
@@ -16,15 +16,29 @@ class Draw3DObject {
         this.vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-        if (this.indices) {
+        if (this.indices !== null && this.indices !== undefined && this.indices.length > 0) {
             this.indexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
         }
     }
 
-    draw() {
+    initVertexArray() {
         const gl = this.gl;
-        this.drawFunction(gl, n);
+        this.vertexArray = gl.createVertexArray();
+        gl.bindVertexArray(this.vertexArray);
+        this.initBuffers();
+    }
+
+    additionalBufferLoad() {
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+    }
+
+    draw(matrix = new MT3D()) {
+        this.additionalBufferLoad();
+        // this.initvertexArray();
+
+        gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista())
+        this.drawFunction(this.gl, this.n);
     }
 }

@@ -10,7 +10,8 @@ const shapes = {
     HEMISPHERE: "hemisphere",
     SOLID_HEMISPHERE: "solid_hemisphere",
     TORUS: "torus",
-    PYRAMID: "pyramid"
+    PYRAMID: "pyramid",
+    GRID: "grid"
 };
 
 function WebGLaplikacija() {
@@ -22,7 +23,8 @@ function WebGLaplikacija() {
     }
 
     const n = 128, r = 1, h = 2;
-    const { vertices, indices, drawFunction } = drawShape(shapes.PYRAMID);
+    const grid = { gridsizeX: 10, gridsizeY: 10, divisions: 10 };
+    const { vertices, indices, drawFunction } = drawShape(shapes.GRID);
 
     function drawShape(shape) {
         switch (shape) {
@@ -39,13 +41,15 @@ function WebGLaplikacija() {
             case shapes.HOLLOW_CYLINDER:
                 return Shapes.hollow_cylinder(r*1.5, r, h, n);
             case shapes.CONE:
-                return Shapes.cone(r, h, n, true);
+                return Shapes.pyramid(r, h, n);
             case shapes.SPHERE:
                 return Shapes.sphere(r, n);
             case shapes.TORUS:
                 return Shapes.torus(h, r, n, n);
             case shapes.PYRAMID:
-                return Shapes.pyramid(r, h);
+                return Shapes.pyramid(r * 2, h, 4);
+            case shapes.GRID:
+                return Shapes.grid(grid.gridsizeX, grid.gridsizeY, grid.divisions);
         }
     }
 
@@ -78,18 +82,27 @@ function WebGLaplikacija() {
     const matrix = new MT3D();
     gl.enable(gl.DEPTH_TEST);
 
-    let φ = 0, θ = 30, θDirection = 1;
+    const cameraLimits = { limitDownward: 5, limitUpward: 60 };
+    let φ = 0, θ = 60, θDirection = 1;
     function orbit() {
         matrix.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
-        θ += θDirection / (360 - 60 - 5) * 4;
+        θ += θDirection / (360 - cameraLimits.limitUpward);
         if (θ >= 60) θDirection = -1;
         if (θ <= 5) θDirection = 1;
-        const x = Math.cos(φ * Math.PI / 180) * 3;
-        const y = Math.sin(φ * Math.PI / 180) * 3;
-        const z = 1 * Math.sin(θ * Math.PI / 180);
+        // calculate x, y and z such that it will orbit horizontally around the object, alternating the camera angle based on the direction (such that hte camera always faces the center, but from different angles with the limit of cameraLimits.limitDownward and cameraLimits.limitUpward)
+
+        // let x = 10 * Math.sin(φ * Math.PI / 180) * Math.cos(θ * Math.PI / 180);
+        // let y = 10 * Math.sin(φ * Math.PI / 180) * Math.sin(θ * Math.PI / 180);
+        // let z = 10 * Math.cos(1 * Math.PI / 180);
+
+        
+        const x = Math.cos(φ * Math.PI / 180) * 4;
+        const y = Math.sin(φ * Math.PI / 180) * 4;
+        let z = Math.sin(θ * Math.PI / 180) * 3;
+
         if (z < 0) z = 0;
         const vert = document.getElementById("animate-vertical").checked;
-        matrix.postaviKameru(x, vert ? z : y, vert ? y : z, 0, 0, 0, 0, 0, 1);
+        matrix.postaviKameru(x, y, z, 0, 0, 0, 0, 0, 2);
     }
 
     function render(timestamp) {

@@ -622,4 +622,28 @@ class Shapes {
         gl.drawArrays(gl.TRIANGLES, 0, indexCount);
     }
 
+    // function to draw a grid that takes three parameters, size of grid on x, size of grid on y and divisor for the grid which is the number of lines in the grid
+    static grid(x, y, divisor) {
+        const vertices = [];
+        const stepX = x / divisor;
+        const stepY = y / divisor;
+        for (let i = -x / 2; i <= x / 2; i += stepX) {
+            vertices.push(i, -y / 2, 0, 0, 0, 1);
+            vertices.push(i, y / 2, 0, 0, 0, 1);
+        }
+        for (let i = -y / 2; i <= y / 2; i += stepY) {
+            vertices.push(-x / 2, i, 0, 0, 0, 1);
+            vertices.push(x / 2, i, 0, 0, 0, 1);
+        }
+        return {
+            vertices: vertices,
+            indices: undefined,
+            drawFunction: this.drawGrid.bind(null, vertices.length / 6)
+        };
+    }
+
+    static drawGrid(indexCount, gl, n) {
+        gl.drawArrays(gl.LINES, 0, indexCount);
+    }
+
 }

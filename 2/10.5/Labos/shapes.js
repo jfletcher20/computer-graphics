@@ -223,32 +223,7 @@ class Shapes {
             }
         }
 
-
-        {
-            const latCount = n;
-            const lonCount = n;
-            for (let i = latCount; i > 0; i--) {
-                const theta0 = (Math.PI / 2) * (i / latCount);
-                const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
-                for (let j = 0; j <= lonCount; j++) {
-                    const phi = 2 * Math.PI * (j / lonCount);
-                    for (let t of [theta0, theta1]) {
-                        const sinT = Math.sin(t), cosT = Math.cos(t);
-                        const y = radius * cosT * Math.sin(phi);
-                        const x = radius * cosT * Math.cos(phi);
-                        const z = -height / 2 + radius * sinT;
-                        const nx = x;
-                        const ny = y;
-                        const nz = z + height / 2;
-                        const mag = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
-                        vertices.push(x, y, height - 0.02 + z, nx / mag, ny / mag, nz / mag);
-                        bottomCount++;
-                    }
-                }
-            }
-        }
-
-        return { vertices: vertices, indices: undefined, drawFunction: this.drawCapsule.bind(null, bottomCount / 4, bottomCount / 8, bottomCount / 8) };
+        return { vertices: vertices, indices: undefined, drawFunction: this.drawCapsule.bind(null, bottomCount, bottomCount, bottomCount) };
     }
 
     static drawHollowHemisphere(gl, n) {

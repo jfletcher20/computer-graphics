@@ -25,7 +25,7 @@ function WebGLaplikacija() {
         return;
     }
 
-    const n = 72, r = 1, h = 2;
+    let n = 72, r = 1, h = 3;
     const grid = { gridsizeX: 10, gridsizeY: 10, divisions: 10 };
 
     function drawShape(shape) {
@@ -33,7 +33,7 @@ function WebGLaplikacija() {
             case shapes.CUBE:
                 return Shapes.cube(r);
             case shapes.CUBOID:
-                return Shapes.cuboid(h, h*.5, h*.75);
+                return Shapes.cuboid(h, h * .5, h * .75);
             case shapes.HEMISPHERE:
                 return Shapes.hollow_hemisphere(r, n);
             case shapes.SOLID_HEMISPHERE:
@@ -94,18 +94,16 @@ function WebGLaplikacija() {
     let φ = 0, θ = 0, θDirection = 1;
     function orbit() {
         matrix.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
-        m2.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
         θ += θDirection * cameraLimits.limitUpward / 180;
         if (θ >= cameraLimits.limitUpward) θDirection = -1;
         if (θ <= cameraLimits.limitDownward) θDirection = 1;
 
-        let x = 6 * Math.sin(φ * Math.PI / 180);
-        let y = 6 * Math.cos(φ * Math.PI / 180);
-        let z = 2 + 4 * Math.sin(θ * Math.PI / 180);
+        let x = 8 * Math.sin(φ * Math.PI / 180);
+        let y = 8 * Math.cos(φ * Math.PI / 180);
+        let z = 4 + 4 * Math.sin(θ * Math.PI / 180) * 0;
 
         // const vert = document.getElementById("animate-vertical").checked;
         matrix.postaviKameru(x, y, z, 0, 0, 0, 0, 0, 1);
-        m2.postaviKameru(x, y, z, 0, 0, 0, 0, 0, 1);
     }
 
     function render(timestamp) {
@@ -147,10 +145,51 @@ function WebGLaplikacija() {
         //     obj.draw(matrix);
         // }
 
+        // createa clone of matrix
+        var tempMatrix = Object.assign(new MT3D(), matrix);
         new Draw3DObject(gl, GPUprogram1, drawShape(shapes.GRID)).draw(matrix);
-        new Draw3DObject(gl, GPUprogram1, drawShape(shapes.HEMISPHERE)).draw(matrix);
-        // new Draw3DObject(gl, GPUprogram1, drawShape(shapes.SPHERE)).draw(matrix);
-        // sphereob.draw(matrix.rotirajY(1));
+        new Draw3DObject(gl, GPUprogram1, drawShape(shapes.CONE)).draw(matrix);
+        function drawCatcher() {
+            var tempR = r;
+            r = 0.7;
+            var beforeState = Object.assign(new MT3D(), tempMatrix);
+            tempMatrix.rotirajY(90);
+            tempMatrix.rotirajX(90);
+            tempMatrix.pomakni(0, h + 0.1, 0);
+            new Draw3DObject(gl, GPUprogram1, drawShape(shapes.HEMISPHERE)).draw(tempMatrix);
+            r = tempR;
+            tempMatrix = beforeState;
+        }
+        function drawSpoke() {
+            var tempR = r, tempH = h;
+            drawCatcher();
+            r = 0.2;
+            h = 2.5;
+            var beforeState = Object.assign(new MT3D(), tempMatrix);
+            tempMatrix.rotirajY(90);
+            new Draw3DObject(gl, GPUprogram1, drawShape(shapes.CYLINDER)).draw(tempMatrix);
+            tempMatrix = beforeState;
+            r = tempR;
+            h = tempH;
+        }
+        function drawCollar() {
+            var tempR = r, tempH = h;
+            r = 0.6;
+            h = 0.8;
+            var beforeState = Object.assign(new MT3D(), tempMatrix);
+            tempMatrix.pomakni(0, 0, 1.75);
+            new Draw3DObject(gl, GPUprogram1, drawShape(shapes.CYLINDER)).draw(tempMatrix);
+            tempMatrix = beforeState;
+            r = tempR;
+            h = tempH;
+        }
+        drawCollar();
+        tempMatrix.pomakni(0, 0, 1.75+0.4);
+        drawSpoke();
+        tempMatrix.rotirajZ(120);
+        drawSpoke();
+        tempMatrix.rotirajZ(120);
+        drawSpoke();
 
         gl.uniform3fv(GPUprogram1.u_izvorXYZ, [-10, 0, -10]);
         gl.uniform3fv(GPUprogram1.u_kameraXYZ, [0, 0, -10]);

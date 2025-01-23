@@ -3,28 +3,23 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Labos 10.5</title>
+	<title>Zadaća 10.5</title>
 	<link rel="stylesheet" href="../../style.css">
 	<script src="../../RG-WebGL.js"></script>
 	<script src="../../mt3d.js"></script>
 	<script src="../../shapes.js"></script>
-	<script src="../../graphics-framework.js"></script>
 	<script src="logic.js"></script>
 </head>
 
 <body>
-	<h1>Zadatak 3</h1>
+	<h1>Rješenje 1</h1>
 	<nav>
-		<a href="../../labos.html">Labos 10.5</a>
-		<a href="../../tasks/1/1.html">Zadatak 1</a>
-		<a href="../../tasks/2/2.html">Zadatak 2</a>
-		<a href="../../tasks/3/3.html" class="selected">Zadatak 3</a>
+		<a href="../../index.html">Zadaća 10.5</a>
+		<a href="../../tasks/1/1.html" class="selected">v1.0 foi ipi</a>
+		<a href="../../tasks/2/2.html">v2.0 foi mini</a>
+		<a href="../../tasks/3/3.html">v3.0 foi in cuboid font</a>
 	</nav>
 	<div class="container">
-		<canvas id="slika1" width="640" height="640">
-			Vaš preglednik ne podržava HTML5 canvas.
-		</canvas>
-
 		<div
 			style="position: absolute; margin-top: 15px; margin-left: 450px; background-color: rgba(0, 0, 0, 0.5); padding: 8px; padding-left: 12px; padding-right: 12px; border-radius: 8px;">
 
@@ -36,16 +31,43 @@
 			<input type="checkbox" name="animate-vertical" id="animate-vertical">
 			<label for="animate-vertical"
 				style="user-select: none; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; -khtml-user-select: none;">Animiraj
-				vertikalno</label>
+				gore-dole</label>
 		</div>
+		<canvas id="slika1" width="640" height="640">
+			Vaš preglednik ne podržava HTML5 canvas.
+		</canvas>
 	</div>
 </body>
 
+<!-- <script id="vertex-shader" type="x-shader/x-vertex">
+	#version 300 es
+	precision highp float; // Ensure precision for WebGL2 shaders
+
+	in vec2 a_vrhXY;
+	in vec3 a_boja;
+	out vec3 v_boja;
+	uniform mat4 u_mTrans;
+
+	void main() {
+	  gl_Position = u_mTrans * vec4(a_vrhXY, 0.0, 1.0);
+	  v_boja = a_boja;
+	}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+	#version 300 es
+	precision highp float;
+	in vec3 v_boja;
+	out vec4 bojaPiksela;
+
+	void main() {
+	  bojaPiksela = vec4(v_boja, 1);
+	}
+</script> -->
 <script id="vertex-shader" type="x-shader/x-vertex">
 	#version 300 es
 	in vec4 a_vrhXYZ;
 	in vec3 a_normala;
-	out vec3 v_normala;
 	uniform mat4 u_mTrans;
 	uniform vec3 u_izvorXYZ;
 	uniform vec3 u_kameraXYZ;
@@ -69,10 +91,9 @@
 	  }
 
 	  v_svjetlina = v_svjetlina * 0.5 + refleksija * 0.5;
-	  v_normala = a_normala;
 	  gl_Position = vrh;
 	}
-</script>
+  </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
 	#version 300 es
@@ -84,6 +105,6 @@
 	void main() {
 	  bojaFragmenta = vec4(v_svjetlina * u_boja, 1.0); // postavlja se boja fragmenta
 	}
-</script>
+  </script>
 
 </html>

@@ -85,37 +85,37 @@ function WebGLaplikacija() {
     // var sphere = drawShape(shapes.CAPSULE);
     // const sphereob = new Draw3DObject(gl, GPUprogram1, sphere);
 
-    const matrix = new MT3D(), m2 = new MT3D();
+    const matrix = new MT3D();
     initAttributes();
     gl.enable(gl.DEPTH_TEST);
 
     const cameraLimits = { limitDownward: 0, limitUpward: 60 };
-    let φ = 0, direction = 1;
+    let φ = 30, direction = 1;
     function orbit() {
         matrix.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
 
-        let x = 8 * Math.sin(φ * Math.PI / 360);
-        let y = 8 * Math.cos(φ * Math.PI / 360);
-        let z = 4;
+        let x = 7 * Math.sin(φ * Math.PI / 360);
+        let y = 7 * Math.cos(φ * Math.PI / 360);
+        let z = 2;
 
         // const vert = document.getElementById("animate-vertical").checked;
-        matrix.postaviKameru(x, y, z, 0, 0, 0, 0, 0, 1);
+        matrix.postaviKameru(x, y, z, 0, 0, 1, 0, 0, 1);
     }
 
     function render(timestamp) {
         if (document.getElementById("animate-view").checked) {
             φ += direction;
-            if (φ >= 360) direction = -direction;
-            if (φ <= 0) direction = -direction;
+            if (φ >= 270) direction = -direction;
+            if (φ <= 30) direction = -direction;
             orbit();
         }
 
-        gl.clearColor(0.5, 0.5, 0.5, 1);
+        gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, platno1.width, platno1.height);
 
         var tempMatrix = Object.assign(new MT3D(), matrix);
-        new Draw3DObject(gl, GPUprogram1, drawShape(shapes.GRID)).draw(matrix);
+        tempMatrix.rotirajX(-30);
         var initialRad = 1;
         var initialHeight = 3;
         var mixerSpokeHeight = initialHeight * 0.275;
@@ -179,19 +179,23 @@ function WebGLaplikacija() {
         function drawMixer() {
             // draw a straight cylinder, then draw a hexagon on top of it, then rotate the hexagon by 360 / 6 degrees and draw another hexagon
             var degrees = 360 / 6;
-            var beforeState = Object.assign(new MT3D(), tempMatrix);
-            tempMatrix.pomakni(0, 0, mixerSpokeHeight * 2);
-            tempMatrix.rotirajY(-degrees);
-            drawSingleSpoke();
             var tempR = r;
             r = mixerSpokeRadius;
             const spherecache = new Draw3DObject(gl, GPUprogram1, drawShape(shapes.SPHERE));
             r = tempR;
-            tempMatrix.rotirajY(degrees * 2);
+            var beforeState = Object.assign(new MT3D(), tempMatrix);
+            // spherecache.draw(tempMatrix);
+            tempMatrix.pomakni(0, 0, mixerSpokeHeight * 2);
+            tempMatrix.rotirajY(-degrees);
             drawSingleSpoke();
             // spherecache.draw(tempMatrix);
             tempMatrix.pomakni(0, 0, mixerSpokeHeight)
-            tempMatrix.rotirajY(-degrees);
+            
+            r = mixerSpokeRadius*1.125;
+            new Draw3DObject(gl, GPUprogram1, drawShape(shapes.SPHERE)).draw(tempMatrix);
+            r = tempR;
+            tempMatrix.pomakni(0, 0, -mixerSpokeHeight);
+            tempMatrix.rotirajY(degrees * 2);
             drawSingleSpoke();
             spherecache.draw(tempMatrix);
             tempMatrix.pomakni(0, 0, mixerSpokeHeight)
@@ -206,6 +210,11 @@ function WebGLaplikacija() {
             tempMatrix.rotirajY(-degrees);
             drawSingleSpoke();
             spherecache.draw(tempMatrix);
+            tempMatrix.pomakni(0, 0, mixerSpokeHeight)
+            tempMatrix.rotirajY(-degrees);
+            drawSingleSpoke();
+            spherecache.draw(tempMatrix);
+            tempMatrix.pomakni(0, 0, mixerSpokeHeight)
             tempMatrix = beforeState;
         }
         function drawMixers() {

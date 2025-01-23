@@ -1,5 +1,5 @@
 class Shapes {
-    static cylinder(r, h, n, withIndices = false) {
+    static cylinder(r, h, n) {
         var vertices = [];
         vertices.push(0, 0, -h / 2, 0, 0, -1);
         let phi = 2 * Math.PI / n;
@@ -23,11 +23,8 @@ class Shapes {
             vertices.push(x, y, h / 2, c, s, 0);
             phi += 2 * Math.PI / n;
         }
-        if (withIndices) {
-            var indices = [];
-            return { vertices: vertices, indices: indices, drawFunction: this.drawCylinder };
-        }
-        return vertices;
+        var indices = [];
+        return { vertices: vertices, indices: indices, drawFunction: this.drawCylinder };
     }
 
     static drawCylinder(gl, n) {
@@ -640,6 +637,10 @@ class Shapes {
             indices: undefined,
             drawFunction: this.drawGrid.bind(null, vertices.length / 6)
         };
+    }
+
+    static drawGrid(indexCount, gl, n) {
+        gl.drawArrays(gl.LINES, 0, indexCount);
     }
 
 }

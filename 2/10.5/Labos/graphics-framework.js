@@ -3,41 +3,52 @@
 
 class Draw3DObject {
     n = 128;
-    constructor(gl, object = { vertices: [], indices: undefined, drawFunction: null }) {
+    constructor(gl, GPUprogram1, object = { vertices: [], indices: undefined, drawFunction: null }) {
         this.gl = gl;
+        this.GPUprogram1 = GPUprogram1;
         this.vertices = object.vertices;
         this.indices = object.indices;
         this.drawFunction = object.drawFunction;
+        this.vertexBuffer = gl.createBuffer();
+        this.vertexArray = gl.createVertexArray();
+        if (this.indices !== null && this.indices !== undefined) this.indexBuffer = gl.createBuffer();
+        // setTimeout(() => this.initBuffers());
         this.initBuffers();
     }
 
     initBuffers() {
+        this.initIndicesArray();
+        this.initVerticesArray();
+    }
+
+    initVerticesArray() {
         const gl = this.gl;
-        this.vertexBuffer = gl.createBuffer();
+        gl.bindVertexArray(this.vertexArray);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.enableVertexAttribArray(this.GPUprogram1.a_vrhXYZ);
+        gl.enableVertexAttribArray(this.GPUprogram1.a_normala);
+        gl.vertexAttribPointer(this.GPUprogram1.a_vrhXYZ, 3, gl.FLOAT, false, 24, 0);
+        gl.vertexAttribPointer(this.GPUprogram1.a_normala, 3, gl.FLOAT, false, 24, 12);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    }
+
+    initIndicesArray() {
         if (this.indices !== null && this.indices !== undefined && this.indices.length > 0) {
-            this.indexBuffer = gl.createBuffer();
+            const gl = this.gl;
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         }
     }
 
-    initVertexArray() {
-        const gl = this.gl;
-        this.vertexArray = gl.createVertexArray();
-        gl.bindVertexArray(this.vertexArray);
-        this.initBuffers();
-    }
-
     additionalBufferLoad() {
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+        // this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+        // this
     }
 
     draw(matrix = new MT3D()) {
-        this.additionalBufferLoad();
-        // this.initvertexArray();
-
+        this.initVerticesArray();
         gl.uniformMatrix4fv(GPUprogram1.u_mTrans, false, matrix.lista())
         this.drawFunction(this.gl, this.n);
     }

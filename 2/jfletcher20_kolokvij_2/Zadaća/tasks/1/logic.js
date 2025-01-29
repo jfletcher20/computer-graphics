@@ -125,8 +125,6 @@ function WebGLaplikacija() {
             r = initialRad;
             h = initialHeight;
             var beforeState = Object.assign(new MT3D(), tempMatrix);
-            gl.uniform3fv(GPUprogram1.u_boja, [1, 0.7, 0.7]);
-
             new Draw3DObject(gl, GPUprogram1, drawShape(shapes.CYLINDER)).draw(tempMatrix);
             tempMatrix = beforeState;
             r = tempR;
@@ -138,10 +136,7 @@ function WebGLaplikacija() {
             h = initialHeight * 0.4;
             var beforeState = Object.assign(new MT3D(), tempMatrix);
             tempMatrix.pomakni(0, 0, initialHeight * 0.6575).rotirajY(90);
-            gl.uniform3fv(GPUprogram1.u_boja, [1, 0.7, 0.7]);
-
             new Draw3DObject(gl, GPUprogram1, drawShape(shapes.CYLINDER)).draw(tempMatrix);
-            gl.uniform3fv(GPUprogram1.u_boja, [1, 0.7, 0.7]);
             drawMixers();
             // drawHolster();
             tempMatrix = beforeState;
@@ -154,10 +149,7 @@ function WebGLaplikacija() {
             h = 0.175;
             var beforeState = Object.assign(new MT3D(), tempMatrix);
             tempMatrix.pomakni(0, 0, initialHeight * 0.6575 / 2 + 0.2);
-
-            gl.uniform3fv(GPUprogram1.u_boja, [1, 0.7, 0.7]);
             new Draw3DObject(gl, GPUprogram1, drawShape(shapes.CYLINDER)).draw(tempMatrix);
-            gl.uniform3fv(GPUprogram1.u_boja, [1, 1, 1]);
             drawMixer();
             tempMatrix.rotirajZ(90);
             drawMixer();
@@ -198,8 +190,8 @@ function WebGLaplikacija() {
             drawSingleSpoke();
             // spherecache.draw(tempMatrix);
             tempMatrix.pomakni(0, 0, mixerSpokeHeight)
-
-            r = mixerSpokeRadius * 1.125;
+            
+            r = mixerSpokeRadius*1.125;
             new Draw3DObject(gl, GPUprogram1, drawShape(shapes.SPHERE)).draw(tempMatrix);
             r = tempR;
             tempMatrix.pomakni(0, 0, -mixerSpokeHeight);

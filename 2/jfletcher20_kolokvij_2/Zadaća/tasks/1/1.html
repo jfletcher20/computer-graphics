@@ -69,7 +69,7 @@
 		refleksija = pow(refleksija, 8.0);
 	  }
 
-	  v_svjetlina = v_svjetlina * 0.75 + refleksija * 0.5;
+	  v_svjetlina = v_svjetlina * 0.5 + refleksija * 0.5;
 	  v_normala = a_normala;
 	  gl_Position = vrh;
 	}

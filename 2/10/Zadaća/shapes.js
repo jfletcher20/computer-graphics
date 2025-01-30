@@ -467,7 +467,6 @@ class Shapes {
         const r = a;
         const dt = (2 * Math.PI) / n;
 
-        // Draw base ngon
         for (let i = 0; i < n; i++) {
             const angle = i * dt;
             const nextAngle = (i + 1) % n * dt;
@@ -475,12 +474,11 @@ class Shapes {
             const y0 = r * Math.sin(angle);
             const x1 = r * Math.cos(nextAngle);
             const y1 = r * Math.sin(nextAngle);
-            verts.push(0, 0, 0, 0, 0, -1); // Center vertex
-            verts.push(x0, y0, 0, 0, 0, -1); // Current vertex
-            verts.push(x1, y1, 0, 0, 0, -1); // Next vertex
+            verts.push(0, 0, 0, 0, 0, -1);
+            verts.push(x0, y0, 0, 0, 0, -1);
+            verts.push(x1, y1, 0, 0, 0, -1);
         }
 
-        // Draw top ngon
         for (let i = 0; i < n; i++) {
             const angle = i * dt;
             const nextAngle = (i + 1) % n * dt;
@@ -488,12 +486,11 @@ class Shapes {
             const y0 = r * Math.sin(angle);
             const x1 = r * Math.cos(nextAngle);
             const y1 = r * Math.sin(nextAngle);
-            verts.push(0, 0, h, 0, 0, 1); // Center vertex
-            verts.push(x1, y1, h, 0, 0, 1); // Next vertex
-            verts.push(x0, y0, h, 0, 0, 1); // Current vertex
+            verts.push(0, 0, h, 0, 0, 1);
+            verts.push(x1, y1, h, 0, 0, 1);
+            verts.push(x0, y0, h, 0, 0, 1);
         }
 
-        // Draw mantle one side at a time and calculate normals
         for (let i = 0; i < n; i++) {
             const angle = i * dt;
             const nextAngle = (i + 1) % n * dt;
@@ -502,7 +499,6 @@ class Shapes {
             const x1 = r * Math.cos(nextAngle);
             const y1 = r * Math.sin(nextAngle);
 
-            // First triangle of the side
             const nx0 = x0;
             const ny0 = y0;
             const nz0 = 0;
@@ -516,7 +512,6 @@ class Shapes {
             verts.push(x1, y1, 0, ...normal1);
             verts.push(x1, y1, h, ...normal1);
 
-            // Second triangle of the side
             verts.push(x0, y0, 0, ...normal0);
             verts.push(x1, y1, h, ...normal1);
             verts.push(x0, y0, h, ...normal0);

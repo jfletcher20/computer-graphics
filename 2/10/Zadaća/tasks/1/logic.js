@@ -1,15 +1,15 @@
 window.onload = WebGLaplikacija;
 
 const shapes = {
-    CUBE: "cube", // no worky
-    CUBOID: "cuboid", // no worky
-    SPHERE: "sphere", // no worky
+    CUBE: "cube",
+    CUBOID: "cuboid",
+    SPHERE: "sphere",
     CYLINDER: "cylinder",
     HOLLOW_CYLINDER: "hollow_cylinder",
     CONE: "cone",
-    HEMISPHERE: "hemisphere", // no worky
-    SOLID_HEMISPHERE: "solid_hemisphere", // no worky
-    TORUS: "torus", // no worky
+    HEMISPHERE: "hemisphere",
+    SOLID_HEMISPHERE: "solid_hemisphere",
+    TORUS: "torus",
     PYRAMID: "pyramid",
     GRID: "grid",
     CAPSULE: "capsule",

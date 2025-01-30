@@ -56,20 +56,13 @@ function WebGLaplikacija() {
     gl.cullFace(gl.BACK);
 
     let φ = 0;
-    let θ = 30;
-    let θDirection = 1;
     function orbit() {
         matrix.PerspektivnaProjekcija(-1, 1, -1, 1, 1, 100);
-        θ += θDirection / (360 - 60 - 5) * 4;
-        if (θ >= 60) θDirection = -1;
-        if (θ <= 5) θDirection = 1;
         const x = Math.cos(φ * Math.PI / 180) * 24;
         const y = Math.sin(φ * Math.PI / 180) * 24;
-        const z = 30 * Math.sin(θ * Math.PI / 180);
+        const z = ((Math.sin(φ * Math.PI / 360)) * (Math.cos(φ * Math.PI / 360))) * 12 + 8;
 
-        if (z < 0) z = 0;
-
-        matrix.postaviKameru(x, y, z, 0, 0, 8, 0, 0, 1);
+        matrix.postaviKameru(x, y, z, 0, 0, 4, 0, 0, 1);
     }
 
     function constructCube() {

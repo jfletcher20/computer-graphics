@@ -139,9 +139,8 @@ function WebGLaplikacija() {
             var beforeState = Object.assign(new MT3D(), tempMatrix);
             tempMatrix.pomakni(0, 0, initialHeight * 0.6575).rotirajY(90);
             gl.uniform3fv(GPUprogram1.u_boja, [1, 0.7, 0.7]);
-
             new Draw3DObject(gl, GPUprogram1, drawShape(shapes.CYLINDER)).draw(tempMatrix);
-            gl.uniform3fv(GPUprogram1.u_boja, [1, 0.7, 0.7]);
+            gl.uniform3fv(GPUprogram1.u_boja, [1, 1, 1]);
             drawMixers();
             // drawHolster();
             tempMatrix = beforeState;

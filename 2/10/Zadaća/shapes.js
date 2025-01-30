@@ -1,33 +1,8 @@
 class Shapes {
-    static cylinder(r, h, n, withIndices = false) {
-        var vertices = [];
-        vertices.push(0, 0, -h / 2, 0, 0, -1);
-        let phi = 2 * Math.PI / n;
-        for (let i = 0; i <= n; i++) {
-            vertices.push(r * Math.cos(phi), r * Math.sin(phi), -h / 2, 0, 0, -1);
-            phi += 2 * Math.PI / n;
-        }
-        vertices.push(0, 0, h / 2, 0, 0, 1);
-        phi = 2 * Math.PI;
-        for (let i = 0; i <= n; i++) {
-            vertices.push(r * Math.cos(phi), r * Math.sin(phi), h / 2, 0, 0, 1);
-            phi -= 2 * Math.PI / n;
-        }
-        phi = 0;
-        for (let i = 0; i <= n; i++) {
-            let c = Math.cos(phi);
-            let s = Math.sin(phi);
-            let x = r * c;
-            let y = r * s;
-            vertices.push(x, y, -h / 2, c, s, 0);
-            vertices.push(x, y, h / 2, c, s, 0);
-            phi += 2 * Math.PI / n;
-        }
-        if (withIndices) {
-            var indices = [];
-            return { vertices: vertices, indices: indices, drawFunction: this.drawCylinder };
-        }
-        return vertices;
+
+    static cylinder(r, h, n) {
+        n > 64 ? n = 64 : n;
+        return this.ngon(r, h, n);
     }
 
     static drawCylinder(gl, n) {
@@ -37,6 +12,7 @@ class Shapes {
     }
 
     static hollow_cylinder(outerR, innerR, h, n) {
+        n = 128;
         var vertices = [];
         let phi = 2 * Math.PI / n;
         for (let i = 0; i <= n; i++) {
@@ -110,38 +86,69 @@ class Shapes {
 
     static sphere(r, n) {
 
-        var vertices = [], indices = [n * n];
-        for (let i = 0; i <= n; i++) {
-            let theta = i * Math.PI / n;
-            let sinTheta = Math.sin(theta), cosTheta = Math.cos(theta);
-            for (let j = 0; j <= n; j++) {
-                let phi = j * 2 * Math.PI / n, sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
-                let x = r * cosPhi * sinTheta;
-                let y = r * sinPhi * sinTheta;
-                let z = r * cosTheta;
-                let nx = cosPhi * sinTheta, ny = sinPhi * sinTheta, nz = cosTheta;
-                vertices.push(x, y, z, nx, ny, nz);
+        let vertices = [];
+        let radius = r;
+        let bottomCount = 0;
+        let height = 0;
+
+        {
+            const latCount = n;
+            const lonCount = n;
+            for (let i = 0; i < latCount; i++) {
+                const theta0 = (Math.PI / 2) * (i / latCount);
+                const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
+                for (let j = 0; j <= lonCount; j++) {
+                    const phi = 2 * Math.PI * (j / lonCount);
+                    for (let t of [theta0, theta1]) {
+                        const sinT = Math.sin(t), cosT = Math.cos(t);
+                        const x = radius * cosT * Math.cos(phi);
+                        const y = radius * cosT * Math.sin(phi);
+                        const z = -height / 2 - radius * sinT;
+                        const nx = x;
+                        const ny = y;
+                        const nz = z + height / 2;
+
+                        const mag = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                        vertices.push(x, y, z, nx / mag, ny / mag, nz / mag);
+                        bottomCount++;
+                    }
+                }
             }
         }
-        vertices.push(0, 0, r, 0, 0, 1);
 
-        for (var i = 0; i < n; i++) indices.push(i);
-        indices.push(0);
-        indices.push(n * n + 1);
-        for (var i = 1; i <= n; i++) indices.push(n * n - i);
-        indices.push(n * n - 1);
-        for (var i = 1; i < n; i++) {
-            for (var j = 0; j < n; j++) indices.push((i - 1) * n + j, i * n + j);
-            indices.push((i - 1) * n, i * n);
+
+        {
+            const latCount = n;
+            const lonCount = n;
+            for (let i = latCount; i > 0; i--) {
+                const theta0 = (Math.PI / 2) * (i / latCount);
+                const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
+                for (let j = 0; j <= lonCount; j++) {
+                    const phi = 2 * Math.PI * (j / lonCount);
+                    for (let t of [theta0, theta1]) {
+                        const sinT = Math.sin(t), cosT = Math.cos(t);
+                        const y = radius * cosT * Math.sin(phi);
+                        const x = radius * cosT * Math.cos(phi);
+                        const z = -height / 2 + radius * sinT;
+                        const nx = x;
+                        const ny = y;
+                        const nz = z + height / 2;
+                        const mag = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                        vertices.push(x, y, height - 0.02 + z, nx / mag, ny / mag, nz / mag);
+                        bottomCount++;
+                    }
+                }
+            }
         }
 
-        return { vertices: vertices, indices: indices, drawFunction: this.drawSphere };
+        return { vertices: vertices, indices: undefined, drawFunction: this.drawCapsule.bind(null, bottomCount, bottomCount, bottomCount) };
     }
 
     static drawSphere(gl, n) {
-        gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, 0);
-        gl.drawElements(gl.TRIANGLE_FAN, n + 2, gl.UNSIGNED_SHORT, (n + 2) * 2);
-        gl.drawElements(gl.TRIANGLE_STRIP, (2 * n + 2) * (n - 1), gl.UNSIGNED_SHORT, 4 * n + 8);
+        let m = n, p = n;
+        gl.drawElements(gl.TRIANGLE_FAN, m + 2, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLE_FAN, m + 2, gl.UNSIGNED_SHORT, (m + 2) * 2);
+        gl.drawElements(gl.TRIANGLE_STRIP, (2 * m + 2) * (p - 1), gl.UNSIGNED_SHORT, 4 * m + 8);
     }
 
     static solid_hemisphere(r, n) {
@@ -185,39 +192,38 @@ class Shapes {
     }
 
     static hollow_hemisphere(r, n, startAngle = 0, endAngle = Math.PI * 1.5) {
+
         let vertices = [];
-        let indices = [];
-        for (let i = 0; i <= n; i++) {
-            const theta = i * Math.PI / n;
-            const sinTheta = Math.sin(theta);
-            const cosTheta = Math.cos(theta);
+        let radius = r;
+        let bottomCount = 0;
+        let height = 0;
 
-            for (let j = 0; j <= n; j++) {
-                const phi = startAngle + j * (endAngle - startAngle) / n;
-                const sinPhi = Math.sin(phi);
-                const cosPhi = Math.cos(phi);
+        {
+            const latCount = n;
+            const lonCount = n;
+            for (let i = 0; i < latCount; i++) {
+                const theta0 = (Math.PI / 2) * (i / latCount);
+                const theta1 = (Math.PI / 2) * ((i + 1) / latCount);
+                for (let j = 0; j <= lonCount; j++) {
+                    const phi = 2 * Math.PI * (j / lonCount);
+                    for (let t of [theta0, theta1]) {
+                        const sinT = Math.sin(t), cosT = Math.cos(t);
+                        const x = radius * cosT * Math.cos(phi);
+                        const y = radius * cosT * Math.sin(phi);
+                        const z = -height / 2 - radius * sinT;
+                        const nx = x;
+                        const ny = y;
+                        const nz = z + height / 2;
 
-                const x = r * cosPhi * sinTheta;
-                const y = r * sinPhi * sinTheta;
-                const z = r * cosTheta;
-                const nx = cosPhi * sinTheta;
-                const ny = sinPhi * sinTheta;
-                const nz = cosTheta;
-
-                vertices.push(x, y, z, nx, ny, nz);
+                        const mag = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                        vertices.push(x, y, z, nx / mag, ny / mag, nz / mag);
+                        bottomCount++;
+                    }
+                }
             }
         }
 
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < n; j++) {
-                const idx = i * (n + 1) + j;
-                const nextRow = idx + (n + 1);
-                indices.push(idx, nextRow, idx + 1);
-                indices.push(idx + 1, nextRow, nextRow + 1);
-            }
-        }
-
-        return { vertices: vertices, indices: indices, drawFunction: this.drawHollowHemisphere };
+        return { vertices: vertices, indices: undefined, drawFunction: this.drawCapsule.bind(null, bottomCount, bottomCount, bottomCount) };
     }
 
     static drawHollowHemisphere(gl, n) {
@@ -227,64 +233,62 @@ class Shapes {
 
     static cube(a) {
         a /= 2;
-        const vertices = [
-            // front
-            -a, -a, a, 0, 0, 1,
-            a, -a, a, 0, 0, 1,
-            a, a, a, 0, 0, 1,
-            a, a, a, 0, 0, 1,
-            -a, a, a, 0, 0, 1,
-            -a, -a, a, 0, 0, 1,
-            // right
-            a, -a, a, 1, 0, 0,
-            a, -a, -a, 1, 0, 0,
-            a, a, -a, 1, 0, 0,
-            a, a, -a, 1, 0, 0,
-            a, a, a, 1, 0, 0,
-            a, -a, a, 1, 0, 0,
-            // back
-            -a, -a, -a, 0, 0, -1,
-            -a, a, -a, 0, 0, -1,
-            a, a, -a, 0, 0, -1,
-            a, a, -a, 0, 0, -1,
-            a, -a, -a, 0, 0, -1,
-            -a, -a, -a, 0, 0, -1,
-            // left
-            -a, -a, a, -1, 0, 0,
-            -a, a, a, -1, 0, 0,
-            -a, a, -a, -1, 0, 0,
-            -a, a, -a, -1, 0, 0,
-            -a, -a, -a, -1, 0, 0,
-            -a, -a, a, -1, 0, 0,
-            // top
-            -a, a, a, 0, 1, 0,
-            a, a, a, 0, 1, 0,
-            a, a, -a, 0, 1, 0,
-            a, a, -a, 0, 1, 0,
-            -a, a, -a, 0, 1, 0,
-            -a, a, a, 0, 1, 0,
-            // bottom
-            -a, -a, a, 0, -1, 0,
-            -a, -a, -a, 0, -1, 0,
-            a, -a, -a, 0, -1, 0,
-            a, -a, -a, 0, -1, 0,
-            a, -a, a, 0, -1, 0,
-            -a, -a, a, 0, -1, 0
-        ];
-        const indices = [
-            0, 1, 2, 3, 4, 5,
-            6, 7, 8, 9, 10, 11,
-            12, 13, 14, 15, 16, 17,
-            18, 19, 20, 21, 22, 23,
-            24, 25, 26, 27, 28, 29,
-            30, 31, 32, 33, 34, 35
-        ];
-        return { vertices: vertices.flat(), indices: indices, drawFunction: this.drawCube };
+        const vertices = [];
+        function cubeVerts(offsetX, offsetY, offsetZ) {
+            const x0 = offsetX - a, x1 = offsetX + a;
+            const y0 = offsetY - a, y1 = offsetY + a;
+            const z0 = offsetZ - a, z1 = offsetZ + a;
+            vertices.push(
+                // front
+                x0, y0, z1, 0, 0, 1,
+                x1, y0, z1, 0, 0, 1,
+                x1, y1, z1, 0, 0, 1,
+                x1, y1, z1, 0, 0, 1,
+                x0, y1, z1, 0, 0, 1,
+                x0, y0, z1, 0, 0, 1,
+                // right
+                x1, y0, z1, 1, 0, 0,
+                x1, y0, z0, 1, 0, 0,
+                x1, y1, z0, 1, 0, 0,
+                x1, y1, z0, 1, 0, 0,
+                x1, y1, z1, 1, 0, 0,
+                x1, y0, z1, 1, 0, 0,
+                // back
+                x0, y0, z0, 0, 0, -1,
+                x0, y1, z0, 0, 0, -1,
+                x1, y1, z0, 0, 0, -1,
+                x1, y1, z0, 0, 0, -1,
+                x1, y0, z0, 0, 0, -1,
+                x0, y0, z0, 0, 0, -1,
+                // left
+                x0, y0, z1, -1, 0, 0,
+                x0, y1, z1, -1, 0, 0,
+                x0, y1, z0, -1, 0, 0,
+                x0, y1, z0, -1, 0, 0,
+                x0, y0, z0, -1, 0, 0,
+                x0, y0, z1, -1, 0, 0,
+                // top
+                x0, y1, z1, 0, 1, 0,
+                x1, y1, z1, 0, 1, 0,
+                x1, y1, z0, 0, 1, 0,
+                x1, y1, z0, 0, 1, 0,
+                x0, y1, z0, 0, 1, 0,
+                x0, y1, z1, 0, 1, 0,
+                // bottom
+                x0, y0, z1, 0, -1, 0,
+                x0, y0, z0, 0, -1, 0,
+                x1, y0, z0, 0, -1, 0,
+                x1, y0, z0, 0, -1, 0,
+                x1, y0, z1, 0, -1, 0,
+                x0, y0, z1, 0, -1, 0
+            );
+        }
+        cubeVerts(0, 0, 0);
+        return { vertices: vertices.flat(), indices: undefined, drawFunction: this.drawCube.bind(null, vertices.length / 6) };
     }
 
-    static drawCube(gl, n) {
-        const indexCount = 36;
-        gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
+    static drawCube(indexCount, gl, n) {
+        gl.drawArrays(gl.TRIANGLES, 0, indexCount);
     }
 
     /// torus
@@ -378,7 +382,7 @@ class Shapes {
             24, 25, 26, 27, 28, 29,
             30, 31, 32, 33, 34, 35
         ];
-        return { vertices: vertices.flat(), indices: indices, drawFunction: this.drawCube };
+        return { vertices: vertices.flat(), indices: indices, drawFunction: this.drawCube.bind(null, 36) };
     }
 
     static pyramid(a, h, n = 3, heightIsPyramidEdge = false) {
@@ -396,8 +400,8 @@ class Shapes {
             const len = Math.sqrt(vx * vx + vy * vy + vz * vz);
             return len > 1e-9 ? [vx / len, vy / len, vz / len] : [0, 0, 0];
         };
-
-        const r = a / 2;
+        // r is the distance to the point from the center of the base
+        const r = a;
         const baseCorners = [];
         const dt = (2 * Math.PI) / n;
         for (let i = 0; i < n; i++) {
@@ -448,6 +452,85 @@ class Shapes {
 
     static drawPyramid(gl, n) {
         const triangleCount = (n >= 3) ? (2 * n - 2) : 0;
+        const vertexCount = triangleCount * 3;
+        gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
+    }
+
+    // similarly to pyramid, write code for draing an ngon which has same parameters as pyramid and extrudes to that height (without the heightIsPyramidEdge option)
+    static ngon(a, h, n = 3) {
+        const normalize = (vx, vy, vz) => {
+            const len = Math.sqrt(vx * vx + vy * vy + vz * vz);
+            return len > 1e-9 ? [vx / len, vy / len, vz / len] : [0, 0, 0];
+        };
+
+        const verts = [];
+        const r = a;
+        const dt = (2 * Math.PI) / n;
+
+        // Draw base ngon
+        for (let i = 0; i < n; i++) {
+            const angle = i * dt;
+            const nextAngle = (i + 1) % n * dt;
+            const x0 = r * Math.cos(angle);
+            const y0 = r * Math.sin(angle);
+            const x1 = r * Math.cos(nextAngle);
+            const y1 = r * Math.sin(nextAngle);
+            verts.push(0, 0, 0, 0, 0, -1); // Center vertex
+            verts.push(x0, y0, 0, 0, 0, -1); // Current vertex
+            verts.push(x1, y1, 0, 0, 0, -1); // Next vertex
+        }
+
+        // Draw top ngon
+        for (let i = 0; i < n; i++) {
+            const angle = i * dt;
+            const nextAngle = (i + 1) % n * dt;
+            const x0 = r * Math.cos(angle);
+            const y0 = r * Math.sin(angle);
+            const x1 = r * Math.cos(nextAngle);
+            const y1 = r * Math.sin(nextAngle);
+            verts.push(0, 0, h, 0, 0, 1); // Center vertex
+            verts.push(x1, y1, h, 0, 0, 1); // Next vertex
+            verts.push(x0, y0, h, 0, 0, 1); // Current vertex
+        }
+
+        // Draw mantle one side at a time and calculate normals
+        for (let i = 0; i < n; i++) {
+            const angle = i * dt;
+            const nextAngle = (i + 1) % n * dt;
+            const x0 = r * Math.cos(angle);
+            const y0 = r * Math.sin(angle);
+            const x1 = r * Math.cos(nextAngle);
+            const y1 = r * Math.sin(nextAngle);
+
+            // First triangle of the side
+            const nx0 = x0;
+            const ny0 = y0;
+            const nz0 = 0;
+            const nx1 = x1;
+            const ny1 = y1;
+            const nz1 = 0;
+            const normal0 = normalize(nx0, ny0, nz0);
+            const normal1 = normalize(nx1, ny1, nz1);
+
+            verts.push(x0, y0, 0, ...normal0);
+            verts.push(x1, y1, 0, ...normal1);
+            verts.push(x1, y1, h, ...normal1);
+
+            // Second triangle of the side
+            verts.push(x0, y0, 0, ...normal0);
+            verts.push(x1, y1, h, ...normal1);
+            verts.push(x0, y0, h, ...normal0);
+        }
+
+        return {
+            vertices: verts,
+            indices: undefined,
+            drawFunction: this.drawNgon
+        };
+    }
+
+    static drawNgon(gl, n) {
+        const triangleCount = (n >= 3) ? (2 * n) : 0;
         const vertexCount = triangleCount * 3;
         gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
     }
@@ -620,6 +703,30 @@ class Shapes {
 
     static drawAmbiguousShape(indexCount, gl, n) {
         gl.drawArrays(gl.TRIANGLES, 0, indexCount);
+    }
+
+    // function to draw a grid that takes three parameters, size of grid on x, size of grid on y and divisor for the grid which is the number of lines in the grid
+    static grid(x, y, divisor) {
+        const vertices = [];
+        const stepX = x / divisor;
+        const stepY = y / divisor;
+        for (let i = -x / 2; i <= x / 2; i += stepX) {
+            vertices.push(i, -y / 2, 0, 0, 0, 1);
+            vertices.push(i, y / 2, 0, 0, 0, 1);
+        }
+        for (let i = -y / 2; i <= y / 2; i += stepY) {
+            vertices.push(-x / 2, i, 0, 0, 0, 1);
+            vertices.push(x / 2, i, 0, 0, 0, 1);
+        }
+        return {
+            vertices: vertices,
+            indices: undefined,
+            drawFunction: this.drawGrid.bind(null, vertices.length / 6)
+        };
+    }
+
+    static drawGrid(indexCount, gl, n) {
+        gl.drawArrays(gl.LINES, 0, indexCount);
     }
 
 }

@@ -61,7 +61,6 @@ function WebGLaplikacija() {
         const x = Math.cos(φ * Math.PI / 180) * 24;
         const y = Math.sin(φ * Math.PI / 180) * 24;
         const z = ((Math.sin(φ * Math.PI / 360)) * (Math.cos(φ * Math.PI / 360))) * 12 + 8;
-
         matrix.postaviKameru(x, y, z, 0, 0, 4, 0, 0, 1);
     }
 
